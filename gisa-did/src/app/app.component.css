@@ -1,0 +1,13 @@
+div#main {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    align-content: center;
+}
+
+button#logout-button {
+    position: fixed;
+    bottom: 5vh;
+    right: 5vh;
+}

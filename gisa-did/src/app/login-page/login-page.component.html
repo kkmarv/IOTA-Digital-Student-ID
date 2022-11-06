@@ -1,0 +1,24 @@
+<div class="content">
+    <h1>Anmelden</h1>
+    <p>Falls du noch keine Identität hast, <a routerLink="/register">besorge dir eine</a>.</p>
+    <main>
+        <form #login="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="log(login.value)">
+            <div class="thin"></div>
+            <div class="login-upload">
+                <label for="file-input">Credential</label>
+                <input
+                  id="file-input"
+                  type="file"
+                  accept=".pdf, application/pdf"
+                  name="login"
+                  #loginInput
+                  (change)="log(loginInput.files)" required ngModel>
+            </div>
+            <div class="thin"></div>
+            <div class="ultrawide desktop-space"></div>
+            <div class="thin"></div>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!login.valid">Login</button>
+            <div class="thin"></div>
+        </form>
+    </main>
+</div>
