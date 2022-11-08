@@ -1,0 +1,5 @@
+export * as digital from './digitalIDs'
+export * as VC from './verifiable/credentials'
+export * as VP from './verifiable/presentations'
+export * from './types'
+export * as isValid from './types.validation'
