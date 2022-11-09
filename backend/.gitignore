@@ -13,5 +13,8 @@ dist/
 .vscode/
 .idea/
 
+# Identity files
+*.hodl
+
 # configuration files
 .env

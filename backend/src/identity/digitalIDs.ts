@@ -28,7 +28,7 @@ abstract class DigitalID {
 
   protected constructor(account: Account) {
     this.account = account
-    this.verifySelf()
+    // this.verifySelf() TODO can do when published to tangle
     console.log(`DID: ${this.account.did().toString()}`);
   }
 

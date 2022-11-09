@@ -17,7 +17,7 @@ const didUrl = process.env.INSTITUTION_DID ? DID.parse(process.env.INSTITUTION_D
 // The Tangle network to use.
 const tangle = process.env.INSTITUTION_NETWORK ? Network.tryFromName(process.env.INSTITUTION_NETWORK) : Network.devnet()
 // The path of the stronghold file.
-const strongholdPath = process.env.STRONGHOLD_PATH || '../identity.hodl'
+const strongholdPath = process.env.STRONGHOLD_PATH || './identity.hodl'
 
 
 const cfg = {
