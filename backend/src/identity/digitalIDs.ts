@@ -28,8 +28,9 @@ abstract class DigitalID {
 
   protected constructor(account: Account) {
     this.account = account
+    console.log(this.toString());
+
     // this.verifySelf() TODO can do when published to tangle
-    console.log(`DID: ${this.account.did().toString()}`);
   }
 
   /**
@@ -92,7 +93,7 @@ export class StudentID extends DigitalID {
    * @returns A new `StudentID`.
    */
   static async new(identitySetup?: IdentitySetup): Promise<StudentID> {
-    const account = await StudentID.builder.createIdentity(identitySetup)
+    const account = await DigitalID.builder.createIdentity(identitySetup)
 
     // Set the student's DID as the Document controller
     await account.setController({ controllers: account.did() })
@@ -113,7 +114,7 @@ export class StudentID extends DigitalID {
    * @returns An existing `StudentID`. Will throw an Error, if `did` cannot be found.
    */
   static async load(did: DID): Promise<StudentID> {
-    return new StudentID(await StudentID.builder.loadIdentity(did))
+    return new StudentID(await DigitalID.builder.loadIdentity(did))
   }
 }
 
@@ -128,7 +129,6 @@ export class UniversityID extends DigitalID implements Issuer {
 
   // Issuer objects are forced to have an ID of type string instead of DID (@v0.6.0 of @iota/identity-wasm)
   readonly id: string
-
   readonly [properties: string]: unknown;
 
   private constructor(account: Account) {
@@ -164,7 +164,7 @@ export class UniversityID extends DigitalID implements Issuer {
    * @returns A new `UniversityID`.
    */
   static async new(name: string, homepage: string, identitySetup?: IdentitySetup): Promise<UniversityID> {
-    const account = await UniversityID.builder.createIdentity(identitySetup)
+    const account = await DigitalID.builder.createIdentity(identitySetup)
 
     // Set the university's DID as the Document controller
     await account.setController({ controllers: account.did() })
@@ -196,9 +196,9 @@ export class UniversityID extends DigitalID implements Issuer {
    * Load an existing `UniversityID` from {@link Storage}.
    * @param did A string representing the {@link DID} of the `UniversityID` to look for.
    * @returns An existing `UniversityID`.
-   * @throws IdentityNotFound if `did` cannot be found locally.
+   * @throws `IdentityNotFound` if `did` cannot be found locally.
    */
   static async load(did: DID, name: string, homepage: string): Promise<UniversityID> {
-    return new UniversityID(await UniversityID.builder.loadIdentity(did))
+    return new UniversityID(await DigitalID.builder.loadIdentity(did))
   }
 }

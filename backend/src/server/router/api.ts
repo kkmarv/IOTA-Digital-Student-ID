@@ -7,10 +7,7 @@ import { HTTPCode, HTTPError } from '../errors.js'
 const apiRouter = express.Router()
 const institution = cfg.institution
 // Load the DID if URL was found in env variables, else create new identity
-const university = (async function () {
-  if (institution.did) return await digital.UniversityID.load(institution.did, institution.name, institution.website)
-  else return await digital.UniversityID.new(institution.name, institution.website)
-}())
+const university = institution.did ? await digital.UniversityID.load(institution.did, institution.name, institution.website) : await digital.UniversityID.new(institution.name, institution.website)
 
 
 apiRouter.use(express.json())
@@ -21,6 +18,7 @@ apiRouter.post('/credentials/matriculation/register',
     if (!isValid.registrationData(req.body)) {
       throw new HTTPError(HTTPCode.BAD_REQUEST, 'Bad registration data.')
     }
+
     const regData = req.body
 
     // Gather the credential information
@@ -33,9 +31,7 @@ apiRouter.post('/credentials/matriculation/register',
       semester: 1
     }
 
-      ; (await university).issueMatriculationVC(matrData, regData.challenge).then((credential) => {
-        return res.status(HTTPCode.OK).send(credential)
-      })
+    return res.status(HTTPCode.OK).send(await university.issueMatriculationVC(matrData, regData.challenge))
   })
 
 // TODO

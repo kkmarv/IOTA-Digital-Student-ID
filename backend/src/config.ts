@@ -19,6 +19,8 @@ const tangle = process.env.INSTITUTION_NETWORK ? Network.tryFromName(process.env
 // The path of the stronghold file.
 const strongholdPath = process.env.STRONGHOLD_PATH || './identity.hodl'
 
+// Silence all console logs when not in dev mode
+if (process.env.NODE_ENV !== 'development') console.log = function () { }
 
 const cfg = {
   // Expose the Web service on this port.
@@ -50,12 +52,13 @@ const cfg = {
     network: tangle,
     // How long proofs from your identity will be valid. Duration in minutes.
     proofDuration: process.env.PROOF_DURATION ?
-      Duration.minutes(parseInt(process.env.PROOF_DURATION, 10)) : Duration.minutes(10),
+      Duration.minutes(parseInt(process.env.PROOF_DURATION, 10)) :
+      Duration.minutes(10),
     // Options for creating and publishing the local DID.
     accBuilder: {
-      autosave: AutoSave.every(),
+      autosave: AutoSave.batch(1), // do not woooooooork Ò_Ó 
       autopublish: false,
-      storage: await Stronghold.build(strongholdPath, process.env.STRONGHOLD_PASS),
+      storage: await Stronghold.build(strongholdPath, process.env.STRONGHOLD_PASS, true),
       clientConfig: { network: tangle }
     },
   }
