@@ -1,11 +1,11 @@
-import nextSemesterStart from '../util/time'
-import { Credential, RevocationBitmap, Timestamp } from '@iota/identity-wasm/node/identity_wasm'
-import { CredentialType, IMatriculationData, UniversityLibraryCard } from '../types'
-import { UniversityID } from '../digitalIDs'
+import nextSemesterStart from '../util/time.js'
+import { Credential, RevocationBitmap, Timestamp } from '@iota/identity-wasm/node/identity_wasm.js'
+import { CredentialType, IMatriculationData, UniversityLibraryCard } from '../types.js'
+import { UniversityID } from '../digitalIDs.js'
 
 
 /**
- * A Verifiable {@link Credential} to assess the matriculation status of a {@link StudentID}.
+ * A Verifiable {@link Credential} to assess the matriculation of its holder.
  */
 export class MatriculationVC extends Credential {
   constructor(issuer: UniversityID, subject: IMatriculationData) {
@@ -31,7 +31,7 @@ export class MatriculationVC extends Credential {
 
 
 /**
- * A Verifiable {@link Credential} to assess library access status of a {@link StudentID}.
+ * A Verifiable {@link Credential} to assess the library access of its holder.
  */
 export class LibraryCardVC extends Credential {
   constructor(issuer: UniversityID, subject: UniversityLibraryCard) {

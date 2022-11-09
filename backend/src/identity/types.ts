@@ -1,4 +1,4 @@
-import { DID, Subject } from '@iota/identity-wasm/node/identity_wasm'
+import { DID, Subject } from '@iota/identity-wasm/node/identity_wasm.js'
 
 
 interface IBaseData extends Subject {

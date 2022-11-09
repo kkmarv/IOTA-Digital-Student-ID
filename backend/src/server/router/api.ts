@@ -1,14 +1,19 @@
-import config from '../../config'
+import cfg from '../../config.js'
 import express, { NextFunction, Request, Response } from 'express'
-import { IMatriculationData, isValid, digital } from '../../identity'
-import { HTTPCode, HTTPError } from '../errors'
+import { IMatriculationData, isValid, digital } from '../../identity/index.js'
+import { HTTPCode, HTTPError } from '../errors.js'
 
+
+const institution = cfg.institution
 
 const apiRouter = express.Router()
 apiRouter.use(express.json())
 
-
-const university = (async function () { return await digital.UniversityID.load(config.didUrl, config.identityName) }())
+// Load the DID if URL was found in env variables, else create new identity
+const university = (async function () {
+  if (institution.did) return await digital.UniversityID.load(institution.did, institution.name, institution.website)
+  else return await digital.UniversityID.new(institution.name, institution.website)
+}())
 
 
 // Register an endpoint for issuing Matriculation Credentials.
@@ -19,7 +24,7 @@ apiRouter.post('/credentials/matriculation/register', async (req: Request, res: 
   // Gather the credential information
   const matrData: IMatriculationData = {
     id: regData.id,
-    university: config.identityName,
+    university: cfg.institution.name,
     degree: regData.degree,
     courseOfStudy: regData.courseOfStudy,
     matriculationNumber: Date.now(),

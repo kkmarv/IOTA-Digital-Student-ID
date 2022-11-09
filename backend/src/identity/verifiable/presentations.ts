@@ -1,5 +1,5 @@
-import {DID, Presentation} from '@iota/identity-wasm/node/identity_wasm'
-import {MatriculationVC} from './credentials'
+import {DID, Presentation} from '@iota/identity-wasm/node/identity_wasm.js'
+import {MatriculationVC} from './credentials.js'
 
 
 /**

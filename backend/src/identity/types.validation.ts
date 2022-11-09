@@ -1,5 +1,5 @@
-import { DID } from '@iota/identity-wasm/node'
-import { IPersonalData, IPostalAddress, IRegistrationData, UniversityDegree } from './types'
+import { DID } from '@iota/identity-wasm/node/identity_wasm.js'
+import { IPersonalData, IPostalAddress, IRegistrationData, UniversityDegree } from './types.js'
 
 
 export function registrationData(data: any): data is IRegistrationData {
@@ -54,4 +54,4 @@ export function did(did: string): boolean {
 }
 
 
-export * as isValid from './types.validation'
+export * as isValid from './types.validation.js'

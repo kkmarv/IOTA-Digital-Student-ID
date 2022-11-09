@@ -1,4 +1,4 @@
-import config from '../config'
+import cfg from '../config.js'
 import {
   Account,
   AccountBuilder,
@@ -11,10 +11,10 @@ import {
   ProofOptions,
   ProofPurpose,
   Timestamp
-} from '@iota/identity-wasm/node/identity_wasm'
-import { IMatriculationData, ServiceType } from './types'
-import { MatriculationVC } from './verifiable/credentials'
-import { MatriculationVP } from './verifiable/presentations'
+} from '@iota/identity-wasm/node/identity_wasm.js'
+import { IMatriculationData, ServiceType } from './types.js'
+import { MatriculationVC } from './verifiable/credentials.js'
+import { MatriculationVP } from './verifiable/presentations.js'
 
 
 /**
@@ -23,12 +23,13 @@ import { MatriculationVP } from './verifiable/presentations'
  * it is able to store its own secret keys through the {@link Account} and {@link Storage} API respectively.
  */
 abstract class DigitalID {
-  protected static readonly builder = new AccountBuilder(config.accountBuilder)
+  protected static readonly builder = new AccountBuilder(cfg.iota.accBuilder)
   readonly account: Account
 
   protected constructor(account: Account) {
     this.account = account
     this.verifySelf()
+    console.log(`DID: ${this.account.did().toString()}`);
   }
 
   /**
@@ -55,7 +56,7 @@ abstract class DigitalID {
 
 
 /**
- * A representation of a student's {@link DID} {@link Document} that manages private keys and access to the Tangle.
+ * A manager for a student's {@link DID} {@link Document} that manages private keys and access to the Tangle.
  */
 export class StudentID extends DigitalID {
   private static readonly matriculationFragment = '#sign-vp-matriculation'
@@ -77,7 +78,7 @@ export class StudentID extends DigitalID {
       new MatriculationVP(this.account.did(), credential),
       new ProofOptions({
         created: Timestamp.nowUTC(),
-        expires: Timestamp.nowUTC().checkedAdd(config.proofDuration),
+        expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
         challenge: challenge,
         domain: '', // TODO research
         purpose: ProofPurpose.authentication()
@@ -118,7 +119,7 @@ export class StudentID extends DigitalID {
 
 
 /**
- * A representation of a university's {@link DID} {@link Document}
+ * A manager for a university's {@link DID} {@link Document}
  * that manages private keys and access to the IOTA Tangle.
  */
 export class UniversityID extends DigitalID implements Issuer {
@@ -147,7 +148,7 @@ export class UniversityID extends DigitalID implements Issuer {
       new MatriculationVC(this, subject),
       new ProofOptions({
         created: Timestamp.nowUTC(),
-        expires: Timestamp.nowUTC().checkedAdd(config.proofDuration),
+        expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
         challenge: challenge,
         domain: '', // TODO research
         purpose: ProofPurpose.authentication()
@@ -162,19 +163,19 @@ export class UniversityID extends DigitalID implements Issuer {
    * @param identitySetup Use a pre-generated Ed25519 private key for the {@link DID}.
    * @returns A new `UniversityID`.
    */
-  static async new(name?: string, homepage?: string, identitySetup?: IdentitySetup): Promise<UniversityID> {
+  static async new(name: string, homepage: string, identitySetup?: IdentitySetup): Promise<UniversityID> {
     const account = await UniversityID.builder.createIdentity(identitySetup)
 
     // Set the university's DID as the Document controller
     await account.setController({ controllers: account.did() })
     // Add a reference to the university's web presence.
-    if (homepage) {
-      await account.createService({
-        fragment: UniversityID.homepageFragment,
-        type: ServiceType.LINKED_DOMAINS,
-        endpoint: homepage
-      })
-    }
+
+    await account.createService({
+      fragment: UniversityID.homepageFragment,
+      type: ServiceType.LINKED_DOMAINS,
+      endpoint: homepage
+    })
+
     // Create signing method for matriculation issuance
     await account.createMethod({
       fragment: UniversityID.matriculationFragment,
@@ -197,7 +198,7 @@ export class UniversityID extends DigitalID implements Issuer {
    * @returns An existing `UniversityID`.
    * @throws IdentityNotFound if `did` cannot be found locally.
    */
-  static async load(did: DID, name?: string, homepage?: string): Promise<UniversityID> {
+  static async load(did: DID, name: string, homepage: string): Promise<UniversityID> {
     return new UniversityID(await UniversityID.builder.loadIdentity(did))
   }
 }

@@ -1,11 +1,11 @@
-import { Timestamp } from '@iota/identity-wasm/node/identity_wasm'
-import config from '../../config'
+import { Timestamp } from '@iota/identity-wasm/node/identity_wasm.js'
+import cfg from '../../config.js'
 
 
 const today = new Date()
 const currentYear = today.getFullYear()
-const startSS = new Date(`${currentYear}-${config.ssStart}T00:00:00Z`)
-const startWS = new Date(`${currentYear}-${config.wsStart}T00:00:00Z`)
+const startSS = new Date(`${currentYear}-${cfg.ssStart}T00:00:00Z`)
+const startWS = new Date(`${currentYear}-${cfg.wsStart}T00:00:00Z`)
 
 /**
  * Calculate the date on which the next semester begins.
