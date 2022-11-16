@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc -b",
-    "dev:server": "nodemon ./src/server/server.ts",
-    "start:server": "npm run build && node -r dotenv/config ./dist/server/server.js"
+    "dev": "nodemon ./src/server/server.ts",
+    "start": "npm run build && node -r dotenv/config ./dist/server/server.js"
   },
   "dependencies": {
     "@iota/identity-stronghold-nodejs": "^0.6.0",

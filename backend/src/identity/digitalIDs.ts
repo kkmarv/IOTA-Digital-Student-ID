@@ -81,7 +81,6 @@ export class StudentID extends DigitalID {
         created: Timestamp.nowUTC(),
         expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
         challenge: challenge,
-        domain: '', // TODO research
         purpose: ProofPurpose.authentication()
       })
     )
@@ -150,7 +149,6 @@ export class UniversityID extends DigitalID implements Issuer {
         created: Timestamp.nowUTC(),
         expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
         challenge: challenge,
-        domain: '', // TODO research
         purpose: ProofPurpose.authentication()
       })
     )

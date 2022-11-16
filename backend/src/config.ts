@@ -1,9 +1,7 @@
 import assert from 'assert'
 import { AutoSave, DID, Duration, Network } from '@iota/identity-wasm/node/identity_wasm.js'
 import { Stronghold } from '@iota/identity-stronghold-nodejs'
-
-
-const urlRegex = /(https?: \/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/
+import { urlRegex } from './globals.js'
 
 // Ensure that all required env variables are defined and of valid format.
 assert(process.env.STRONGHOLD_PASS, 'Please specify a password.')

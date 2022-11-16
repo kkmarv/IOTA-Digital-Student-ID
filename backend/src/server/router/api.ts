@@ -1,6 +1,7 @@
 import cfg from '../../config.js'
+import crypto from 'crypto'
 import express, { NextFunction, Request, Response } from 'express'
-import { IMatriculationData, isValid, digital } from '../../identity/index.js'
+import { IMatriculationData, isValid, digital, UniversityDegree } from '../../identity/index.js'
 import { HTTPCode, HTTPError } from '../errors.js'
 
 
@@ -12,40 +13,47 @@ const university = institution.did ? await digital.UniversityID.load(institution
 
 apiRouter.use(express.json())
 
+apiRouter.get('/challenge',
+  (req: Request, res: Response) => {
+    return res.status(HTTPCode.OK).send(crypto.randomBytes(32).toString('hex'))
+  }
+)
+
 // Register an endpoint for issuing Matriculation Credentials.
-apiRouter.post('/credentials/matriculation/register',
-  async (req: Request, res: Response) => {
+apiRouter.post('/student/register',
+  async (req: Request, res: Response, next: NextFunction) => {
     if (!isValid.registrationData(req.body)) {
-      throw new HTTPError(HTTPCode.BAD_REQUEST, 'Bad registration data.')
+      console.log(req.body);
+      
+      next(new HTTPError(HTTPCode.BAD_REQUEST, 'Bad registration data.'))
+    } else {
+      const regData = req.body
+
+      // Gather the credential information
+      const matrData: IMatriculationData = {
+        id: regData.id,
+        providerName: cfg.institution.name,
+        currentTerm: 1,
+        matriculationNumber: Date.now(),
+        studySubject: regData.studySubject,
+        student: regData.student
+      }
+
+      return res.status(HTTPCode.OK).send(
+        await university.issueMatriculationVC(matrData, regData.challengeSignature)
+      )
     }
-
-    const regData = req.body
-
-    // Gather the credential information
-    const matrData: IMatriculationData = {
-      id: regData.id,
-      university: cfg.institution.name,
-      degree: regData.degree,
-      courseOfStudy: regData.courseOfStudy,
-      matriculationNumber: Date.now(),
-      semester: 1
-    }
-
-    return res.status(HTTPCode.OK).send(await university.issueMatriculationVC(matrData, regData.challenge))
-  })
+  }
+)
 
 // TODO
-apiRouter.post('/credentials/matriculation/login',
+apiRouter.post('/student/login',
   (req: Request, res: Response) => { })
 
 // Custom error handling
 apiRouter.use(
-  (err: Error, req: Request, res: Response, next: NextFunction) => {
-    // Catch HTTPError and send its message as a response
-    if (err instanceof HTTPError) {
-      return res.status(err.statusCode).send(err.message)
-    }
-    next(err)
+  (err: HTTPError, req: Request, res: Response, next: NextFunction) => {
+    return res.status(err.statusCode).send(err.message)
   }
 )
 

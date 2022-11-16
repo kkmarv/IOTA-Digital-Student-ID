@@ -1,34 +1,59 @@
 import { DID } from '@iota/identity-wasm/node/identity_wasm.js'
-import { IPersonalData, IPostalAddress, IRegistrationData, UniversityDegree } from './types.js'
+import { IStudent, IPostalAddress, IRegistrationData, UniversityDegree } from './types.js'
 
 
 export function registrationData(data: any): data is IRegistrationData {
   data = data as IRegistrationData
+  try {
+    return (
+      did(data.id) &&
+      typeof data.studySubject.name === 'string' &&
+      universityDegree(data.studySubject.degree) &&
+      student(data.student) &&
+      typeof data.challenge === 'string' &&
+      typeof data.challengeSignature === 'string'
+    )
+  } catch (e) {
+    if (e instanceof TypeError) {
+      console.log(e);
+    }
+    else throw e
+  }
+  return false
+}
+
+export function student(student: any): student is IStudent {
+  student = student as IStudent
   return (
-    did(data.id) &&
-    universityDegree(data.degree) &&
-    typeof data.courseOfStudy === 'string' &&
-    personalData(data.personalData) &&
-    typeof data.challenge === 'string'
+    typeof student.firstName === 'string' &&
+    typeof student.middleNames === 'string' &&
+    typeof student.familyName === 'string' &&
+    typeof student.birthDate === 'string' &&
+    !isNaN(Date.parse(student.birthDate)) &&
+    postalAddress(student.address)
   )
 }
 
 export function universityDegree(degree: string): degree is UniversityDegree {
-  return degree === 'Bachelor' || degree === 'Master'
-}
-
-export function personalData(data: any): data is IPersonalData {
-  data = data as IPersonalData
   return (
-    Array.isArray(data.firstNames) &&
-    data.firstNames.length > 0 &&
-    data.firstNames.every((entry: any) => {
-      return typeof entry === 'string'
-    }) &&
-    typeof data.lastName === 'string' &&
-    typeof data.dateOfBirth === 'string' &&
-    !isNaN(new Date(data.dateOfBirth).getTime()) &&
-    postalAddress(data.postalAddress)
+    degree === 'Bachelor of Arts' ||
+    degree === 'Bachelor of Business Administration' ||
+    degree === 'Bachelor of Education' ||
+    degree === 'Bachelor of Engineering' ||
+    degree === 'Bachelor of Fine Arts' ||
+    degree === 'Bachelor of Laws' ||
+    degree === 'Bachelor of Music' ||
+    degree === 'Bachelor of Musical Arts' ||
+    degree === 'Bachelor of Science' ||
+    degree === 'Master of Arts' ||
+    degree === 'Master of Business Administration' ||
+    degree === 'Master of Education' ||
+    degree === 'Master of Engineering' ||
+    degree === 'Master of Fine Arts' ||
+    degree === 'Master of Laws' ||
+    degree === 'Master of Music' ||
+    degree === 'Master of Musical Arts' ||
+    degree === 'Master of Science'
   )
 }
 
