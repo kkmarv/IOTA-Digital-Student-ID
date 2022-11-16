@@ -1,6 +1,11 @@
 import { DID } from '@iota/identity-wasm/node/identity_wasm.js'
 import { IStudent, IPostalAddress, IRegistrationData, UniversityDegree } from './types.js'
+import { StudentVC } from './verifiable/credentials.js'
 
+
+export function studentCredential(data: any): data is StudentVC {
+  return true
+}
 
 export function registrationData(data: any): data is IRegistrationData {
   data = data as IRegistrationData

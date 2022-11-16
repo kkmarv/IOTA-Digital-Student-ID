@@ -7,7 +7,7 @@ import { UniversityID } from '../digitalIDs.js'
 /**
  * A Verifiable {@link Credential} to assess the matriculation of its holder.
  */
-export class MatriculationVC extends Credential {
+export class StudentVC extends Credential {
   constructor(issuer: UniversityID, subject: IMatriculationData) {
     super({
       id: undefined, // FIXME necessary?

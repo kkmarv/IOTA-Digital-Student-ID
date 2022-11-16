@@ -13,7 +13,7 @@ import {
   Timestamp
 } from '@iota/identity-wasm/node/identity_wasm.js'
 import { IMatriculationData, ServiceType } from './types.js'
-import { MatriculationVC } from './verifiable/credentials.js'
+import { StudentVC } from './verifiable/credentials.js'
 import { MatriculationVP } from './verifiable/presentations.js'
 
 
@@ -73,7 +73,7 @@ export class StudentID extends DigitalID {
    * Typically issued by an {@link Issuer}.
    * @returns A newly created {@link MatriculationVP} signed by this student.
    */
-  async newSignedMatriculationVP(credential: MatriculationVC, challenge: string): Promise<Presentation> {
+  async newSignedMatriculationVP(credential: StudentVC, challenge: string): Promise<Presentation> {
     return this.account.createSignedPresentation(
       StudentID.matriculationFragment,
       new MatriculationVP(this.account.did(), credential),
@@ -144,7 +144,7 @@ export class UniversityID extends DigitalID implements Issuer {
   issueMatriculationVC(subject: IMatriculationData, challenge: string): Promise<Credential> {
     return this.account.createSignedCredential(
       UniversityID.matriculationFragment,
-      new MatriculationVC(this, subject),
+      new StudentVC(this, subject),
       new ProofOptions({
         created: Timestamp.nowUTC(),
         expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
