@@ -1,21 +1,16 @@
-# REST API<!-- omit in toc -->
+# REST API <!-- omit in toc -->
 
 ## Contents
-- [1. REST API Endpoints](#1-rest-api-endpoints)
+- [1. Endpoints](#1-endpoints)
   - [1.1. GET `/api/challenge`](#11-get-apichallenge)
-    - [1.1.1. Response Body](#111-response-body)
   - [1.2. POST `/api/student/register`](#12-post-apistudentregister)
-    - [1.2.1. Request Body](#121-request-body)
-    - [1.2.2. Response Body](#122-response-body)
   - [1.3. POST `/api/student/login`](#13-post-apistudentlogin)
-    - [1.3.1. Request Body](#131-request-body)
-    - [1.3.2. Response Body](#132-response-body)
 
-# 1. REST API Endpoints
+# 1. Endpoints
 
 ## 1.1. GET `/api/challenge`
 
-### 1.1.1. Response Body
+### 1.1.1. Response Body <!-- omit in toc -->
 
 - Content-Type: text/html; charset=utf-8
 - Content-Length: 64
@@ -27,7 +22,7 @@
 
 ## 1.2. POST `/api/student/register`
 
-### 1.2.1. Request Body
+### 1.2.1. Request Body <!-- omit in toc -->
 
 - Content-Type: application/json
 
@@ -58,7 +53,7 @@
 }
 ```
 
-### 1.2.2. Response Body
+### 1.2.2. Response Body <!-- omit in toc -->
 
 - Content-Type: application/json
 
@@ -114,7 +109,7 @@
 
 ## 1.3. POST `/api/student/login`
 
-### 1.3.1. Request Body
+### 1.3.1. Request Body <!-- omit in toc -->
 
 - Content-Type: application/json
 
@@ -167,6 +162,6 @@
   }
 ```
 
-### 1.3.2. Response Body
+### 1.3.2. Response Body <!-- omit in toc -->
 
 - Content-Type: application/json
