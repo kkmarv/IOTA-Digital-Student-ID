@@ -5,7 +5,7 @@ import { StudentVC } from './credentials.js'
 /**
  * A Verifiable {@link Presentation} to present the matriculation status of a {@link StudentID}.
  */
-export class MatriculationVP extends Presentation {
+export class StudentVP extends Presentation {
     constructor(student: DID, matriculationVC: StudentVC | Array<StudentVC>) {
         super({
             // context: Presentation.BaseContext(),

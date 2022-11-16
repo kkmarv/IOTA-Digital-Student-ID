@@ -20,7 +20,10 @@ export class StudentVC extends Credential {
       // },
       issuanceDate: Timestamp.nowUTC(),
       expirationDate: nextSemesterStart(),
-      // credentialSchema: undefined, // TODO define credentialSchema
+      // credentialSchema: { // FIXME serde_json Error
+      //   id: 'https://gitlab.hs-anhalt.de/stmosarw/projekt-anwendungsentwicklung/-/blob/backend/schemas/credentials/student.jsonld',
+      //   types: 'StudentCredential'
+      // },
       // termsOfUse: undefined, // TODO define tos
       // refreshService: undefined, // TODO define service
       // evidence: undefined, // TODO define evidence

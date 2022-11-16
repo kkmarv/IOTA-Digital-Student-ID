@@ -7,10 +7,12 @@ import { urlRegex } from './globals.js'
 assert(process.env.STRONGHOLD_PASS, 'Please specify a password.')
 assert(process.env.INSTITUTION_NAME, 'Please specify an institution name.')
 assert(process.env.INSTITUTION_WEBSITE, 'Please specify a Website that represents the institution.')
-assert(process.env.INSTITUTION_WEBSITE.match(urlRegex), 'Given website could not be parsed as a URL.')
+assert(process.env.INSTITUTION_WEBSITE.match(urlRegex), 'Given website could not be parsed as a valid URL.')
+if (process.env.PRIMARY_NODE_URL !== undefined) {
+  assert(process.env.PRIMARY_NODE_URL.match(urlRegex), 'Primary Node URL is not a valid URL.')
+}
 
-
-// Validate DID URL.
+// Validate DID URL and "cast" to DID object.
 const didUrl = process.env.INSTITUTION_DID ? DID.parse(process.env.INSTITUTION_DID) : undefined
 // The Tangle network to use.
 const tangle = process.env.INSTITUTION_NETWORK ? Network.tryFromName(process.env.INSTITUTION_NETWORK) : Network.devnet()
@@ -48,6 +50,9 @@ const cfg = {
   iota: {
     // The Tangle network to use.
     network: tangle,
+    // The node to use for Tangle operations
+    primaryNode: process.env.PRIMARY_NODE_URL ?
+      { url: process.env.PRIMARY_NODE_URL } : undefined,
     // How long proofs from your identity will be valid. Duration in minutes.
     proofDuration: process.env.PROOF_DURATION ?
       Duration.minutes(parseInt(process.env.PROOF_DURATION, 10)) :

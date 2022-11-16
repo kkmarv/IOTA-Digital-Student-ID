@@ -2,19 +2,23 @@ import cfg from '../config.js'
 import {
   Account,
   AccountBuilder,
+  CekAlgorithm,
   Credential,
   DID,
+  EncryptedData,
+  EncryptionAlgorithm,
   IdentitySetup,
   Issuer,
   MethodContent,
   Presentation,
   ProofOptions,
   ProofPurpose,
+  Resolver,
   Timestamp
 } from '@iota/identity-wasm/node/identity_wasm.js'
 import { IMatriculationData, ServiceType } from './types.js'
 import { StudentVC } from './verifiable/credentials.js'
-import { MatriculationVP } from './verifiable/presentations.js'
+import { StudentVP } from './verifiable/presentations.js'
 
 
 /**
@@ -24,6 +28,12 @@ import { MatriculationVP } from './verifiable/presentations.js'
  */
 abstract class DigitalID {
   protected static readonly builder = new AccountBuilder(cfg.iota.accBuilder)
+  protected static resolver: Resolver
+  protected static readonly resolverBuilder = Resolver.builder().clientConfig({
+    network: cfg.iota.network,
+    primaryNode: cfg.iota.primaryNode
+  })
+
   readonly account: Account
 
   protected constructor(account: Account) {
@@ -31,6 +41,23 @@ abstract class DigitalID {
     console.log(this.toString());
 
     // this.verifySelf() TODO can do when published to tangle
+  }
+
+  /**
+   * Decrypt a message that has been signed with a public key from this ID.
+   * @param encryptedMessage The signature of the message
+   * @param encryptionAlgorithm The algorithm that was used to encrypt the message.
+   * @param cekAlgorithm ??
+   * @param keyFragment The fragment of the public key that was used to encrypt the message.
+   * @returns 
+   */
+  async decryptMessage(
+    encryptedMessage: EncryptedData,
+    encryptionAlgorithm: EncryptionAlgorithm,
+    cekAlgorithm: CekAlgorithm,
+    keyFragment: string
+  ) {
+    return await this.account.decryptData(encryptedMessage, encryptionAlgorithm, cekAlgorithm, keyFragment)
   }
 
   /**
@@ -71,12 +98,12 @@ export class StudentID extends DigitalID {
    * @param credential The credentials to include in this Verifiable Presentation.
    * @param challenge The challenge to include in this Verifiable Presentation as a proof of authentication.
    * Typically issued by an {@link Issuer}.
-   * @returns A newly created {@link MatriculationVP} signed by this student.
+   * @returns A newly created {@link StudentVP} signed by this student.
    */
   async newSignedMatriculationVP(credential: StudentVC, challenge: string): Promise<Presentation> {
     return this.account.createSignedPresentation(
       StudentID.matriculationFragment,
-      new MatriculationVP(this.account.did(), credential),
+      new StudentVP(this.account.did(), credential),
       new ProofOptions({
         created: Timestamp.nowUTC(),
         expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
@@ -154,6 +181,10 @@ export class UniversityID extends DigitalID implements Issuer {
     )
   }
 
+  verifyStudentVP(vp: StudentVP) {
+    // DigitalID.resolver.verifyPresentation()
+  }
+
   /**
    * Construct a new `UniversityID`.
    * @param name The official name of the university represented by this `UniversityID`.
@@ -162,6 +193,7 @@ export class UniversityID extends DigitalID implements Issuer {
    * @returns A new `UniversityID`.
    */
   static async new(name: string, homepage: string, identitySetup?: IdentitySetup): Promise<UniversityID> {
+    this.resolver = await DigitalID.resolverBuilder.build()
     const account = await DigitalID.builder.createIdentity(identitySetup)
 
     // Set the university's DID as the Document controller
