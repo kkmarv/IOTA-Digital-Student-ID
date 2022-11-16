@@ -20,7 +20,7 @@
 - Content-Type: text/html; charset=utf-8
 - Content-Length: 64
   
-> The response contains a single 32 Byte hex-encoded string.
+> The response contains a single 32 Byte hex-encoded string serving as a challenge.
 ```
 883f0922e1add9f51862cff9f8e8c6769bf2b1acb4bf5c8ac9b03698c237733b
 ```
@@ -31,8 +31,8 @@
 
 - Content-Type: application/json
 
-> The request must contain personal information about a student and their study 
-> subject.
+> The request must contain the following personal information
+> about a student and their study subject.
 
 ```json
 {
@@ -62,7 +62,7 @@
 
 - Content-Type: application/json
 
-> The response is a StudentCredential.
+> The response is a `StudentCredential`.
 
 ```json
 {
@@ -118,7 +118,7 @@
 
 - Content-Type: application/json
 
-> The body must contain a StudentCredential.
+> The body must contain a `StudentCredential`.
 
 ```json
 {
