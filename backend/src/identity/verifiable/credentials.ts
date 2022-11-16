@@ -1,7 +1,7 @@
 import nextSemesterStart from '../util/time.js'
 import { Credential, RevocationBitmap, Timestamp } from '@iota/identity-wasm/node/identity_wasm.js'
 import { CredentialType, IMatriculationData, UniversityLibraryCard } from '../types.js'
-import { UniversityID } from '../digitalIDs.js'
+import { UniversityID } from '../digitalIDs/UniversityID'
 
 
 /**
