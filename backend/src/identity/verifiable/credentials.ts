@@ -4,17 +4,17 @@ import {
   RevocationBitmap,
   Timestamp
 } from '@iota/identity-wasm/node/identity_wasm.js'
-import { CredentialType } from '../types.js'
 import { UniversityID } from '../digitalIDs/UniversityID.js'
-import { RegistrationData } from '../subjects/Matriculation.js'
 import { LibraryAccess } from '../subjects/LibraryAccess.js'
+import { MatriculationData } from '../subjects/Matriculation.js'
+import { CredentialType } from '../types.js'
 
 
 /**
  * A Verifiable {@link Credential} to assess the matriculation of its holder.
  */
 export class StudentVC extends Credential {
-  constructor(issuer: UniversityID, subject: RegistrationData) {
+  constructor(issuer: UniversityID, subject: MatriculationData) {
     super({
       id: undefined, // FIXME necessary?
       type: CredentialType.UNIVERSITY_MATRICULATION,

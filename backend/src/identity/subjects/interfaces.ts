@@ -42,28 +42,28 @@ export interface IMatriculationData {
 
 export function isIRegistrationData(data: any): data is IRegistrationData {
   return (
-    isDID(data.id) &&
-    isIStudySubject(data.studySubject) &&
-    isIStudentData(data.student) &&
-    typeof data.challenge === 'string' &&
-    typeof data.challengeSignature === 'string'
+    data.id && isDID(data.id) &&
+    data.studySubject && isIStudySubject(data.studySubject) &&
+    data.student && isIStudentData(data.student) &&
+    data.challenge && typeof data.challenge === 'string' &&
+    data.challengeSignature && typeof data.challengeSignature === 'string'
   )
 }
 
 export function isIStudentData(data: any): data is IStudentData {
   return (
-    typeof data.firstName === 'string' &&
-    typeof data.middleNames === 'string' &&
-    typeof data.familyName === 'string' &&
-    (typeof data.birthDate === 'string' || data.birthDate instanceof Date) &&
-    !isNaN(Date.parse(data.birthDate)) &&
-    isIPostalAddress(data.address)
+    data.firstName && typeof data.firstName === 'string' &&
+    data.middleNames && typeof data.middleNames === 'string' &&
+    data.familyName && typeof data.familyName === 'string' &&
+    data.birthDate && (typeof data.birthDate === 'string' && !isNaN(Date.parse(data.birthDate)) ||
+      data.birthDate instanceof Date) &&
+    data.address && isIPostalAddress(data.address)
   )
 }
 
 export function isIStudySubject(data: any): data is IStudySubject {
   return (
-    typeof data.name === 'string' &&
-    isUniversityDegree(data.degree)
+    data.name && typeof data.name === 'string' &&
+    data.degree && isUniversityDegree(data.degree)
   )
 }

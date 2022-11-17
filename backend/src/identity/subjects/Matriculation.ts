@@ -25,11 +25,7 @@ export class RegistrationData implements Subject {
   }
 
   static fromJSON(data: any): RegistrationData | null {
-    return isIRegistrationData(data) ? new RegistrationData({
-      id: data.id,
-      studentData: data.studentData,
-      studySubject: data.studySubject
-    }) : null
+    return isIRegistrationData(data) ? new RegistrationData(data) : null
   }
 }
 
@@ -39,7 +35,8 @@ export class MatriculationData extends RegistrationData {
   readonly currentTerm: number
 
   constructor(regData: IRegistrationData, studyData: IMatriculationData) {
-    super(regData)
+    // Leaving out challenge information as it is not necessary for matriculation data.
+    super({ id: regData.id, studentData: regData.studentData, studySubject: regData.studySubject })
     this.providerName = studyData.providerName
     this.currentTerm = studyData.currentTerm
     this.matriculationNumber = studyData.matriculationNumber
