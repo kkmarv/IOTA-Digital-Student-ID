@@ -35,7 +35,7 @@ export class StudyData extends RegistrationData {
   readonly currentTerm: number
 
   constructor(regData: IRegistrationData, studyData: IStudyData) {
-    // Leaving out challenge information as it is not necessary for matriculation data.
+    // Leaving out challenge information as it is not necessary for study data.
     super({ id: regData.id, studentData: regData.studentData, studySubject: regData.studySubject })
     this.providerName = studyData.providerName
     this.currentTerm = studyData.currentTerm

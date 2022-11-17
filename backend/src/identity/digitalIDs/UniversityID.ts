@@ -60,11 +60,11 @@ export class UniversityID extends DigitalID implements Issuer {
   static async new(name: string, homepage: string, identitySetup?: IdentitySetup): Promise<UniversityID> {
     this.resolver = await DigitalID.resolverBuilder.build()
     const account = await DigitalID.builder.createIdentity(identitySetup)
-
+ 
     // Set the university's DID as the Document controller
     await account.setController({ controllers: account.did() })
+    
     // Add a reference to the university's web presence.
-
     await account.createService({
       fragment: UniversityID.homepageFragment,
       type: ServiceType.LINKED_DOMAINS,
@@ -76,6 +76,7 @@ export class UniversityID extends DigitalID implements Issuer {
       fragment: UniversityID.matriculationFragment,
       content: MethodContent.GenerateEd25519()
     })
+
     // Sign all changes made to the DID Document.
     await account.updateDocumentUnchecked(
       await account.createSignedDocument(
@@ -84,6 +85,7 @@ export class UniversityID extends DigitalID implements Issuer {
         ProofOptions.default()
       )
     )
+
     return new UniversityID(account)
   }
 

@@ -1,39 +1,45 @@
+import cfg from '../../config.js'
 import {
-  Account, DID, IdentitySetup, Presentation, ProofOptions, ProofPurpose,
+  Account,
+  DID,
+  IdentitySetup,
+  MethodContent,
+  Presentation,
+  ProofOptions,
+  ProofPurpose,
   Timestamp
 } from '@iota/identity-wasm/node/identity_wasm.js'
-import cfg from "../../config.js"
-import { DigitalID } from "./DigitalID.js"
-import { StudentVC } from "../verifiable/credentials.js"
-import { StudentVP } from "../verifiable/presentations.js"
+import { DigitalID } from './DigitalID.js'
+import { StudentVC } from '../verifiable/credentials.js'
+import { StudentVP } from '../verifiable/presentations.js'
 
 
 /**
  * A manager for a student's {@link DID} {@link Document} that manages private keys and access to the Tangle.
  */
 export class StudentID extends DigitalID {
-  private static readonly matriculationFragment = '#sign-vp-matriculation'
+  private static readonly studentVPFragment = '#key-sign-student'
+  private readonly studentVC: StudentVC
 
-  private constructor(account: Account) {
+  private constructor(account: Account, studentVC: StudentVC) {
     super(account)
+    this.studentVC = studentVC
   }
 
   /**
    * Create a Verifiable {@link Presentation} to present the matriculation status of this `StudentID`.
-   * @param credential The credentials to include in this Verifiable Presentation.
-   * @param challenge The challenge to include in this Verifiable Presentation as a proof of authentication.
-   * Typically issued by an {@link Issuer}.
-   * @returns A newly created {@link StudentVP} signed by this student.
+   * @param challenge The challenge to include in this Verifiable Presentation
+   *                  as a proof of authentication. Typically issued by an {@link Issuer}.
+   * @returns         A newly created {@link StudentVP} signed by this student.
    */
-  async newSignedMatriculationVP(credential: StudentVC, challenge: string): Promise<Presentation> {
+  async newSignedStudentVP(challenge: string): Promise<Presentation> {
     return this.account.createSignedPresentation(
-      StudentID.matriculationFragment,
-      new StudentVP(this.account.did(), credential),
+      StudentID.studentVPFragment,
+      new StudentVP(this.account.did(), this.studentVC),
       new ProofOptions({
-        created: Timestamp.nowUTC(),
-        expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
         challenge: challenge,
-        purpose: ProofPurpose.authentication()
+        created: Timestamp.nowUTC(),
+        expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration)
       })
     )
   }
@@ -41,13 +47,20 @@ export class StudentID extends DigitalID {
   /**
    * Construct a new `StudentID`.
    * @param identitySetup Use a pre-generated Ed25519 private key for the {@link DID}.
-   * @returns A new `StudentID`.
+   * @returns             A new `StudentID`.
    */
-  static async new(identitySetup?: IdentitySetup): Promise<StudentID> {
+  static async new(studentVC: StudentVC, identitySetup?: IdentitySetup): Promise<StudentID> {
     const account = await DigitalID.builder.createIdentity(identitySetup)
 
     // Set the student's DID as the Document controller
     await account.setController({ controllers: account.did() })
+
+    // Create signing method for StudentVPs
+    await account.createMethod({
+      fragment: StudentID.studentVPFragment,
+      content: MethodContent.GenerateEd25519()
+    })
+
     // Sign all changes made to the DID Document.
     await account.updateDocumentUnchecked(
       await account.createSignedDocument(
@@ -56,15 +69,15 @@ export class StudentID extends DigitalID {
         ProofOptions.default()
       )
     )
-    return new StudentID(account)
+    return new StudentID(account, studentVC)
   }
 
   /**
    * Load an existing `StudentID` from {@link Storage}.
    * @param did The {@link DID} of the `StudentID` to look for.
-   * @returns An existing `StudentID`. Will throw an Error, if `did` cannot be found.
+   * @returns   An existing `StudentID`. Will throw an Error, if `did` cannot be found.
    */
-  static async load(did: DID): Promise<StudentID> {
-    return new StudentID(await DigitalID.builder.loadIdentity(did))
+  static async load(did: DID, studentVC: StudentVC): Promise<StudentID> {
+    return new StudentID(await DigitalID.builder.loadIdentity(did), studentVC)
   }
 }

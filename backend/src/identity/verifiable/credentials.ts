@@ -16,7 +16,7 @@ import { CredentialType } from '../types.js'
 export class StudentVC extends Credential {
   constructor(issuer: UniversityID, subject: StudyData) {
     super({
-      id: undefined, // FIXME necessary?
+      // id: undefined, // FIXME necessary?
       type: CredentialType.UNIVERSITY_MATRICULATION,
       credentialSubject: subject,
       issuer: issuer.id,
