@@ -1,58 +1,68 @@
-This is my [site][id] located somewhere in my Markdown document.
-
-[id]: http://example.com/whatever/
-
-
 # Schemas <!-- omit in toc -->
 
-`JSON-LD` schemas.
+- [1. Credential Schemas](#1-credential-schemas)
+  - [1.1. StudentCredential](#11-studentcredential)
+    - [1.1.1. StudySubject](#111-studysubject)
+    - [1.1.2. StudentData](#112-studentdata)
+    - [1.1.3. Address](#113-address)
 
-- [1. StudentCredential](#1-studentcredential)
+# 1. Credential Schemas
 
-## 1. StudentCredential
+## 1.1. StudentCredential
 
 A subject of a Verifiable Credential. Represents a Student ID.
 
-| Property                           | Expected Type   | Alias | Description                                 |
-| ---------------------------------- | --------------- | ----- | ------------------------------------------- |
-| [courseOfStudy](#11-courseofstudy) | [CourseOfStudy] |       | Description of the study subject.           |
-| matriculationNumber                | [Integer]       |       | .                                           |
-| currentTerm                        | [Integer]       |       | .                                           |
-| [student](#12-student)             | [Student]       |       | Personal information to identify a student. |
+| Property            | Expected Type                 | Alias | Description                                 |
+| ------------------- | ----------------------------- | ----- | ------------------------------------------- |
+| currentTerm         | [Integer]                     |       | .                                           |
+| matriculationNumber | [Integer]                     |       | .                                           |
+| studentData         | [StudentData](#studentdata)   |       | Personal information to identify a student. |
+| studySubject        | [StudySubject](#studysubject) |       | Description of the study subject.           |
 
-### CourseOfStudy <!-- omit in toc -->
+### 1.1.1. StudySubject
 
 In principle, all properties of `Person` are allowed.
 But at least the following properties are required.
 
-| Property     | Expected Type | Alias       | Description                                                         |
-| ------------ | ------------- | ----------- | ------------------------------------------------------------------- |
-| provider     | [Text]        | [legalName] | The legal name of the institution which provides study subjects.    |
-| degree       | [Text]        |             | .                                                                   |
-| name         | [Name]        |             | .                                                                   |
-| credits      | [Integer]     |             | .                                                                   |
-| termsPerYear | [Integer]     |             | Possible Values are 2,3,4,... for semester, trimester and so forth. |
+| Property     | Expected Type | Alias       | Description                                                      |
+| ------------ | ------------- | ----------- | ---------------------------------------------------------------- |
+| degree       | [Text]        |             | .                                                                |
+| name         | [Name]        |             | .                                                                |
+| providerName | [Text]        | [legalName] | The legal name of the institution which provides study subjects. |
 
-### Student <!-- omit in toc -->
+### 1.1.2. StudentData
 
-| Property    | Expected Type | Alias             | Description |
-| ----------- | ------------- | ----------------- | ----------- |
-| firstName   |               | [givenName]       | .           |
-| middleNames |               | [additionalNames] | .           |
-| familyName  |               | [familyName]      | .           |
-| birthDate   |               | [birthDate]       | .           |
-| photoURL    |               | [url]             | .           |
+| Property    | Expected Type       | Alias             | Description |
+| ----------- | ------------------- | ----------------- | ----------- |
+| address     | [Address](#address) |                   | .           |
+| firstName   | [Text]              | [givenName]       | .           |
+| middleNames | [Text]              | [additionalNames] | .           |
+| familyName  | [Text]              | [familyName]      | .           |
+| birthDate   | [Text]              | [birthDate]       | .           |
+| photoURL    | [URL]               |                   | .           |
 
+### 1.1.3. Address 
+
+| Property    | Expected Type | Alias | Description |
+| ----------- | ------------- | ----- | ----------- |
+| apartment   | [Integer]     |       |             |
+| city        | [Text]        |       |             |
+| county      | [Text]        |       |             |
+| country     | [Text]        |       |             |
+| houseNumber | [Integer]     |       |             |
+| postalCode  | [Text]        |       |             |
+| street      | [Text]        |       |             |
+| suffix      | [Text]        |       |             |
 
 <!-- Link list -->
 
 [Integer]: https://schema.org/Integer
-[Person]: https://schema.org/Person
-[legalName]: https://schema.org/legalName
-[Text]: https://schema.org/Text
 [Name]: https://schema.org/Name
-[givenName]: https://schema.org/givenName
+[Text]: https://schema.org/Text
+[URL]: https://schema.org/URL
+
 [additionalNames]: https://schema.org/additionalNames
-[familyName]: https://schema.org/familyName
 [birthDate]: https://schema.org/birthDate
-[url]: https://schema.org/url
+[familyName]: https://schema.org/familyName
+[givenName]: https://schema.org/givenName
+[legalName]: https://schema.org/legalName

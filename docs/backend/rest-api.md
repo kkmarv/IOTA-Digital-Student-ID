@@ -26,29 +26,32 @@
 
 - Content-Type: application/json
 
-> The request must contain the following personal information
+> The request must contain the following (personal) information
 > about a student and their study subject.
 
 ```json
 {
-  "student": {
-    "address": {
-      "city": "Musterstetten",
-      "country": "Germany",
-      "county": "Bavaria",
-      "houseNumber": 123,
-      "postalCode": 123456,
-      "street": "Musterweg"
-    },
-    "birthDate": "09.07.2000",
-    "familyName": "Henke",
-    "firstName": "Dustin",
-    "middleNames": "Walter Bruno",
-    "photo": "https://thispersondoesnotexist.com/"
-  },
+  "id": "did:iota:dev:8dQAzVbbf6FLW9ckwyCBnPmcMGcUV9LYJoXtgQkHcNQy",
+  "challenge": "todo",
+  "challengeSignature": "todo",
   "studySubject": {
     "degree": "Bachelor of Arts",
     "name": "Gender Studies"
+  },
+  "studentData": {
+    "firstName": "Dustin",
+    "middleNames": "Walter Bruno",
+    "familyName": "Henke",
+    "birthDate": "09.07.2000",
+    "photo": "https://thispersondoesnotexist.com/",
+    "address": {
+      "street": "Musterweg",
+      "houseNumber": 123,
+      "postalCode": 123456,
+      "city": "Musterstetten",
+      "county": "Bavaria",
+      "country": "Germany"
+    }
   }
 }
 ```
@@ -57,7 +60,9 @@
 
 - Content-Type: application/json
 
-> The response is a `StudentCredential`.
+#### On success <!-- omit in toc -->
+
+> The response is a verifiable credential of type `StudentCredential`.
 
 ```json
 {
@@ -69,9 +74,9 @@
   "credentialSubject": {
     "id": "did:iota:dev:8dQAzVbbf6FLW9ckwyCBnPmcMGcUV9LYJoXtgQkHcNQy",
     "currentTerm": 1,
-    "matriculationNumber": 1668626747102,
+    "matriculationNumber": 1668717661699,
     "providerName": "Anhalt University of Applied Sciences",
-    "student": {
+    "studentData": {
       "address": {
         "city": "Musterstetten",
         "country": "Germany",
@@ -91,20 +96,24 @@
       "name": "Gender Studies"
     }
   },
-  "issuer": "did:iota:dev:Hi6fF68zfXQVQJccFAsbiqiMNUnaJVvzCy3iQNRGP84q",
-  "issuanceDate": "2022-11-16T19:25:47Z",
+  "issuer": "did:iota:dev:8Y12LwEq4qBY1PnveWXZeH2LiunGdgKwe9cEaevLwFgs",
+  "issuanceDate": "2022-11-17T20:41:01Z",
   "expirationDate": "2023-04-01T00:00:00Z",
   "nonTransferable": true,
   "proof": {
     "type": "JcsEd25519Signature2020",
-    "verificationMethod": "did:iota:dev:Hi6fF68zfXQVQJccFAsbiqiMNUnaJVvzCy3iQNRGP84q#sign-matriculation-vc",
-    "signatureValue": "24srzgVrMyHLqFr76bos7vqLAV3Wh5TxcAVTvHpupNrRdBtALS9hrrRWkmS769J9mQAkW9y8P5aJQPuR8thrv8Qx",
-    "created": "2022-11-16T19:25:47Z",
-    "expires": "2022-11-16T19:35:47Z",
-    "challenge": "todo",
-    "proofPurpose": "authentication"
+    "verificationMethod": "did:iota:dev:8Y12LwEq4qBY1PnveWXZeH2LiunGdgKwe9cEaevLwFgs#key-sign-student",
+    "signatureValue": "5mMRyqqPEzRrvxuXnWtvRRwws8RjsKJ4EoXatW2bzSNFSoDr8aG8SR8Svfoqqo57pfQpz1m1shYVKxmZspomYQ44"
   }
 }
+```
+
+#### On Failure <!-- omit in toc -->
+
+> If the format of the credential is wrong
+
+```json
+422 Unprocessable Content
 ```
 
 ## 1.3. POST `/api/student/login`
@@ -113,7 +122,7 @@
 
 - Content-Type: application/json
 
-> The body must contain a `StudentCredential`.
+> The body must contain a verifiable credential of type `StudentCredential`.
 
 ```json
 {
@@ -165,3 +174,19 @@
 ### 1.3.2. Response Body <!-- omit in toc -->
 
 - Content-Type: application/json
+
+#### On Success <!-- omit in toc -->
+
+> The response tells wether the `StudentCredential` is valid.
+
+```json
+200 OK
+```
+
+#### On Failure <!-- omit in toc -->
+
+> In any other case. (Invalid format or signature, expired credential, etc.)
+
+```json
+401 Unauthorized
+```

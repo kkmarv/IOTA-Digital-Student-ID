@@ -30,7 +30,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
   if (registrationData === null) {
     return next(new HTTPError(HTTPCode.UNPROCESSABLE_CONTENT, 'Bad registration data.'))
   }
-
+  
   const studyData = new StudyData(
     registrationData, {
     currentTerm: 1,
