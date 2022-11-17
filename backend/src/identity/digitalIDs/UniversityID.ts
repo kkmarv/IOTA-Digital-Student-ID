@@ -1,12 +1,12 @@
 import {
   Account, Credential, DID, IdentitySetup, Issuer, MethodContent,
   ProofOptions, ProofPurpose, Timestamp
-} from "@iota/identity-wasm/node"
-import cfg from "../../config"
-import { DigitalID } from "./DigitalID"
-import { IMatriculationData, ServiceType } from "../types"
-import { StudentVC } from "../verifiable/credentials"
-import { StudentVP } from "../verifiable/presentations"
+} from '@iota/identity-wasm/node/identity_wasm.js'
+import cfg from '../../config.js'
+import { DigitalID } from './DigitalID.js'
+import { IMatriculationData, ServiceType } from '../types.js'
+import { StudentVC } from '../verifiable/credentials.js'
+import { StudentVP } from '../verifiable/presentations.js'
 
 
 /**

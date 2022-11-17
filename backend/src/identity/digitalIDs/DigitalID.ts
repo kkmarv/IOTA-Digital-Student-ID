@@ -2,6 +2,7 @@ import cfg from '../../config.js'
 import {
   Account,
   AccountBuilder,
+  AgreementInfo,
   CekAlgorithm,
   EncryptedData,
   EncryptionAlgorithm,
@@ -34,18 +35,15 @@ export abstract class DigitalID {
   /**
    * Decrypt a message that has been signed with a public key from this ID.
    * @param encryptedMessage The signature of the message
-   * @param encryptionAlgorithm The algorithm that was used to encrypt the message.
-   * @param cekAlgorithm ??
-   * @param keyFragment The fragment of the public key that was used to encrypt the message.
+   * @param agreement 
    * @returns 
    */
-  async decryptMessage(
-    encryptedMessage: EncryptedData,
-    encryptionAlgorithm: EncryptionAlgorithm,
-    cekAlgorithm: CekAlgorithm,
-    keyFragment: string
-  ) {
-    return await this.account.decryptData(encryptedMessage, encryptionAlgorithm, cekAlgorithm, keyFragment)
+  async decryptMessage(encryptedMessage: EncryptedData, agreement: AgreementInfo) {
+    return await this.account.decryptData(
+      encryptedMessage,
+      EncryptionAlgorithm.A256GCM(),
+      CekAlgorithm.EcdhEs(agreement),
+      '') // TODO key fragment
   }
 
   /**
