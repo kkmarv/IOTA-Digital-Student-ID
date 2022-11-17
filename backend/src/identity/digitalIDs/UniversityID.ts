@@ -11,7 +11,7 @@ import { DigitalID } from './DigitalID.js'
 import { ServiceType } from '../types.js'
 import { StudentVC } from '../verifiable/credentials.js'
 import { StudentVP } from '../verifiable/presentations.js'
-import { MatriculationData, RegistrationData } from '../subjects/Matriculation.js'
+import { StudyData, RegistrationData } from '../subjects/Matriculation.js'
 
 
 /**
@@ -38,7 +38,7 @@ export class UniversityID extends DigitalID implements Issuer {
    * @returns         A signed Verifiable Credential providing information
    *                  about the student's matriculation status.
    */
-  issueStudentVC(subject: MatriculationData): Promise<Credential> {
+  issueStudentVC(subject: StudyData): Promise<Credential> {
     return this.account.createSignedCredential(
       UniversityID.matriculationFragment,
       new StudentVC(this, subject),

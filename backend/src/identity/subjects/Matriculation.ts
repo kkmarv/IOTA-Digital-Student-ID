@@ -3,7 +3,7 @@ import {
   IStudentData,
   IStudySubject,
   IRegistrationData,
-  IMatriculationData,
+  IStudyData,
   isIRegistrationData
 } from './interfaces.js'
 
@@ -29,12 +29,12 @@ export class RegistrationData implements Subject {
   }
 }
 
-export class MatriculationData extends RegistrationData {
+export class StudyData extends RegistrationData {
   readonly providerName: string
   readonly matriculationNumber: number
   readonly currentTerm: number
 
-  constructor(regData: IRegistrationData, studyData: IMatriculationData) {
+  constructor(regData: IRegistrationData, studyData: IStudyData) {
     // Leaving out challenge information as it is not necessary for matriculation data.
     super({ id: regData.id, studentData: regData.studentData, studySubject: regData.studySubject })
     this.providerName = studyData.providerName

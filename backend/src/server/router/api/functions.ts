@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import { Presentation, VerifierOptions } from '@iota/identity-wasm/node/identity_wasm.js'
 import { NextFunction, Request, Response } from 'express'
 import { digital } from '../../../identity/index.js'
-import { MatriculationData, RegistrationData } from '../../../identity/subjects/Matriculation.js'
+import { StudyData, RegistrationData } from '../../../identity/subjects/Matriculation.js'
 import { HTTPCode, HTTPError } from '../../errors.js'
 
 
@@ -28,14 +28,16 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     return next(new HTTPError(HTTPCode.UNPROCESSABLE_CONTENT, 'Bad registration data.'))
   }
 
-  const matriculationData = new MatriculationData(
+  const studyData = new StudyData(
     registrationData, {
     currentTerm: 1,
     matriculationNumber: Date.now(),
     providerName: cfg.institution.name
   })
 
-  const signedStudentVC = await university.issueStudentVC(matriculationData)
+  console.log(studyData);
+
+  const signedStudentVC = await university.issueStudentVC(studyData)
   return res.status(HTTPCode.OK).send(signedStudentVC.toJSON())
 }
 

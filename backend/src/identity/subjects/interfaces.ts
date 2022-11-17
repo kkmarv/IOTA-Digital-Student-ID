@@ -30,11 +30,11 @@ export interface IStudySubject {
   readonly degree: UniversityDegree;
 }
 
-// Data describing a matriculation
-export interface IMatriculationData {
-  readonly providerName: string;
-  readonly matriculationNumber: number;
+// Properties describing a students study
+export interface IStudyData {
   readonly currentTerm: number;
+  readonly matriculationNumber: number;
+  readonly providerName: string;
 }
 
 
@@ -42,16 +42,18 @@ export interface IMatriculationData {
 
 export function isIRegistrationData(data: any): data is IRegistrationData {
   return (
+    data &&
     data.id && isDID(data.id) &&
-    data.studySubject && isIStudySubject(data.studySubject) &&
-    data.student && isIStudentData(data.student) &&
     data.challenge && typeof data.challenge === 'string' &&
-    data.challengeSignature && typeof data.challengeSignature === 'string'
+    data.challengeSignature && typeof data.challengeSignature === 'string' &&
+    data.studySubject && isIStudySubject(data.studySubject) &&
+    data.studentData && isIStudentData(data.studentData)
   )
 }
 
 export function isIStudentData(data: any): data is IStudentData {
   return (
+    data &&
     data.firstName && typeof data.firstName === 'string' &&
     data.middleNames && typeof data.middleNames === 'string' &&
     data.familyName && typeof data.familyName === 'string' &&
@@ -63,6 +65,7 @@ export function isIStudentData(data: any): data is IStudentData {
 
 export function isIStudySubject(data: any): data is IStudySubject {
   return (
+    data &&
     data.name && typeof data.name === 'string' &&
     data.degree && isUniversityDegree(data.degree)
   )
