@@ -1,12 +1,17 @@
 import {
-  Account, Credential, DID, IdentitySetup, Issuer, MethodContent,
-  ProofOptions, ProofPurpose, Timestamp
+  Account,
+  Credential,
+  DID,
+  IdentitySetup,
+  Issuer,
+  MethodContent,
+  ProofOptions,
 } from '@iota/identity-wasm/node/identity_wasm.js'
-import cfg from '../../config.js'
 import { DigitalID } from './DigitalID.js'
-import { IMatriculationData, ServiceType } from '../types.js'
+import { ServiceType } from '../types.js'
 import { StudentVC } from '../verifiable/credentials.js'
 import { StudentVP } from '../verifiable/presentations.js'
+import { RegistrationData } from '../subjects/Matriculation.js'
 
 
 /**
@@ -15,7 +20,7 @@ import { StudentVP } from '../verifiable/presentations.js'
  */
 export class UniversityID extends DigitalID implements Issuer {
   private static readonly homepageFragment = '#linked-domain-homepage'
-  private static readonly matriculationFragment = '#sign-matriculation-vc'
+  private static readonly matriculationFragment = '#key-sign-student'
 
   // Issuer objects are forced to have an ID of type string instead of DID (@v0.6.0 of @iota/identity-wasm)
   readonly id: string
@@ -27,21 +32,17 @@ export class UniversityID extends DigitalID implements Issuer {
   }
 
   /**
-   * Issue a new Verifiable Credential, effectively matriculating a student at this university.
-   * @param subject The student's registration data.
-   * @param challenge Arbitrary text taken from the student to include in this credential. Used for improved security.
-   * @returns A signed Verifiable Credential providing information about the student's matriculation status.
+   * Issue a signed Verifiable Credential, effectively matriculating a student
+   * at this university.
+   * @param subject   The student's registration data.
+   * @returns         A signed Verifiable Credential providing information
+   *                  about the student's matriculation status.
    */
-  issueMatriculationVC(subject: IMatriculationData, challenge: string): Promise<Credential> {
+  issueStudentVC(subject: RegistrationData): Promise<Credential> {
     return this.account.createSignedCredential(
       UniversityID.matriculationFragment,
       new StudentVC(this, subject),
-      new ProofOptions({
-        created: Timestamp.nowUTC(),
-        expires: Timestamp.nowUTC().checkedAdd(cfg.iota.proofDuration),
-        challenge: challenge,
-        purpose: ProofPurpose.authentication()
-      })
+      ProofOptions.default()
     )
   }
 

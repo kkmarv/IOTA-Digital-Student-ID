@@ -1,14 +1,20 @@
 import nextSemesterStart from '../util/time.js'
-import { Credential, RevocationBitmap, Timestamp } from '@iota/identity-wasm/node/identity_wasm.js'
-import { CredentialType, IMatriculationData, UniversityLibraryCard } from '../types.js'
-import { UniversityID } from '../digitalIDs/UniversityID'
+import {
+  Credential,
+  RevocationBitmap,
+  Timestamp
+} from '@iota/identity-wasm/node/identity_wasm.js'
+import { CredentialType } from '../types.js'
+import { UniversityID } from '../digitalIDs/UniversityID.js'
+import { RegistrationData } from '../subjects/Matriculation.js'
+import { LibraryAccess } from '../subjects/LibraryAccess.js'
 
 
 /**
  * A Verifiable {@link Credential} to assess the matriculation of its holder.
  */
 export class StudentVC extends Credential {
-  constructor(issuer: UniversityID, subject: IMatriculationData) {
+  constructor(issuer: UniversityID, subject: RegistrationData) {
     super({
       id: undefined, // FIXME necessary?
       type: CredentialType.UNIVERSITY_MATRICULATION,
@@ -37,7 +43,7 @@ export class StudentVC extends Credential {
  * A Verifiable {@link Credential} to assess the library access of its holder.
  */
 export class LibraryCardVC extends Credential {
-  constructor(issuer: UniversityID, subject: UniversityLibraryCard) {
+  constructor(issuer: UniversityID, subject: LibraryAccess) {
     super({
       id: undefined,
       type: CredentialType.UNIVERSITY_LIBRARY_CARD,

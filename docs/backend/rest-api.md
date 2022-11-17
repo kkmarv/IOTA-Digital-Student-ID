@@ -12,7 +12,7 @@
 
 ### 1.1.1. Response Body <!-- omit in toc -->
 
-- Content-Type: text/html; charset=utf-8
+- Content-Type: text/plain; charset=utf-8
 - Content-Length: 64
   
 > The response contains a single 32 Byte hex-encoded string serving as a challenge.

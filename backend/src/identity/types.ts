@@ -1,32 +1,3 @@
-import { DID, Subject } from '@iota/identity-wasm/node/identity_wasm.js'
-
-
-interface IBaseData extends Subject {
-  readonly id: DID
-  readonly studySubject: {
-    readonly name: string
-    readonly degree: UniversityDegree
-  }
-  readonly student: IStudent
-}
-
-// Contains information about a student's registration.
-export interface IRegistrationData extends IBaseData {
-  readonly challenge: string
-  readonly challengeSignature: string
-}
-
-// Contains information about a student's matriculation.
-export interface IMatriculationData extends IBaseData {
-  readonly providerName: string
-  readonly matriculationNumber: number
-  readonly currentTerm: number
-}
-
-// TODO
-// Contains information about a student's library access.
-export interface UniversityLibraryCard extends Subject { }
-
 // A Collection of Credential types for easier configuration of Credentials.
 export const CredentialType = {
   DOMAIN_LINKAGE: 'DomainLinkageCredential',
@@ -59,14 +30,7 @@ export type UniversityDegree = 'Bachelor of Arts' |
   'Master of Musical Arts' |
   'Master of Science'
 
-export interface IStudent {
-  readonly firstName: string
-  readonly middleNames: string
-  readonly familyName: string
-  readonly birthDate: Date
-  readonly photo: URL
-  readonly address: IPostalAddress
-}
+
 
 // Interface that defines the contents of a postal address.
 export interface IPostalAddress {
