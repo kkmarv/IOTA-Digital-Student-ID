@@ -12,12 +12,12 @@
 
 A subject of a Verifiable Credential. Represents a Student ID.
 
-| Property            | Expected Type                 | Alias | Description                                 |
-| ------------------- | ----------------------------- | ----- | ------------------------------------------- |
-| currentTerm         | [Integer]                     |       | .                                           |
-| matriculationNumber | [Integer]                     |       | .                                           |
-| studentData         | [StudentData](#studentdata)   |       | Personal information to identify a student. |
-| studySubject        | [StudySubject](#studysubject) |       | Description of the study subject.           |
+| Property            | Expected Type                     | Alias | Description                                 |
+| ------------------- | --------------------------------- | ----- | ------------------------------------------- |
+| currentTerm         | [Integer]                         |       | .                                           |
+| matriculationNumber | [Integer]                         |       | .                                           |
+| studentData         | [StudentData](#112-studentdata)   |       | Personal information to identify a student. |
+| studySubject        | [StudySubject](#111-studysubject) |       | Description of the study subject.           |
 
 ### 1.1.1. StudySubject
 
