@@ -1,5 +1,11 @@
 import { DID, Subject } from '@iota/identity-wasm/node/identity_wasm.js'
-import { IStudentData, IStudySubject, IRegistrationData, IMatriculationData } from './interfaces'
+import {
+  IStudentData,
+  IStudySubject,
+  IRegistrationData,
+  IMatriculationData,
+  isIRegistrationData
+} from './interfaces.js'
 
 
 export class RegistrationData implements Subject {
@@ -19,11 +25,11 @@ export class RegistrationData implements Subject {
   }
 
   static fromJSON(data: any): RegistrationData | null {
-    return new RegistrationData({
+    return isIRegistrationData(data) ? new RegistrationData({
       id: data.id,
-      studentData: data.student,
+      studentData: data.studentData,
       studySubject: data.studySubject
-    })
+    }) : null
   }
 }
 

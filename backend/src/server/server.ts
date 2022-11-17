@@ -1,6 +1,6 @@
 import cfg from '../config.js'
 import express from 'express'
-import apiRouter from './router/api.js'
+import apiRouter from './router/api/router.js'
 
 const apiEndpoint = '/api'
 const apiServer = express()
