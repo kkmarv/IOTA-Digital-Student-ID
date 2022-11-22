@@ -2,17 +2,17 @@
     <h1>Anmelden</h1>
     <p>Falls du noch keine Identität hast, <a routerLink="/register">besorge dir eine</a>.</p>
     <main>
-        <form #login="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="log(login.value)">
+        <form #login="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="uploadFile()">
             <div class="thin"></div>
             <div class="login-upload">
                 <label for="file-input">Credential</label>
                 <input
                   id="file-input"
                   type="file"
-                  accept=".pdf, application/pdf"
+                  accept=".json, application/json"
                   name="login"
                   #loginInput
-                  (change)="log(loginInput.files)" required ngModel>
+                  (change)="changeFile($event)" required ngModel>
             </div>
             <div class="thin"></div>
             <div class="ultrawide desktop-space"></div>
