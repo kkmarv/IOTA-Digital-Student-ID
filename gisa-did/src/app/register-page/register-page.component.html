@@ -39,7 +39,15 @@
                 </mat-datepicker-actions>
               </mat-datepicker>
             </mat-form-field>
-            <div class="image-upload">
+            <mat-form-field appearance="fill">
+              <mat-label>Choose an option</mat-label>
+              <mat-select name="studySubject" ngModel required>
+                <div *ngFor="let subject of studySubjects">
+                  <mat-option value="{{ subject }}">{{ subject }}</mat-option>
+                </div>
+              </mat-select>
+            </mat-form-field>
+            <!-- <div class="image-upload">
                 <label for="file-input">Hochschulzugangsberechtigung</label>
                 <input
                   id="file-input"
@@ -47,8 +55,8 @@
                   accept=".pdf, application/pdf"
                   name="qualification"
                   #qualificationInput
-                  (change)="log(qualificationInput.files)" required ngModel>
-            </div>
+                  (change)="log(qualificationInput.files)" ngModel>
+            </div> -->
             <div class="thin"></div>
             <button mat-raised-button color="primary" type="submit" [disabled]="!register.valid">Absenden</button>
             <div class="ultrawide mobile-space"></div>
