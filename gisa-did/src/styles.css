@@ -23,7 +23,7 @@ body {
     justify-items: center;
     align-items: stretch;
     
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     overflow-y: auto;
     overflow-x: hidden;
     width: 100vw;
