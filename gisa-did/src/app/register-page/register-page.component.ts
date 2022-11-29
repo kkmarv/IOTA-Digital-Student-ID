@@ -10,11 +10,15 @@ export class RegisterPageComponent implements OnInit {
 
   constructor() { }
 
+  studySubjects: any = ["Informatik", "Gender Studies", "Japanologie", "Grundschullehramt Tanzunterricht"]
+
   ngOnInit(): void {
   }
 
   log(lol: any) {
     console.log(lol);
   }
+
+
 
 }

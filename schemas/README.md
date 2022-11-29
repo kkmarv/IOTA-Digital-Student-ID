@@ -34,7 +34,7 @@ But at least the following properties are required.
 
 | Property    | Expected Type       | Alias             | Description |
 | ----------- | ------------------- | ----------------- | ----------- |
-| address     | [Address](#address) |                   | .           |
+| address     | [`Address`](#113-address) |                   | .           |
 | firstName   | [Text]              | [givenName]       | .           |
 | middleNames | [Text]              | [additionalNames] | .           |
 | familyName  | [Text]              | [familyName]      | .           |
