@@ -6,7 +6,7 @@ export const DEVNET = false;
 
 export const API_URL = __DEV__ ? 'http://localhost:4000' : 'https://selv01.iota.cafe';
 
-export const IOTA_NODE_URL = DEVNET ? 'https://nodes.devnet.iota.org' : 'https://nodes.thetangle.org:443';
+export const IOTA_NODE_URL = DEVNET ? 'https://nodes.devnet.iota.org' : 'https://nodes.devnet.iota.org:443/';
 
 export const RANDOM_USER_DATA_API_URL = 'https://randomuser.me/api/';
 
