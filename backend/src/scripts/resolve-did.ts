@@ -2,6 +2,11 @@ import { DID, ResolvedDocument, Resolver } from "@iota/identity-wasm/node/identi
 import { exit } from "process";
 import cfg from "../config.js";
 
+/**
+ * Resolve a DID Document from the Tangle.
+ * @param did The DID to resolve
+ * @returns The ResolvedDocument of the DID.
+ */
 async function resolveDID(did: DID): Promise<ResolvedDocument> {
   // Retrieve the published DID Document from the Tangle.
   const resolver = await Resolver
