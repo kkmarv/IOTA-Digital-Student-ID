@@ -15,11 +15,9 @@ async function loadDID(did: DID): Promise<Account> {
   return account
 }
 
-const arg = process.argv[2]
-if (!arg) {
+if (!process.argv[2]) {
   console.log("Please specify a DID as first argument");
   exit()
 }
-const did = DID.parse(arg)
 
-loadDID(did)
+loadDID(DID.parse(process.argv[2]))

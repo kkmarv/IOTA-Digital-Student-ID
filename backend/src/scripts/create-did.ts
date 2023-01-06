@@ -2,16 +2,16 @@ import { Account, AccountBuilder } from "@iota/identity-wasm/node/identity_wasm.
 import cfg from "../config.js"
 
 /**
- * Create a new DID, save it to a Stronghold file and publish to the Tangle.
+ * Create a new DID and save it to a Stronghold file.
+ * @param forcePublishing Wether to publish to the Tangle. Defaults to true.
  * @returns The account of the newly created DID.
  */
-async function createIdentity(): Promise<Account> {
+async function createIdentity(forcePublishing = true): Promise<Account> {
   const builder = new AccountBuilder(cfg.iota.accountBuilderConfig)
   const account = await builder.createIdentity()
 
-  // Wait for all unpublished changes to get included in a Tangle message.
-  await account.publish()
-  console.log(account.document())
+  if (forcePublishing) await account.publish()
+  console.log(account.document().toJSON())
 
   return account
 }

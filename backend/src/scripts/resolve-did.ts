@@ -7,7 +7,7 @@ import cfg from "../config.js";
  * @param did The DID to resolve
  * @returns The ResolvedDocument of the DID.
  */
-async function resolveDID(did: DID): Promise<ResolvedDocument> {
+export async function resolveDID(did: DID): Promise<ResolvedDocument> {
   // Retrieve the published DID Document from the Tangle.
   const resolver = await Resolver
     .builder()
@@ -20,11 +20,9 @@ async function resolveDID(did: DID): Promise<ResolvedDocument> {
   return doc
 }
 
-const arg = process.argv[2]
-if (!arg) {
+if (!process.argv[2]) {
   console.log("Please specify a DID as first argument");
   exit()
 }
-const did = DID.parse(arg)
 
-resolveDID(did)
+resolveDID(DID.parse(process.argv[2]))
