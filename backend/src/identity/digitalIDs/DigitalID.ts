@@ -4,6 +4,8 @@ import {
   AccountBuilder,
   AgreementInfo,
   CekAlgorithm,
+  DID,
+  Document,
   EncryptedData,
   EncryptionAlgorithm,
   Resolver
@@ -16,20 +18,24 @@ import {
  * it is able to store its own secret keys through the {@link Account} and {@link Storage} API respectively.
  */
 export abstract class DigitalID {
-  protected static readonly builder = new AccountBuilder(cfg.iota.accBuilder)
+  protected static readonly builder = new AccountBuilder(cfg.iota.accountBuilderConfig)
   protected static resolver: Resolver
-  protected static readonly resolverBuilder = Resolver.builder().clientConfig({
-    network: cfg.iota.network,
-    primaryNode: cfg.iota.primaryNode
-  })
+  protected static readonly resolverBuilder = Resolver.builder().clientConfig(cfg.iota.clientConfig)
 
   readonly account: Account
 
   protected constructor(account: Account) {
     this.account = account
-    console.log(this.toString());
-
     // this.verifySelf() TODO can do when published to tangle
+  }
+
+  /**
+   * Fetch and return a {@link DID} {@link Document} from the Tangle.
+   * @param did {@link DID} to resolve.
+   * @returns The {@link DID}'s {@link document}.
+   */
+  static async resolve(did: DID): Promise<Document> {
+    return (await DigitalID.resolver.resolve(did)).intoDocument()
   }
 
   /**

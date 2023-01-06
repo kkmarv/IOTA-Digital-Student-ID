@@ -2,11 +2,11 @@ import cfg from '../../config.js'
 import {
   Account,
   DID,
+  Document,
   IdentitySetup,
   MethodContent,
   Presentation,
   ProofOptions,
-  ProofPurpose,
   Timestamp
 } from '@iota/identity-wasm/node/identity_wasm.js'
 import { DigitalID } from './DigitalID.js'
@@ -27,7 +27,7 @@ export class StudentID extends DigitalID {
   }
 
   /**
-   * Create a Verifiable {@link Presentation} to present the matriculation status of this `StudentID`.
+   * Create a Verifiable {@link Presentation} to present the matriculation status of this {@link StudentID}.
    * @param challenge The challenge to include in this Verifiable Presentation
    *                  as a proof of authentication. Typically issued by an {@link Issuer}.
    * @returns         A newly created {@link StudentVP} signed by this student.
@@ -45,9 +45,9 @@ export class StudentID extends DigitalID {
   }
 
   /**
-   * Construct a new `StudentID`.
+   * Construct a new {@link StudentID}.
    * @param identitySetup Use a pre-generated Ed25519 private key for the {@link DID}.
-   * @returns             A new `StudentID`.
+   * @returns             A new {@link StudentID}.
    */
   static async new(studentVC: StudentVC, identitySetup?: IdentitySetup): Promise<StudentID> {
     const account = await DigitalID.builder.createIdentity(identitySetup)
@@ -73,9 +73,9 @@ export class StudentID extends DigitalID {
   }
 
   /**
-   * Load an existing `StudentID` from {@link Storage}.
-   * @param did The {@link DID} of the `StudentID` to look for.
-   * @returns   An existing `StudentID`. Will throw an Error, if `did` cannot be found.
+   * Load an existing {@link StudentID} from {@link Storage}.
+   * @param did The {@link DID} of the {@link StudentID} to look for.
+   * @returns   An existing {@link StudentID}. Will throw an Error, if `did` cannot be found.
    */
   static async load(did: DID, studentVC: StudentVC): Promise<StudentID> {
     return new StudentID(await DigitalID.builder.loadIdentity(did), studentVC)

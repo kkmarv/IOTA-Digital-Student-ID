@@ -6,18 +6,23 @@ import { urlRegex } from './globals.js'
 // Ensure that all required env variables are defined and of valid format.
 assert(process.env.STRONGHOLD_PASS, 'Please specify a password.')
 assert(process.env.INSTITUTION_NAME, 'Please specify an institution name.')
-assert(process.env.INSTITUTION_WEBSITE, 'Please specify a Website that represents the institution.')
+assert(process.env.INSTITUTION_WEBSITE, 'Please specify a website that represents the institution.')
 assert(process.env.INSTITUTION_WEBSITE.match(urlRegex), 'Given website could not be parsed as a valid URL.')
 if (process.env.PRIMARY_NODE_URL !== undefined) {
-  assert(process.env.PRIMARY_NODE_URL.match(urlRegex), 'Primary Node URL is not a valid URL.')
+  assert(process.env.PRIMARY_NODE_URL.match(urlRegex), 'Primary node URL is not a valid URL.')
 }
 
 // Validate DID URL and "cast" to DID object.
 const didUrl = process.env.INSTITUTION_DID ? DID.parse(process.env.INSTITUTION_DID) : undefined
-// The Tangle network to use.
-const tangle = process.env.INSTITUTION_NETWORK ? Network.tryFromName(process.env.INSTITUTION_NETWORK) : Network.devnet()
 // The path of the stronghold file.
 const strongholdPath = process.env.STRONGHOLD_PATH || './identity.hodl'
+// Options for connecting to the Tangle network.
+const tangleClient = {
+  // The Tangle network to use.
+  network: process.env.INSTITUTION_NETWORK ? Network.tryFromName(process.env.INSTITUTION_NETWORK) : Network.devnet(),
+  // The node to use for Tangle operations - defaults to load balancer if undefined.
+  primaryNode: process.env.PRIMARY_NODE_URL ? { url: process.env.PRIMARY_NODE_URL } : undefined
+}
 
 // Silence all console logs when not in dev mode
 if (process.env.NODE_ENV !== 'development') console.log = function () { }
@@ -41,30 +46,27 @@ const cfg = {
     // A website that officially represents the institution on the web.
     website: process.env.INSTITUTION_WEBSITE
   },
-  stronghold: {
-    // The path of the stronghold file
-    path: strongholdPath,
-    // The password to the stronghold file containing the DID private key.
-    pass: process.env.STRONGHOLD_PASS,
-  },
   iota: {
-    // The Tangle network to use.
-    network: tangle,
-    // The node to use for Tangle operations
-    primaryNode: process.env.PRIMARY_NODE_URL ?
-      { url: process.env.PRIMARY_NODE_URL } : undefined,
+    // Options for connecting to the Tangle network.
+    clientConfig: tangleClient,
     // How long proofs from your identity will be valid. Duration in minutes.
     proofDuration: process.env.PROOF_DURATION ?
       Duration.minutes(parseInt(process.env.PROOF_DURATION, 10)) :
       Duration.minutes(10),
-    // Options for creating and publishing the local DID.
-    accBuilder: {
-      autosave: AutoSave.batch(1), // do not woooooooork Ò_Ó 
+    // Options for creating and publishing local DIDs.
+    accountBuilderConfig: {
+      autosave: AutoSave.every(), // do not woooooooork Ò_Ó 
       autopublish: false,
       storage: await Stronghold.build(strongholdPath, process.env.STRONGHOLD_PASS, true),
-      clientConfig: { network: tangle }
+      clientConfig: tangleClient
     },
+    stronghold: {
+      // The path of the stronghold file
+      path: strongholdPath,
+      // The password to the stronghold file containing the DID private key.
+      pass: process.env.STRONGHOLD_PASS,
+    }
   }
-} as const
+}
 
 export default cfg

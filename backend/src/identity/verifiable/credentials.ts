@@ -9,7 +9,6 @@ import { LibraryAccess } from '../subjects/LibraryAccess.js'
 import { StudyData } from '../subjects/Matriculation.js'
 import { CredentialType } from '../types.js'
 
-
 /**
  * A Verifiable {@link Credential} to assess the matriculation of its holder.
  */

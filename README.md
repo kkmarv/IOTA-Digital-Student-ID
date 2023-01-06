@@ -24,9 +24,13 @@ pip install nodeenv
 ```
 
 Now create an environment called `.node`.  
-For this environment, we will use `node.js` version `18.8.0`.
+For this environment, we will use `node.js` version `18.12.1`.
 Your command line will need elevated privileges for this to work.
 
 ```shell
-nodeenv .node --node=18.8.0
+nodeenv .node --node=18.12.1
 ```
+
+<details><summary><b>Good to know</b>: Node.js version that will not work correctly</summary>
+- 18.8.0
+</details>

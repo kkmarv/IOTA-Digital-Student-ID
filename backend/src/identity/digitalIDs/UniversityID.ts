@@ -2,6 +2,7 @@ import {
   Account,
   Credential,
   DID,
+  Document,
   IdentitySetup,
   Issuer,
   MethodContent,
@@ -11,7 +12,7 @@ import { DigitalID } from './DigitalID.js'
 import { ServiceType } from '../types.js'
 import { StudentVC } from '../verifiable/credentials.js'
 import { StudentVP } from '../verifiable/presentations.js'
-import { StudyData, RegistrationData } from '../subjects/Matriculation.js'
+import { StudyData } from '../subjects/Matriculation.js'
 
 
 /**
@@ -60,10 +61,10 @@ export class UniversityID extends DigitalID implements Issuer {
   static async new(name: string, homepage: string, identitySetup?: IdentitySetup): Promise<UniversityID> {
     this.resolver = await DigitalID.resolverBuilder.build()
     const account = await DigitalID.builder.createIdentity(identitySetup)
- 
+
     // Set the university's DID as the Document controller
     await account.setController({ controllers: account.did() })
-    
+
     // Add a reference to the university's web presence.
     await account.createService({
       fragment: UniversityID.homepageFragment,
@@ -71,7 +72,7 @@ export class UniversityID extends DigitalID implements Issuer {
       endpoint: homepage
     })
 
-    // Create signing method for matriculation issuance
+    // Create signing method for matriculation issuance.
     await account.createMethod({
       fragment: UniversityID.matriculationFragment,
       content: MethodContent.GenerateEd25519()
@@ -91,11 +92,11 @@ export class UniversityID extends DigitalID implements Issuer {
 
   /**
    * Load an existing `UniversityID` from {@link Storage}.
-   * @param did A string representing the {@link DID} of the `UniversityID` to look for.
+   * @param did The {@link DID} of the `UniversityID`.
    * @returns An existing `UniversityID`.
    * @throws `IdentityNotFound` if `did` cannot be found locally.
    */
-  static async load(did: DID, name: string, homepage: string): Promise<UniversityID> {
+  static async load(did: DID): Promise<UniversityID> {
     return new UniversityID(await DigitalID.builder.loadIdentity(did))
   }
 }
