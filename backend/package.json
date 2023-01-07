@@ -9,7 +9,7 @@
     "did:create": "npm run build && node -r dotenv/config ./dist/scripts/create-did.js",
     "did:load": "npm run build && node -r dotenv/config ./dist/scripts/load-did.js",
     "did:resolve": "npm run build && node -r dotenv/config ./dist/scripts/resolve-did.js",
-    "stronghold:print": "npm run build && node -r dotenv/config ./dist/scripts/print-stronghold.js"
+    "stronghold:print": "npm run build && node -r dotenv/config ./dist/scripts/print-stronghold.js",
   },
   "dependencies": {
     "@iota/identity-stronghold-nodejs": "^0.6.0",

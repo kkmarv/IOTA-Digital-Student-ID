@@ -3,6 +3,10 @@ import { AutoSave, DID, Duration, Network } from '@iota/identity-wasm/node/ident
 import { Stronghold } from '@iota/identity-stronghold-nodejs'
 import { urlRegex } from './globals.js'
 
+
+// Silence all console logs when not in dev mode
+if (process.env.NODE_ENV !== 'development') console.log = function () { }
+
 // Ensure that all required env variables are defined and of valid format.
 assert(process.env.STRONGHOLD_PASS, 'Please specify a password.')
 assert(process.env.INSTITUTION_NAME, 'Please specify an institution name.')
@@ -12,10 +16,16 @@ if (process.env.PRIMARY_NODE_URL !== undefined) {
   assert(process.env.PRIMARY_NODE_URL.match(urlRegex), 'Primary node URL is not a valid URL.')
 }
 
-// Validate DID URL and "cast" to DID object.
-const didUrl = process.env.INSTITUTION_DID ? DID.parse(process.env.INSTITUTION_DID) : undefined
-// The path of the stronghold file.
+// Build the Stronghold storage
 const strongholdPath = process.env.STRONGHOLD_PATH || './identity.hodl'
+const stronghold = await Stronghold.build(strongholdPath, process.env.STRONGHOLD_PASS)
+
+// Parse the DID and check if it exists in Stronghold
+const didUrl = process.env.INSTITUTION_DID ? DID.parse(process.env.INSTITUTION_DID) : undefined
+if (didUrl) {
+  assert(stronghold.didExists(didUrl), "Given DID does not exist in Stronghold.")
+}
+
 // Options for connecting to the Tangle network.
 const tangleClient = {
   // The Tangle network to use.
@@ -23,9 +33,6 @@ const tangleClient = {
   // The node to use for Tangle operations - defaults to load balancer if undefined.
   primaryNode: process.env.PRIMARY_NODE_URL ? { url: process.env.PRIMARY_NODE_URL } : undefined
 }
-
-// Silence all console logs when not in dev mode
-if (process.env.NODE_ENV !== 'development') console.log = function () { }
 
 const cfg = {
   // Expose the Web service on this port.
@@ -57,7 +64,7 @@ const cfg = {
     accountBuilderConfig: {
       autosave: AutoSave.every(), // do not woooooooork Ò_Ó 
       autopublish: false,
-      storage: await Stronghold.build(strongholdPath, process.env.STRONGHOLD_PASS, true),
+      storage: stronghold,
       clientConfig: tangleClient
     },
     stronghold: {
