@@ -6,10 +6,11 @@
     "build": "tsc -b",
     "dev": "nodemon ./src/server/server.ts",
     "start": "npm run build && node -r dotenv/config ./dist/server/server.js",
-    "did:create": "npm run build && node -r dotenv/config ./dist/scripts/create-did.js",
     "did:load": "npm run build && node -r dotenv/config ./dist/scripts/load-did.js",
+    "did:create": "npm run build && node -r dotenv/config ./dist/scripts/create-did.js",
     "did:resolve": "npm run build && node -r dotenv/config ./dist/scripts/resolve-did.js",
-    "stronghold:print": "npm run build && node -r dotenv/config ./dist/scripts/print-stronghold.js",
+    "did:manipulate": "npm run build && node -r dotenv/config ./dist/scripts/manipulate-did.js",
+    "stronghold:print": "npm run build && node -r dotenv/config ./dist/scripts/print-stronghold.js"
   },
   "dependencies": {
     "@iota/identity-stronghold-nodejs": "^0.6.0",

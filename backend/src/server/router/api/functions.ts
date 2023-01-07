@@ -1,11 +1,17 @@
-import cfg from '../../../config.js'
+import {
+  FailFast,
+  PresentationValidationOptions,
+  PresentationValidator,
+  SubjectHolderRelationship,
+  VerifierOptions
+} from '@iota/identity-wasm/node/identity_wasm.js'
 import crypto from 'crypto'
-import { FailFast, PresentationValidationOptions, PresentationValidator, SubjectHolderRelationship, VerifierOptions } from '@iota/identity-wasm/node/identity_wasm.js'
 import { NextFunction, Request, Response } from 'express'
-import { digital } from '../../../identity/index.js'
-import { StudyData, RegistrationData } from '../../../identity/subjects/Matriculation.js'
-import { HTTPCode, HTTPError } from '../../errors.js'
+import cfg from '../../../config.js'
 import { StudentID } from '../../../identity/digitalIDs/StudentID.js'
+import { digital } from '../../../identity/index.js'
+import { RegistrationData, StudyData } from '../../../identity/subjects/Matriculation.js'
+import { HTTPCode, HTTPError } from '../../errors.js'
 
 
 let student: StudentID
