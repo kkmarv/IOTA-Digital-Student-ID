@@ -1,0 +1,87 @@
+POST http://localhost:8080/api/challenge
+Content-Type: application/json
+
+{
+  "id": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn"
+}
+###
+
+POST http://localhost:8080/api/student/register
+Content-Type: application/json
+
+{
+  "id": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
+  "challenge": "todo",
+  "challengeSignature": "todo",
+  "studySubject": {
+    "degree": "Bachelor of Arts",
+    "name": "Gender Studies"
+  },
+  "studentData": {
+    "firstName": "Dustin",
+    "middleNames": "Friedrich Wilfried",
+    "familyName": "Henker",
+    "birthDate": "09.07.2000",
+    "photo": "https://thispersondoesnotexist.com/",
+    "address": {
+      "street": "Musterweg",
+      "houseNumber": 123,
+      "postalCode": 123456,
+      "city": "Musterstetten",
+      "county": "Bavaria",
+      "country": "Germany"
+    }
+  }
+}
+###
+
+POST http://localhost:8080/api/student/login
+Content-Type: application/json
+
+{
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": "VerifiablePresentation",
+  "verifiableCredential": {
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": [ "VerifiableCredential", "StudentCredential" ],
+    "credentialSubject": {
+      "id": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
+      "currentTerm": 1,
+      "matriculationNumber": 1673133679294,
+      "providerName": "Anhalt University of Applied Sciences",
+      "studentData": {
+        "address": {
+          "city": "Musterstetten",
+          "country": "Germany",
+          "county": "Bavaria",
+          "houseNumber": 123,
+          "postalCode": 123456,
+          "street": "Musterweg"
+        },
+        "birthDate": "09.07.2000",
+        "familyName": "Henke",
+        "firstName": "Dustin",
+        "middleNames": "Walter Bruno",
+        "photo": "https://thispersondoesnotexist.com/"
+      },
+      "studySubject": { "degree": "Bachelor of Arts", "name": "Gender Studies" }
+    },
+    "issuer": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF",
+    "issuanceDate": "2023-01-07T23:21:19Z",
+    "expirationDate": "2023-01-10T00:00:00Z",
+    "nonTransferable": true,
+    "proof": {
+      "type": "JcsEd25519Signature2020",
+      "verificationMethod": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF#key-sign-student",
+      "signatureValue": "22gg3pEm7Ge18cZeHzrLvKDqxu8kgLHqq5rTcLdc7tAgRvM6442uFTy7kK4EzFLLRS1RX4VaYPhcWdLibCTKXtTo"
+    }
+  },
+  "holder": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
+  "proof": {
+    "type": "JcsEd25519Signature2020",
+    "verificationMethod": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn#sign-0",
+    "signatureValue": "5YQQNiwspSrMWG6TFNvyrKt8RNr2eLTvHceTQgyz7cqsYXKi5rggNFWGoztFcUcpMvCXYB6BpM1c1Xgo8J4edkQo",
+    "expires": "2023-01-07T23:31:50Z",
+    "challenge": "980b55fac889c5a6556371e28a2951b9254fe879a333c6532fe7d67aafb563b2"
+  }
+}

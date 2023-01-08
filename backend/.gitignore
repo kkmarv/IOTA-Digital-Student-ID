@@ -4,7 +4,6 @@ node_modules/
 
 # temporary files
 *.html
-*.rest
 
 # compiled TypeScript files
 dist/

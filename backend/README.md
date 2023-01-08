@@ -18,5 +18,5 @@ npm run dev
 | `INSTITUTION_NAME`    | `undefined`       | Used to fill out the name in VCs issued by this DID.         |
 | `INSTITUTION_WEBSITE` | `undefined`       | Used to fill out the homepage in VCs issued by this DID.     |
 | `INSTITUTION_NETWORK` | `dev`             | The IOTA Tangle network to use.                              |
-| `NODE_ENV`            | `undefined`       | Set it to `development` to enable some debug console prints. |
 | `PRIMARY_NODE_URL`    | `undefined`       | The primary node URL used for operations on the Tangle.      |
+| `NODE_ENV`            | `undefined`       | Set it to `development` to enable some debug console prints. |
