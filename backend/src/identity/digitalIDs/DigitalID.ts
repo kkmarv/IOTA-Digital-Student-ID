@@ -26,6 +26,7 @@ export abstract class DigitalID {
 
   protected constructor(account: Account) {
     this.account = account
+    // await account.publish() # TOTO remove this from subclasses and put here
     // this.verifySelf() TODO can do when published to tangle
   }
 

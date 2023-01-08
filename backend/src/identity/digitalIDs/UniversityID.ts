@@ -87,6 +87,8 @@ export class UniversityID extends DigitalID implements Issuer {
       )
     )
 
+    await account.publish()
+
     return new UniversityID(account)
   }
 

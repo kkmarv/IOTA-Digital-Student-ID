@@ -5,7 +5,7 @@ import { handleHTTPError, login, register, sendChallenge } from './functions.js'
 const apiRouter = express.Router()
 
 apiRouter.use(express.json())
-apiRouter.get('/challenge', sendChallenge)
+apiRouter.post('/challenge', sendChallenge)
 // Endpoint for issuing StudentCredentials.
 apiRouter.post('/student/register', register)
 // Endpoint for logging in via StudentCredential.

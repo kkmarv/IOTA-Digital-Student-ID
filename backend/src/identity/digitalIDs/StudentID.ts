@@ -19,11 +19,9 @@ import { StudentVP } from '../verifiable/presentations.js'
  */
 export class StudentID extends DigitalID {
   private static readonly studentVPFragment = '#key-sign-student'
-  private readonly studentVC: StudentVC
 
-  private constructor(account: Account, studentVC: StudentVC) {
+  private constructor(account: Account) {
     super(account)
-    this.studentVC = studentVC
   }
 
   /**
@@ -32,10 +30,10 @@ export class StudentID extends DigitalID {
    *                  as a proof of authentication. Typically issued by an {@link Issuer}.
    * @returns         A newly created {@link StudentVP} signed by this student.
    */
-  async newSignedStudentVP(challenge: string): Promise<Presentation> {
+  async newSignedStudentVP(studentVC: StudentVC, challenge: string): Promise<Presentation> {
     return this.account.createSignedPresentation(
       StudentID.studentVPFragment,
-      new StudentVP(this.account.did(), this.studentVC),
+      new StudentVP(this.account.did(), studentVC),
       new ProofOptions({
         challenge: challenge,
         created: Timestamp.nowUTC(),
@@ -49,7 +47,7 @@ export class StudentID extends DigitalID {
    * @param identitySetup Use a pre-generated Ed25519 private key for the {@link DID}.
    * @returns             A new {@link StudentID}.
    */
-  static async new(studentVC: StudentVC, identitySetup?: IdentitySetup): Promise<StudentID> {
+  static async new(identitySetup?: IdentitySetup): Promise<StudentID> {
     const account = await DigitalID.builder.createIdentity(identitySetup)
 
     // Set the student's DID as the Document controller
@@ -69,7 +67,7 @@ export class StudentID extends DigitalID {
         ProofOptions.default()
       )
     )
-    return new StudentID(account, studentVC)
+    return new StudentID(account)
   }
 
   /**
@@ -77,7 +75,7 @@ export class StudentID extends DigitalID {
    * @param did The {@link DID} of the {@link StudentID} to look for.
    * @returns   An existing {@link StudentID}. Will throw an Error, if `did` cannot be found.
    */
-  static async load(did: DID, studentVC: StudentVC): Promise<StudentID> {
-    return new StudentID(await DigitalID.builder.loadIdentity(did), studentVC)
+  static async load(did: DID): Promise<StudentID> {
+    return new StudentID(await DigitalID.builder.loadIdentity(did))
   }
 }
