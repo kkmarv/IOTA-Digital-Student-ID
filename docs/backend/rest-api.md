@@ -146,49 +146,58 @@
 
 ```json
 {
-  "@context": "https://www.w3.org/2018/credentials/v1",
-  "type": [
-    "VerifiableCredential",
-    "StudentCredential"
-  ],
-  "credentialSubject": {
-    "id": "did:iota:dev:8dQAzVbbf6FLW9ckwyCBnPmcMGcUV9LYJoXtgQkHcNQy",
-    "currentTerm": 1,
-    "matriculationNumber": 1668626747102,
-    "providerName": "Anhalt University of Applied Sciences",
-    "student": {
-      "address": {
-        "city": "Musterstetten",
-        "country": "Germany",
-        "county": "Bavaria",
-        "houseNumber": 123,
-        "postalCode": 123456,
-        "street": "Musterweg"
+   "@context":"https://www.w3.org/2018/credentials/v1",
+   "type":"VerifiablePresentation",
+   "verifiableCredential":{
+      "@context":"https://www.w3.org/2018/credentials/v1",
+      "type":[
+         "VerifiableCredential",
+         "StudentCredential"
+      ],
+      "credentialSubject":{
+         "id":"did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU",
+         "currentTerm":1,
+         "matriculationNumber":1673140194620,
+         "providerName":"Anhalt University of Applied Sciences",
+         "studentData":{
+            "address":{
+               "city":"Musterstetten",
+               "country":"Germany",
+               "county":"Bavaria",
+               "houseNumber":123,
+               "postalCode":123456,
+               "street":"Musterweg"
+            },
+            "birthDate":"09.07.2000",
+            "familyName":"Henker",
+            "firstName":"Dustin",
+            "middleNames":"Friedrich Wilfried",
+            "photo":"https://thispersondoesnotexist.com/"
+         },
+         "studySubject":{
+            "degree":"Bachelor of Arts",
+            "name":"Gender Studies"
+         }
       },
-      "birthDate": "09.07.2000",
-      "familyName": "Henke",
-      "firstName": "Dustin",
-      "middleNames": "Walter Bruno",
-      "photo": "https://thispersondoesnotexist.com/"
-    },
-    "studySubject": {
-      "degree": "Bachelor of Arts",
-      "name": "Gender Studies"
-    }
-  },
-  "issuer": "did:iota:dev:Hi6fF68zfXQVQJccFAsbiqiMNUnaJVvzCy3iQNRGP84q",
-  "issuanceDate": "2022-11-16T19:25:47Z",
-  "expirationDate": "2023-04-01T00:00:00Z",
-  "nonTransferable": true,
-  "proof": {
-    "type": "JcsEd25519Signature2020",
-    "verificationMethod": "did:iota:dev:Hi6fF68zfXQVQJccFAsbiqiMNUnaJVvzCy3iQNRGP84q#sign-matriculation-vc",
-    "signatureValue": "24srzgVrMyHLqFr76bos7vqLAV3Wh5TxcAVTvHpupNrRdBtALS9hrrRWkmS769J9mQAkW9y8P5aJQPuR8thrv8Qx",
-    "created": "2022-11-16T19:25:47Z",
-    "expires": "2022-11-16T19:35:47Z",
-    "challenge": "todo",
-    "proofPurpose": "authentication"
-  }
+      "issuer":"did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF",
+      "issuanceDate":"2023-01-08T01:09:54Z",
+      "expirationDate":"2023-04-01T00:00:00Z",
+      "nonTransferable":true,
+      "proof":{
+         "type":"JcsEd25519Signature2020",
+         "verificationMethod":"did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF#key-sign-student",
+         "signatureValue":"515w4aVstpwFGLtJPL8xf82vfggDXQhb2eHqnqgcbsTJPkRh4j2gfgjYTCeWBRhTFLCQTb6wQa9VypVWncLKGcRQ"
+      }
+   },
+   "holder":"did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU",
+   "proof":{
+      "type":"JcsEd25519Signature2020",
+      "verificationMethod":"did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU#sign-0",
+      "signatureValue":"482JQCbrvwpzebaEGLEWUeV1uR4Lp3GPCYwBy2Cy4d99KRE14Jk9vhuNNtJvLJjaHvodAfcL1bSTpVxeoQjRhoSg",
+      "expires":"2023-01-08T19:27:03Z",
+      "challenge":"exampleChallenge"
+   }
+}
 ```
 
 ### 1.3.2. Response Body <!-- omit in toc -->
