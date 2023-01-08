@@ -1,22 +1,54 @@
-# Digital Student ID <!-- omit in toc -->
+# Digital Student ID Demo<!-- omit in toc -->
 
-A web application and the associated backend are to be developed using the IOTA Identity framework developed by the IOTA Foundation. The web application is to prototype a digital student ID.
+Newest efforts in Digital Identity and Self Sovereign Identity (SSI) leave the hope that digital governing may come true.  
+Organizations such as the [IOTA Foundation](https://www.iota.org/) are creating decentralized frameworks that make this possible. IOTA has the unique concept of the [Tangle](https://wiki.iota.org/learn/about-iota/tangle) which makes SSI possible today.  
 
-- [1. How it works](#1-how-it-works)
+To showcase a possible scenario where SSI would greatly benefit everyday life, this project aims to prototype a Digital Student ID for the use on a university website.
+
+- [1. Verifiable Student Credential](#1-verifiable-student-credential)
+  - [1.1. How it works](#11-how-it-works)
+  - [1.2. Contents](#12-contents)
 - [2. Setting up your environment](#2-setting-up-your-environment)
   - [2.1. Set up `node.js` using `nodeenv`](#21-set-up-nodejs-using-nodeenv)
     - [2.1.1. Create a virtual node environment](#211-create-a-virtual-node-environment)
 
-# 1. How it works
+# 1. Verifiable Student Credential
 
-- Precondition: Identities for the issuer and the holder exist on the Tangle.
-1. The holder requests a challenge from the issuer, signs it and sends it back (off-chain).
-1. The issuer verifies the signature of the challenge. Now they can be sure that the holder controls their DID.
-1. Issuer creates, signs and sends the Verifiable Credential to the holder (off-chain).
-1. Verifier sends the holder a challenge and requests a signed Verifiable Presentation (off-chain).
-1. Holder creates and sends a verifiable presentation including the challenge from the issued credential (off-chain).
-1. Verifier receives the Verifiable Presentation and verifies it.
+## 1.1. How it works
 
+- **Precondition**: Identities for both, the university and the student, exist on the Tangle.
+
+**Matriculation** (Registration)
+1. The student requests a challenge from the university, signs it and sends it back (off-chain).
+2. The university verifies the signature of the challenge. Now they can be sure that the student controls their DID.
+3. The student sends a Verifiable Presentation of their existing Credentials (e.g. a digital ID card) to the university. (off-chain)
+4. After verifying the validity of the Presentation, the university creates, signs and sends the Verifiable Student Credential to the student (off-chain).
+
+**Authentication** (Login)
+1. University as a verifier sends the student a challenge and requests a signed Verifiable Presentation of the Verifiable Student Credential (off-chain).
+2. Student creates and sends the Verifiable Presentation including the challenge from the issued Credential (off-chain).
+3. University as a verifier receives the Verifiable Presentation and verifies it.
+4. Upon successful validation, the student may proceed.
+
+## 1.2. Contents
+
+The Student Credential makes several assertions about its holder.  
+For now it will contain a students personal information, which in a fully working ecosystem will not be necessary or desirable. This will be done via official government issuers. But as such infrastructure does not exist yet, the design decision was to include personal information in the Student Credential just for convenience.
+
+**Personal information**
+
+- Full name
+- Address
+- Picture of the student
+
+**Study information**
+
+- University name
+- Current semester
+- Matriculation number
+- Subject
+  - Name
+  - Degree
 
 # 2. Setting up your environment
 
