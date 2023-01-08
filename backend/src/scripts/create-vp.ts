@@ -2,9 +2,9 @@ import { AccountBuilder, Credential, DID, Duration, Presentation, ProofOptions, 
 import { exit } from "process";
 import cfg from "../config.js";
 
-async function createVP(credential: Credential, challenge: string) {
+async function createVP(did: DID, credential: Credential, challenge: string) {
   const builder = new AccountBuilder(cfg.iota.accountBuilderConfig)
-  const account = await builder.loadIdentity(DID.parse("did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn"))
+  const account = await builder.loadIdentity(did)
 
   const vp = new Presentation({
     verifiableCredential: credential,
@@ -31,7 +31,7 @@ const vc = JSON.parse(
     "credentialSubject": {
       "id": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
       "currentTerm": 1,
-      "matriculationNumber": 1673133679294,
+      "matriculationNumber": 1673140194620,
       "providerName": "Anhalt University of Applied Sciences",
       "studentData": {
         "address": {
@@ -43,9 +43,9 @@ const vc = JSON.parse(
           "street": "Musterweg"
         },
         "birthDate": "09.07.2000",
-        "familyName": "Henke",
+        "familyName": "Henker",
         "firstName": "Dustin",
-        "middleNames": "Walter Bruno",
+        "middleNames": "Friedrich Wilfried",
         "photo": "https://thispersondoesnotexist.com/"
       },
       "studySubject": {
@@ -54,20 +54,24 @@ const vc = JSON.parse(
       }
     },
     "issuer": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF",
-    "issuanceDate": "2023-01-07T23:21:19Z",
-    "expirationDate": "2023-01-10T00:00:00Z",
+    "issuanceDate": "2023-01-08T01:09:54Z",
+    "expirationDate": "2023-04-01T00:00:00Z",
     "nonTransferable": true,
     "proof": {
       "type": "JcsEd25519Signature2020",
       "verificationMethod": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF#key-sign-student",
-      "signatureValue": "22gg3pEm7Ge18cZeHzrLvKDqxu8kgLHqq5rTcLdc7tAgRvM6442uFTy7kK4EzFLLRS1RX4VaYPhcWdLibCTKXtTo"
+      "signatureValue": "515w4aVstpwFGLtJPL8xf82vfggDXQhb2eHqnqgcbsTJPkRh4j2gfgjYTCeWBRhTFLCQTb6wQa9VypVWncLKGcRQ"
     }
   }`
 )
 
 if (!process.argv[2]) {
-  console.log("Please specify a DID as first argument");
+  console.log("Please specify a challenge as first argument");
   exit()
 }
 
-createVP(Credential.fromJSON(vc), process.argv[2])
+createVP(
+  DID.parse("did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn"),
+  Credential.fromJSON(vc),
+  process.argv[2]
+)

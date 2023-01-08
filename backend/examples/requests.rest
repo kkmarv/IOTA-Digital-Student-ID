@@ -39,49 +39,55 @@ POST http://localhost:8080/api/student/login
 Content-Type: application/json
 
 {
-  "@context": "https://www.w3.org/2018/credentials/v1",
-  "type": "VerifiablePresentation",
-  "verifiableCredential": {
-    "@context": "https://www.w3.org/2018/credentials/v1",
-    "type": [ "VerifiableCredential", "StudentCredential" ],
-    "credentialSubject": {
-      "id": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
-      "currentTerm": 1,
-      "matriculationNumber": 1673133679294,
-      "providerName": "Anhalt University of Applied Sciences",
-      "studentData": {
-        "address": {
-          "city": "Musterstetten",
-          "country": "Germany",
-          "county": "Bavaria",
-          "houseNumber": 123,
-          "postalCode": 123456,
-          "street": "Musterweg"
-        },
-        "birthDate": "09.07.2000",
-        "familyName": "Henke",
-        "firstName": "Dustin",
-        "middleNames": "Walter Bruno",
-        "photo": "https://thispersondoesnotexist.com/"
+   "@context":"https://www.w3.org/2018/credentials/v1",
+   "type":"VerifiablePresentation",
+   "verifiableCredential":{
+      "@context":"https://www.w3.org/2018/credentials/v1",
+      "type":[
+         "VerifiableCredential",
+         "StudentCredential"
+      ],
+      "credentialSubject":{
+         "id":"did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
+         "currentTerm":1,
+         "matriculationNumber":1673140194620,
+         "providerName":"Anhalt University of Applied Sciences",
+         "studentData":{
+            "address":{
+               "city":"Musterstetten",
+               "country":"Germany",
+               "county":"Bavaria",
+               "houseNumber":123,
+               "postalCode":123456,
+               "street":"Musterweg"
+            },
+            "birthDate":"09.07.2000",
+            "familyName":"Henker",
+            "firstName":"Dustin",
+            "middleNames":"Friedrich Wilfried",
+            "photo":"https://thispersondoesnotexist.com/"
+         },
+         "studySubject":{
+            "degree":"Bachelor of Arts",
+            "name":"Gender Studies"
+         }
       },
-      "studySubject": { "degree": "Bachelor of Arts", "name": "Gender Studies" }
-    },
-    "issuer": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF",
-    "issuanceDate": "2023-01-07T23:21:19Z",
-    "expirationDate": "2023-01-10T00:00:00Z",
-    "nonTransferable": true,
-    "proof": {
-      "type": "JcsEd25519Signature2020",
-      "verificationMethod": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF#key-sign-student",
-      "signatureValue": "22gg3pEm7Ge18cZeHzrLvKDqxu8kgLHqq5rTcLdc7tAgRvM6442uFTy7kK4EzFLLRS1RX4VaYPhcWdLibCTKXtTo"
-    }
-  },
-  "holder": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
-  "proof": {
-    "type": "JcsEd25519Signature2020",
-    "verificationMethod": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn#sign-0",
-    "signatureValue": "5YQQNiwspSrMWG6TFNvyrKt8RNr2eLTvHceTQgyz7cqsYXKi5rggNFWGoztFcUcpMvCXYB6BpM1c1Xgo8J4edkQo",
-    "expires": "2023-01-07T23:31:50Z",
-    "challenge": "980b55fac889c5a6556371e28a2951b9254fe879a333c6532fe7d67aafb563b2"
-  }
+      "issuer":"did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF",
+      "issuanceDate":"2023-01-08T01:09:54Z",
+      "expirationDate":"2023-04-01T00:00:00Z",
+      "nonTransferable":true,
+      "proof":{
+         "type":"JcsEd25519Signature2020",
+         "verificationMethod":"did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF#key-sign-student",
+         "signatureValue":"515w4aVstpwFGLtJPL8xf82vfggDXQhb2eHqnqgcbsTJPkRh4j2gfgjYTCeWBRhTFLCQTb6wQa9VypVWncLKGcRQ"
+      }
+   },
+   "holder":"did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
+   "proof":{
+      "type":"JcsEd25519Signature2020",
+      "verificationMethod":"did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn#sign-0",
+      "signatureValue":"3x1c3vrvAvCxub47dBrqdkMRNy5CAPFRuQym4EaVXF2iHJafhU5XKBPvT2LvKJt3SKrYRk93uon5m8ukuHqEX22q",
+      "expires":"2023-01-08T01:26:14Z",
+      "challenge":"24d0fcfd6dad2a8a7b4cf537330dd8a50a131e10a4613ad3ddd8a29d30b300ab"
+   }
 }

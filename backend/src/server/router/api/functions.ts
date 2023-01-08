@@ -1,7 +1,5 @@
 import {
-  CredentialValidationOptions,
   DID,
-  Duration,
   FailFast,
   Presentation,
   PresentationValidationOptions,
@@ -15,7 +13,6 @@ import { NextFunction, Request, Response } from 'express'
 import cfg from '../../../config.js'
 import { digital } from '../../../identity/index.js'
 import { RegistrationData, StudyData } from '../../../identity/subjects/Matriculation.js'
-import nextSemesterStart from '../../../identity/util/time.js'
 import { HTTPCode, HTTPError } from '../../errors.js'
 
 type did = string
@@ -123,10 +120,6 @@ export async function login(req: Request, res: Response, next: NextFunction) {
       challenge: CHALLENGE_MAP.get(studentDID.toString()),
       // Do not allow expired signatures ever
       allowExpired: false
-    }),
-    sharedValidationOptions: new CredentialValidationOptions({
-      // Tolerate expired credentials by 1 hour past midnight
-      earliestExpiryDate: nextSemesterStart().checkedAdd(Duration.hours(1))
     })
   })
 

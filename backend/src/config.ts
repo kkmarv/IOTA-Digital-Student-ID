@@ -40,9 +40,9 @@ const cfg = {
   // Expose the API service on this port.
   apiPort: 8080,
   // The first day of the summer semester.
-  ssStart: process.env.SS_START || '01-04',
+  ssStart: process.env.SS_START || '04-01',
   // The first day of the winter semester.
-  wsStart: process.env.WS_START || '01-10',
+  wsStart: process.env.WS_START || '10-01',
   // Development mode ("development" is used for debug)
   devMode: process.env.NODE_ENV && process.env.NODE_ENV === 'development' ? true : false,
   institution: {
