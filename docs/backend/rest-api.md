@@ -83,7 +83,7 @@
 
 #### On success <!-- omit in toc -->
 
-> The response is a verifiable credential of type `StudentCredential`.
+> The response is a Verifiable Credential of type `StudentCredential`.
 
 ```json
 {
@@ -142,7 +142,7 @@
 
 - Content-Type: application/json
 
-> The body must contain a verifiable credential of type `StudentCredential`.
+> The body must be a Verifiable Presentation containing a `StudentCredential`.
 
 ```json
 {
@@ -206,7 +206,7 @@
 
 #### On Success <!-- omit in toc -->
 
-> The response tells wether the `StudentCredential` is valid.
+> The response tells wether the Presentation is valid.
 
 ```json
 200 OK

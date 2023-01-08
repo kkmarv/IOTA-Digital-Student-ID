@@ -29,7 +29,7 @@ const vc = JSON.parse(
       "StudentCredential"
     ],
     "credentialSubject": {
-      "id": "did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn",
+      "id": "did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU",
       "currentTerm": 1,
       "matriculationNumber": 1673140194620,
       "providerName": "Anhalt University of Applied Sciences",
@@ -71,7 +71,7 @@ if (!process.argv[2]) {
 }
 
 createVP(
-  DID.parse("did:iota:dev:ggUs8jhh4fPqcS9im3VpCF3rvjp349dksGozWKQ5JZn"),
+  DID.parse("did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU"),
   Credential.fromJSON(vc),
   process.argv[2]
 )
