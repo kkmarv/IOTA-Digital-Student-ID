@@ -45,7 +45,7 @@ export function sendChallenge(req: Request, res: Response, next: NextFunction) {
     DID.parse(did)
   } catch (err) {
     console.error(err);
-    return next(new HTTPError(HTTPCode.BAD_REQUEST, "Not a valid DID."))
+    return next(new HTTPError(HTTPCode.UNPROCESSABLE_ENTITY, "Not a valid DID."))
   }
 
   const challenge = crypto.randomBytes(32).toString('hex')

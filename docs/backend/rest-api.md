@@ -2,15 +2,29 @@
 
 ## Contents
 - [1. Endpoints](#1-endpoints)
-  - [1.1. GET `/api/challenge`](#11-get-apichallenge)
+  - [1.1. POST `/api/challenge`](#11-post-apichallenge)
   - [1.2. POST `/api/student/register`](#12-post-apistudentregister)
   - [1.3. POST `/api/student/login`](#13-post-apistudentlogin)
 
 # 1. Endpoints
 
-## 1.1. GET `/api/challenge`
+## 1.1. POST `/api/challenge`
+
+### 1.2.1. Request Body <!-- omit in toc -->
+
+- Content-Type: application/json; charset=utf-8
+
+> The request must contain the DID of the requester.
+
+```json
+{
+  "id": "did:iota:dev:8dQAzVbbf6FLW9ckwyCBnPmcMGcUV9LYJoXtgQkHcNQy"
+}
+```
 
 ### 1.1.1. Response Body <!-- omit in toc -->
+
+#### On success <!-- omit in toc -->
 
 - Content-Type: text/plain; charset=utf-8
 - Content-Length: 64
@@ -19,6 +33,13 @@
 ```
 883f0922e1add9f51862cff9f8e8c6769bf2b1acb4bf5c8ac9b03698c237733b
 ```
+
+#### On Failure <!-- omit in toc -->
+
+| Error Code | Reason                             |
+| ---------- | ---------------------------------- |
+| `400`      | The payload contains no DID.       |
+| `422`      | The payload contains no valid DID. |
 
 ## 1.2. POST `/api/student/register`
 
@@ -110,11 +131,10 @@
 
 #### On Failure <!-- omit in toc -->
 
-> If the format of the credential is wrong
-
-```json
-422 Unprocessable Content
-```
+| Error Code | Reason                                           |
+| ---------- | ------------------------------------------------ |
+| `401`      | The requester did not acquire a challenge first. |
+| `422`      | The format of the credential is wrong.           |
 
 ## 1.3. POST `/api/student/login`
 
@@ -185,8 +205,8 @@
 
 #### On Failure <!-- omit in toc -->
 
-> In any other case. (Invalid format or signature, expired credential, etc.)
-
-```json
-401 Unauthorized
-```
+| Error Code | Reason                                                                         |
+| ---------- | ------------------------------------------------------------------------------ |
+| `400`      | The payload is not a valid Verifiable Presentation.                            |
+| `401`      | The Verifiable Presentation has an invalid signature, expired credential, etc. |
+| `422`      | The Verifiable Presentation contains no valid DID.                             |
