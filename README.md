@@ -1,4 +1,4 @@
-# Digital Student ID Demo<!-- omit in toc -->
+# Digital Student ID Demo <!-- omit in toc -->
 
 Newest efforts in Digital Identity and Self Sovereign Identity (SSI) leave the hope that digital governing may come true.  
 Organizations such as the [IOTA Foundation](https://www.iota.org/) are creating decentralized frameworks that make this possible. IOTA has the unique concept of the [Tangle](https://wiki.iota.org/learn/about-iota/tangle) which makes SSI possible today.  

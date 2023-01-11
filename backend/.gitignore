@@ -1,18 +1,7 @@
-# node.js files
-.node/
-node_modules/
-
-# temporary files
-*.html
-
 # compiled TypeScript files
 dist/
 
-# IDE files
-.vscode/
-.idea/
-
-# Identity files
+# IOTA Identity files
 *.hodl
 
 # configuration files
