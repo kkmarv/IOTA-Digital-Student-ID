@@ -9,6 +9,7 @@ const BRIGHT = "\x1b[1m"
 async function isPublished(did: DID): Promise<boolean> {
   const stronghold = cfg.iota.accountBuilderConfig.storage
   const chainState = await stronghold.chainStateGet(did)
+
   // Check if output of chainState has any entries i.e. the DID is pushed onto the Tangle
   return chainState && Object.keys(chainState.toJSON()).length === 0 ? false : true
 }
