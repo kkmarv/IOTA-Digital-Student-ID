@@ -18,6 +18,26 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
 
 - **Precondition**: Identities for both, the university and the student, exist on the Tangle.
 
+```mermaid
+sequenceDiagram
+
+Student ->> University: Hi University, I am did:iota:example123<br>and I'd like to enroll myself.
+Note over University: The University needs to know <br> wether the Student has control <br> of did:iota:example123. <br> So it sends a challenge <br> to the Student.
+University ->> Student: Authenticate yourself, please.
+Note over Student: The Student<br>signs the challenge <br> with their private <br> key and sends it back.
+Student --x University: Sure.
+University ->> Tangle: I need document with ID <br> did:iota:example123
+Tangle--xUniversity: Sure.
+Note over University: The University decrypts the signed <br> challenge with the Student's public key. <br> If it matches with the original challenge, <br> the Student has proven ownership of their DID.
+University ->> Student: I need your personal data.
+Note over Student: Now, the Student <br> can decide <br> wether to send <br> their data or not.
+Student --x University: Sure.
+Note over University: With the Student's personal data, <br> the university needs to verify its validity.
+Note over University: If the data is valid, the Uni creates <br> and signs a StudentCredential. <br> The Uni also disposes all information <br> about the Student as everything is <br> contained within the StudentCredential.
+University --x Student: Here's your signed Student ID.
+Note over Student: With the StudentCredential <br> at hand, they are now able to <br> verify their status as a <br> student of University.
+```
+
 **Matriculation** (Registration)
 1. The student requests a challenge from the university, signs it and sends it back (off-chain).
 2. The university verifies the signature of the challenge. Now they can be sure that the student controls their DID.
