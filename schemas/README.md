@@ -32,14 +32,14 @@ But at least the following properties are required.
 
 ### 1.1.2. StudentData
 
-| Property    | Expected Type       | Alias             | Description |
-| ----------- | ------------------- | ----------------- | ----------- |
+| Property    | Expected Type             | Alias             | Description |
+| ----------- | ------------------------- | ----------------- | ----------- |
 | address     | [`Address`](#113-address) |                   | .           |
-| firstName   | [Text]              | [givenName]       | .           |
-| middleNames | [Text]              | [additionalNames] | .           |
-| familyName  | [Text]              | [familyName]      | .           |
-| birthDate   | [Text]              | [birthDate]       | .           |
-| photoURL    | [URL]               |                   | .           |
+| firstName   | [Text]                    | [givenName]       | .           |
+| middleNames | [Text]                    | [additionalNames] | .           |
+| familyName  | [Text]                    | [familyName]      | .           |
+| birthDate   | [Text]                    | [birthDate]       | .           |
+| photoURL    | [URL]                     |                   | .           |
 
 ### 1.1.3. Address 
 
