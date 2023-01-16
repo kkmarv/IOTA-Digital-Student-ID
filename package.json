@@ -8,12 +8,6 @@
         "build:prod": "cross-env NODE_ENV=production webpack",
         "lint": "tsc --noEmit && eslint '*/**/*.{js,ts}' --fix",
         "pwa": "yarn build:dev && cap copy && cap serve",
-        "ios": "yarn build:dev && cap copy && cap open ios",
-        "android": "yarn build:dev && cap copy && cap open android",
-        "ios:prod": "yarn build:prod && cap copy && cap open ios",
-        "android:prod": "yarn build:prod && cap copy && cap open android",
-        "live-reload": "ts-node --project tsconfig.server.json scripts/enable-live-reload.ts",
-        "revert-live-reload": "ts-node --project tsconfig.server.json scripts/revert-live-reload.ts && cap copy",
         "cli": "ts-node --project tsconfig.server.json cli.ts"
     },
     "author": "IOTA Foundation <contact@iota.org>",

@@ -1,8 +1,6 @@
 import { Schemas, SchemaNames } from './ui/lib/identity/schemas';
-import * as IotaIdentity from 'iota-identity-wasm-test/node';
-
-import { KEY_ID, IOTA_NODE_URL, MINIMUM_WEIGHT_MAGNITUDE, DEPTH, DEFAULT_TAG, DEVNET } from './ui/lib/config';
 import type { Identity } from './ui/lib/identity';
+import * as IotaIdentity from 'iota-identity-wasm-test/node';
 
 const QRCode = require('qrcode-svg');
 
@@ -44,7 +42,7 @@ const createIdentity = (): Promise<Identity> => {
             const { key, doc } = IotaIdentity.Doc.generateEd25519();
             doc.sign(key);
             //Publish Identity
-            await IotaIdentity.publish(doc.toJSON(), { node: IOTA_NODE_URL, network: DEVNET ? 'dev' : 'main' });
+            //await IotaIdentity.publish(doc.toJSON(), { node: IOTA_NODE_URL, network: DEVNET ? 'dev' : 'main' });
             resolve({ didDoc: JSON.stringify(doc.toJSON()), publicAuthKey: key.public, privateAuthKey: key.private });
         } catch (err) {
             reject('Error during Identity Creation: ' + err);

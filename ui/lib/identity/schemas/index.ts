@@ -9,14 +9,16 @@ export enum SchemaNames {
     COMPANY = 'Company',
     CONTACT_DETAILS = 'ContactDetails',
     INSURANCE = 'Insurance',
-    STUDENT = 'Student'
+    STUDENT = 'Student',
 }
 
 export const AddressSchema = {
     type: 'object',
     required: ['DID'],
     properties: {
-
+        DID: {
+            type: 'string',
+        },
         Language: {
             type: 'string',
         },
@@ -312,22 +314,39 @@ export const InsuranceSchema = {
         },
     },
 };
-export const StudSchema={
-    type: 'object',
-    required: ['DID'],
-    properties: {
 
-        channelId:{type : 'string'}, // ?
-        challenge:{type:'string'}, // Die Challenge ist eine Art Beweis vom Backend, die in der VP enthalten sein muss
-        password:{type:'string'}, // ?
-        shareWith:{type:'string'}, // ?
-        requestedCredentials:{
-            PersonalData:{type:'string'},
-            Address:{type:'string'}}, // Bei uns: Attribute des StudentCredentials z.B. currentTerm
-        url:"https://selv01.iota.cafe:8888" // Bei uns: Unsere Backend-URL
-      
+export const StudentSchema = {
+    type: 'object',
+    properties: {
+        CurrentTerm: { type: 'integer' },
+        MatriculationNumber: { type: 'integer' },
+        ProviderName: { type: 'string' },
+        StudentData: {
+            type: 'object',
+            Address: {
+                type: 'object',
+                City: { type: 'string' },
+                Country: { type: 'string' },
+                County: { type: 'string' },
+                HouseNumber: { type: 'integer' },
+                PostalCode: { type: 'string' },
+                Street: { type: 'string' }
+            },
+            BirthDate: { type: 'string' },
+            FamilyName: { type: 'string' },
+            FirstName: { type: 'string' },
+            MiddleNames: { type: 'string' },
+            Photo: { type: 'string' },
+        },
+        StudySubject: {
+            type: 'object',
+            Degree: { type: 'string' },
+            Name: { type: 'string' },
+
         }
+    }
 }
+
 export const Schemas = {
     [SchemaNames.ADDRESS]: AddressSchema,
     [SchemaNames.PERSONAL_DATA]: PersonalDataSchema,
@@ -337,7 +356,7 @@ export const Schemas = {
     [SchemaNames.COMPANY]: CompanySchema,
     [SchemaNames.CONTACT_DETAILS]: ContactDetailsSchema,
     [SchemaNames.INSURANCE]: InsuranceSchema,
-    [SchemaNames.STUDENT]: StudSchema,
+    [SchemaNames.STUDENT]: StudentSchema,
 };
 
 export const DIDMapping: { [DID: string]: { logo: string; issuerLabel: string; theme: string } } = {
