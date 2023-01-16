@@ -1,6 +1,8 @@
 import { Schemas, SchemaNames } from './ui/lib/identity/schemas';
-import type { Identity } from './ui/lib/identity';
 import * as IotaIdentity from 'iota-identity-wasm-test/node';
+
+import { KEY_ID, IOTA_NODE_URL, MINIMUM_WEIGHT_MAGNITUDE, DEPTH, DEFAULT_TAG, DEVNET } from './ui/lib/config';
+import type { Identity } from './ui/lib/identity';
 
 const QRCode = require('qrcode-svg');
 

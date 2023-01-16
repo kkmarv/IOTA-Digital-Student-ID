@@ -199,7 +199,6 @@ export const decrypt = (key: string, payload: string): string => {
  * @returns {void}
  */
 export const goto = (path: string, params?: { [key: string]: string }): void => {
-
     window.location.hash = `${path}${params ? `?${new URLSearchParams(params).toString()}` : ''}`;
 };
 
