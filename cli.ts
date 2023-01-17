@@ -44,7 +44,7 @@ const createIdentity = (): Promise<Identity> => {
             const { key, doc } = IotaIdentity.Doc.generateEd25519();
             doc.sign(key);
             //Publish Identity
-            //await IotaIdentity.publish(doc.toJSON(), { node: IOTA_NODE_URL, network: DEVNET ? 'dev' : 'main' });
+            await IotaIdentity.publish(doc.toJSON(), { node: IOTA_NODE_URL, network: DEVNET ? 'dev' : 'main' });
             resolve({ didDoc: JSON.stringify(doc.toJSON()), publicAuthKey: key.public, privateAuthKey: key.private });
         } catch (err) {
             reject('Error during Identity Creation: ' + err);
