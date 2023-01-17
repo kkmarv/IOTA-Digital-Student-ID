@@ -9,6 +9,7 @@ import { encode } from "./base58.js"
  */
 async function createIdentity() {
   const keyPair = new KeyPair(KeyType.Ed25519)
+
   console.log(`Public Key: ${encode(keyPair.public())}`)
   console.log(`Private Key: ${encode(keyPair.private())}`)
 
