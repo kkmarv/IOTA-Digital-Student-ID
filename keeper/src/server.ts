@@ -4,6 +4,7 @@ import cors from 'cors'
 import express, { Request, Response } from 'express'
 import fs from 'fs'
 import jwt from 'jsonwebtoken'
+import path from 'path'
 import {
   getStrongholdPath,
   getUserDirectory,
@@ -11,7 +12,6 @@ import {
   isVerifiableCredential, UserCredentials
 } from './helper'
 import { authenticateJWT } from './jwt'
-import path from 'path'
 
 Identity.start()
 
@@ -28,6 +28,7 @@ const PATHS = {
   credentialGet: API_ENDPOINT + '/credentials/get',
   credentialSave: API_ENDPOINT + '/credentials/save',
   credentialList: API_ENDPOINT + '/credentials/list',
+  presentationGet: API_ENDPOINT + '/presentations/get'
 }
 
 const SERVER = express()
@@ -48,7 +49,7 @@ SERVER.put(PATHS.didCreate, async (req: Request, res: Response) => {
   }
 
   const credentials = req.body as UserCredentials
-  const stronghold = await getStronghold(credentials.username, credentials.password, false)
+  const stronghold = await buildStronghold(credentials.username, credentials.password, false)
 
   if (!stronghold) {
     return res.status(409).send('Username already taken.')
@@ -91,7 +92,7 @@ SERVER.post(PATHS.login, async (req: Request, res: Response) => {
   }
 
   const credentials = req.body as UserCredentials
-  const stronghold = await getStronghold(credentials.username, credentials.password)
+  const stronghold = await buildStronghold(credentials.username, credentials.password)
 
   if (!stronghold) {
     return res.status(401).send('Wrong username or password.')
@@ -124,7 +125,7 @@ SERVER.post(PATHS.login, async (req: Request, res: Response) => {
  * - Null if `password` is wrong or if `strongholdShouldExist` 
  * is set to true and the Stronghold file does not exist. 
  */
-async function getStronghold(username: string, password: string, strongholdShouldExist = true): Promise<Stronghold | null> {
+async function buildStronghold(username: string, password: string, strongholdShouldExist = true): Promise<Stronghold | null> {
   const strongholdPath = getStrongholdPath(username)
 
   if (strongholdShouldExist && !fs.existsSync(strongholdPath)) {
@@ -150,7 +151,7 @@ SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) =
     return res.status(400).send('Missing password.')
   }
 
-  const stronghold = await getStronghold(req.body.jwtPayload.username, req.body.password)
+  const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
 
   if (!stronghold) {
     return res.status(401).send('Wrong username or password.')
@@ -195,6 +196,10 @@ SERVER.put(PATHS.credentialSave, authenticateJWT, async (req: Request, res: Resp
 
 
 SERVER.post(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
+  if (!req.body.credentialName) {
+    return res.status(400).send('Missing credential name.')
+  }
+
   const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
 
   // Abort if credential does NOT exist.
@@ -203,11 +208,11 @@ SERVER.post(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Resp
   }
 
   // Read content of the credential file.
-  fs.readFile(credentialFile, (err, data) => {
+  fs.readFile(credentialFile, { encoding: 'utf8' }, (err, data) => {
     if (err) {
       return res.status(500).send('Error while reading the credential file.')
     }
-    const credential = JSON.parse(data.toString('utf8'))
+    const credential = JSON.parse(data)
 
     return res.status(200).json(credential)
   })
@@ -232,6 +237,62 @@ SERVER.get(PATHS.credentialList, authenticateJWT, async (req: Request, res: Resp
 
     res.status(200).json({ credentials: credentialFiles })
   })
+})
+
+
+SERVER.post(PATHS.presentationGet, authenticateJWT, async (req: Request, res: Response) => {
+  if (!req.body.password) {
+    return res.status(400).send('Missing password.')
+  } else if (!req.body.challenge) {
+    return res.status(400).send('Missing challenge.')
+  } else if (!req.body.credentialName) {
+    return res.status(400).send('Missing credential name.')
+  }
+
+  const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
+
+  if (!stronghold) {
+    return res.status(401).send('Wrong username or password.')
+  }
+
+  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
+
+  // Abort if credential does NOT exist.
+  if (!fs.existsSync(credentialFile)) {
+    return res.status(404).send('Credential with this name does not exist.')
+  }
+
+  // Read content of the credential file.
+  const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
+  const credential = Identity.Credential.fromJSON(JSON.parse(credentialData))
+
+  const builder = new Identity.AccountBuilder({
+    autopublish: BASE_ACCOUNT_BUILDER_OPTIONS.autopublish,
+    autosave: BASE_ACCOUNT_BUILDER_OPTIONS.autosave,
+    clientConfig: BASE_ACCOUNT_BUILDER_OPTIONS.clientConfig,
+    storage: stronghold
+  })
+
+  // Retrieve DID from Stronghold.
+  const did = (await stronghold.didList())[0]
+  const account = await builder.loadIdentity(did)
+
+  // Create the Verifiable Presentation
+  const vp = new Identity.Presentation({
+    verifiableCredential: credential,
+    holder: did
+  })
+
+  // Create a proof.
+  const proof = new Identity.ProofOptions({
+    challenge: req.body.challenge,
+    expires: Identity.Timestamp.nowUTC().checkedAdd(Identity.Duration.minutes(10))
+  })
+
+  // Sign the presentation.
+  const signedVP = await account.createSignedPresentation("sign-0", vp, proof)
+
+  return res.status(200).json(signedVP.toJSON())
 })
 
 
