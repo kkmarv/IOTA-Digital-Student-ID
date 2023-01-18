@@ -1,0 +1,71 @@
+PUT http://localhost:8081/api/register
+Content-Type: application/json
+
+{
+  "username": "marvin",
+  "password": "blep"
+}
+###
+
+POST http://localhost:8081/api/login
+Content-Type: application/json
+
+{
+  "username": "marvin",
+  "password": "blep"
+}
+###
+
+GET http://localhost:8081/api/getdid/marvin/blep
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibWFydmluIiwicGFzc3dvcmQiOiJibGVwIiwiaWF0IjoxNjc0MDAzMjU4LCJleHAiOjE2NzQ2MDgwNTh9.TrJpk1jTqn2HlM3_M6QAKnTOc5cPBdn7T7pJXHVhzXM
+###
+
+PUT http://localhost:8081/api/credentials/save
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibWFydmluIiwicGFzc3dvcmQiOiJibGVwIiwiaWF0IjoxNjc0MDAzMjU4LCJleHAiOjE2NzQ2MDgwNTh9.TrJpk1jTqn2HlM3_M6QAKnTOc5cPBdn7T7pJXHVhzXM
+Content-Type: application/json
+
+{
+  "credentialName": "tarzan",
+  "verifiableCredential": {
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": [
+      "VerifiableCredential",
+      "StudentCredential"
+    ],
+    "credentialSubject": {
+      "id": "did:iota:dev:8dQAzVbbf6FLW9ckwyCBnPmcMGcUV9LYJoXtgQkHcNQy",
+      "currentTerm": 1,
+      "matriculationNumber": 1668712065824,
+      "providerName": "Anhalt University of Applied Sciences",
+      "studentData": {
+        "address": {
+          "city": "Musterstetten",
+          "country": "Germany",
+          "county": "Bavaria",
+          "houseNumber": 123,
+          "postalCode": 123456,
+          "street": "Musterweg"
+        },
+        "birthDate": "09.07.2000",
+        "familyName": "Henke",
+        "firstName": "Dustin",
+        "middleNames": "Walter Bruno",
+        "photo": "https://thispersondoesnotexist.com/"
+      },
+      "studySubject": {
+        "degree": "Bachelor of Arts",
+        "name": "Gender Studies"
+      }
+    },
+    "issuer": "did:iota:dev:4akBffVm1d1RBdywx4kMMZ4u5ErNRqms5xTZowjxLXAP",
+    "issuanceDate": "2022-11-17T19:07:45Z",
+    "expirationDate": "2023-04-01T00:00:00Z",
+    "nonTransferable": true,
+    "proof": {
+      "type": "JcsEd25519Signature2020",
+      "verificationMethod": "did:iota:dev:4akBffVm1d1RBdywx4kMMZ4u5ErNRqms5xTZowjxLXAP#key-sign-student",
+      "signatureValue": "3r8GbeJ9fzjH3p4AVeNj9p72KDmDusXhEEyBMb6tnSBs4LLcLrBaRtAdRbPczCXsS14fcbFKmvXTSWsYHX6YNFrT"
+    }
+  }
+}
+###
