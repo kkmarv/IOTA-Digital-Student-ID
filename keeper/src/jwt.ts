@@ -14,13 +14,13 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
   // Remove the 'Bearer' keyword from the token.
   const token = authHeader.replace('Bearer ', '');
 
-  jwt.verify(token, TOKEN_SECRET, (err, user) => {
+  jwt.verify(token, TOKEN_SECRET, (err, jwtPayload) => {
     if (err) {
       return res.status(403).send('Invalid JWT Token.');
     }
 
     // Insert user data into request for further processing.
-    req.body.user = user
+    req.body.jwtPayload = jwtPayload
 
     return next();
   });
