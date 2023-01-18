@@ -14,22 +14,23 @@
 
   const studentData = {
     address: {
-      city: "Musterstetten",
-      country: "Germany",
-      county: "Bavaria",
-      houseNumber: 123,
-      postalCode: 123456,
-      street: "Musterweg",
+      city: "Albuquerque",
+      country: "USA",
+      county: "New Mexico",
+      houseNumber: 308,
+      postalCode: 87104,
+      street: "Negra Arroyo Lane",
     },
-    birthDate: "09.07.2000",
-    familyName: "Henke",
-    firstName: "Dustin",
-    middleNames: "Walter Bruno",
-    photo: "https://thispersondoesnotexist.com/",
+    birthDate: "07.09.1958",
+    familyName: "White",
+    firstName: "Walter",
+    middleNames: "Hartwell",
+    photo:
+      "https://vignette.wikia.nocookie.net/breakingbad/images/e/e7/BB-S5B-Walt-590.jpg/revision/latest?cb=20130928055404/",
   };
   const studySubject = {
-    degree: "Bachelor of Arts",
-    name: "Gender Studies",
+    degree: "Master of Science",
+    name: "Chemistry",
   };
 
   identity.init().then(async () => {
