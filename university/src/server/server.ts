@@ -11,5 +11,5 @@ server.disable('x-powered-by')
 server.use(cors())
 server.use(apiEndpoint, apiRouter)
 server.listen(cfg.apiPort, () => {
-  console.log(`API listening at ${apiEndpoint} on port ${cfg.apiPort}.`)
+  console.log(`University listening at ${apiEndpoint} on port ${cfg.apiPort}.`)
 })
