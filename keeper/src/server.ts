@@ -173,5 +173,5 @@ SERVER.put(API_ENDPOINT + '/credentials/save', authenticateJWT, async (req: Requ
 
 // Start the REST server.
 SERVER.listen(PORT, () => {
-  console.log(`API listening at ${API_ENDPOINT} on port ${PORT}.`)
+  console.log(`Keeper listening at http://localhost:${PORT}${API_ENDPOINT}`)
 })

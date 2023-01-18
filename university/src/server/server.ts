@@ -4,12 +4,12 @@ import apiRouter from './router/api/router.js'
 import cors from 'cors'
 
 
-const apiEndpoint = '/api'
-const server = express()
+const API_ENDPOINT = '/api'
+const SERVER = express()
 
-server.disable('x-powered-by')
-server.use(cors())
-server.use(apiEndpoint, apiRouter)
-server.listen(cfg.apiPort, () => {
-  console.log(`University listening at ${apiEndpoint} on port ${cfg.apiPort}.`)
+SERVER.disable('x-powered-by')
+SERVER.use(cors({ origin: 'localhost' }))
+SERVER.use(API_ENDPOINT, apiRouter)
+SERVER.listen(cfg.apiPort, () => {
+  console.log(`University listening at http://localhost:${cfg.apiPort}${API_ENDPOINT}`)
 })
