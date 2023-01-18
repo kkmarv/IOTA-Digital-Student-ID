@@ -1,7 +1,6 @@
 import crypto from 'crypto'
 
 
-
 interface ExtendedProofDocument {
   created: string,
   creator: string,
@@ -74,7 +73,7 @@ export function getStrongholdPath(username: string): string {
 /**
  * Hash the username for mainly two reasons:
  * 1) Will create a valid filename from any username.
- * 2) Will Keep username anonymous.
+ * 2) Will keep username anonymous.
  * @param username 
  * @returns The directory where user files are stored.
  */
