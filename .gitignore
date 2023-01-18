@@ -1,7 +1,7 @@
-node_modules
-.build
-.cli
+# node.js & npm files
+.node/
+node_modules/
 
-.idea
-
-.node
+# IDE files
+.vscode/
+.idea/
