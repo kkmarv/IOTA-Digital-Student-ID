@@ -7,6 +7,8 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
 
 - [1. Verifiable Student Credential](#1-verifiable-student-credential)
   - [1.1. How it works](#11-how-it-works)
+    - [1.1.1. Registration | Matriculation](#111-registration--matriculation)
+    - [1.1.2. Login | Authentication](#112-login--authentication)
   - [1.2. Contents](#12-contents)
 - [2. Setting up your environment](#2-setting-up-your-environment)
   - [2.1. Set up `node.js` using `nodeenv`](#21-set-up-nodejs-using-nodeenv)
@@ -16,19 +18,46 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
 
 ## 1.1. How it works
 
-- **Precondition**: Identities for both, the university and the student, exist on the Tangle.
+**Precondition:** Identities for both, the university and the Student, already exist on the Tangle.
 
-**Matriculation** (Registration)
-1. The student requests a challenge from the university, signs it and sends it back (off-chain).
-2. The university verifies the signature of the challenge. Now they can be sure that the student controls their DID.
-3. The student sends a Verifiable Presentation of their existing Credentials (e.g. a digital ID card) to the university. (off-chain)
-4. After verifying the validity of the Presentation, the university creates, signs and sends the Verifiable Student Credential to the student (off-chain).
+### 1.1.1. Registration | Matriculation
 
-**Authentication** (Login)
-1. University as a verifier sends the student a challenge and requests a signed Verifiable Presentation of the Verifiable Student Credential (off-chain).
-2. Student creates and sends the Verifiable Presentation including the challenge from the issued Credential (off-chain).
-3. University as a verifier receives the Verifiable Presentation and verifies it.
-4. Upon successful validation, the student may proceed.
+```mermaid
+sequenceDiagram
+
+Student ->> University: Hi University, I am did:iota:example:123<br>and I'd like to enroll myself.
+Note over University: The uni needs to know <br> whether the Student has control <br> of did:iota:example:123. <br> So it sends a challenge <br> to the Student.
+University ->> Student: Authenticate yourself, please.
+Note over Student: The Student<br>signs the challenge <br> with their private <br> key and sends it back.
+Student --x University: Sure.
+University ->> Tangle: I need document with ID <br> did:iota:example:123
+Tangle --x University: Sure.
+Note over University: The uni decrypts the signed <br> challenge with the Student's public key. <br> If it matches with the original challenge, <br> the Student has proven ownership of their DID.
+University ->> Student: I need your personal data.
+Note over Student: Now, the Student <br> can decide <br> whether to send <br> their data or not.
+Student --x University: Sure.
+Note over University: With the Student's personal data, <br> the uni needs to verify its validity.
+Note over University: If the data is valid, the uni creates <br> and signs a StudentCredential. <br> The uni also disposes all information <br> about the Student as everything is <br> contained within the StudentCredential.
+University --x Student: Here's your signed Student ID.
+Note over Student: With the StudentCredential <br> at hand, they are now able to <br> verify their status as a <br> student of University.
+```
+
+### 1.1.2. Login | Authentication
+
+```mermaid
+sequenceDiagram
+
+Student ->> University: Hi University, I am did:iota:example:123 <br> and I want to use your website.
+Note over University: As with the registration, <br> the uni needs to know <br> whether the Student is <br> who they claim to be.
+University --x Student: Sure thing. <br> But first we need your matriculation status. <br> And please sign this challenge.
+Note over Student: The Student creates a <br> Verifiable Presentation <br> of their StudentCredential, <br> includes the challenge, <br>signs and sends it.
+Student ->> University: Here's proof of my matriculation.
+University ->> Tangle: I need document with ID <br> did:iota:example:123
+Tangle --x University: Sure.
+Note over University: The uni is now able to <br> verify the Student's <br> matriculation status by verifying <br> the Presentation and the Credential.
+Note over University: If the validation is successful, <br> the Student currently is enrolled.
+University --x Student: You may proceed.
+```
 
 ## 1.2. Contents
 

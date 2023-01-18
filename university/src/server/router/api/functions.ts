@@ -22,12 +22,12 @@ type challenge = string
 const CHALLENGE_MAP = new Map<did, challenge>()
 const TANGLE_RESOLVER = await Resolver.builder().clientConfig(cfg.iota.clientConfig).build();
 
-// Load the DID of the institution
-// if a DID URL was found in env variables, else create a new identity
+// Load the DID of the institution if a DID URL was found in env variables, else create a new identity
 const INSTITUTION = cfg.institution
 const UNIVERSITY = INSTITUTION.did ?
   await digital.UniversityID.load(INSTITUTION.did) :
   await digital.UniversityID.new(INSTITUTION.name, INSTITUTION.website)
+
 console.dir(UNIVERSITY.toJSON(), { depth: null });
 
 

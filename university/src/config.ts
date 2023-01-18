@@ -62,7 +62,7 @@ const cfg = {
       Duration.minutes(10),
     // Options for creating and publishing local DIDs.
     accountBuilderConfig: {
-      autosave: AutoSave.every(), // do not woooooooork Ò_Ó 
+      autosave: AutoSave.every(),
       autopublish: false,
       storage: stronghold,
       clientConfig: tangleClient
