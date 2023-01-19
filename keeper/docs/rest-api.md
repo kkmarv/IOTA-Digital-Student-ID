@@ -54,8 +54,6 @@ Get yourself a JWT with a username and a password.
 
 ### Request Body <!-- omit in toc -->
 
-- Content-Type: `application/json`
-
 > The request must contain:
 > - a username
 > - a password
