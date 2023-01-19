@@ -1,6 +1,6 @@
-@username = "Patrick"
-@password = "blep"
-@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhdHJpY2siLCJpYXQiOjE2NzQwNjYwMTUsImV4cCI6MTY3NDY3MDgxNX0.ogB0pjGt5EQCQq9Z-wU8J-1SZAdCANU2XcBQNO8wjIY
+@username = "heisenberg58"
+@password = "?!chemistry%Heck&Yeah420"
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhdHJpY2siLCJpYXQiOjE2NzQwODQwMzQsImV4cCI6MTY3NDY4ODgzNH0.RKHeEvviXsujx82-IUGOjUa7LPG5vYdnelBAdCpvIlw
 @credentialName = "walter"
 
 PUT http://localhost:8081/api/did/create
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8081/api/login
+POST http://localhost:8081/api/did/login
 Content-Type: application/json
 
 {

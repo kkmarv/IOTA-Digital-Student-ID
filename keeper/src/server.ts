@@ -22,8 +22,8 @@ const PORT = 8081
 const API_ENDPOINT = '/api'
 
 const PATHS = {
-  login: API_ENDPOINT + '/login',
   didGet: API_ENDPOINT + '/did/get',
+  didLogin: API_ENDPOINT + '/did/login',
   didCreate: API_ENDPOINT + '/did/create',
   credentialGet: API_ENDPOINT + '/credentials/get',
   credentialSave: API_ENDPOINT + '/credentials/save',
@@ -86,7 +86,7 @@ SERVER.put(PATHS.didCreate, async (req: Request, res: Response) => {
 })
 
 
-SERVER.post(PATHS.login, async (req: Request, res: Response) => {
+SERVER.post(PATHS.didLogin, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).send('Invalid format.')
   }
@@ -154,7 +154,7 @@ SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) =
   const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
 
   if (!stronghold) {
-    return res.status(401).send('Wrong username or password.')
+    return res.status(403).send('Wrong password.')
   }
 
   // Abort if Stronghold does not contain exactly one DID.
