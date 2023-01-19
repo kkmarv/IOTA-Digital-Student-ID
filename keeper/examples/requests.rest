@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 ###
 
-PUT http://localhost:8081/api/credentials/save
+PUT http://localhost:8081/api/credentials/store
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 

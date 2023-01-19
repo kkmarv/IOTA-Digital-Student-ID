@@ -5,7 +5,7 @@
   - [1.2. POST `/api/did/login`](#12-post-apididlogin)
   - [1.3. POST `/api/did/get`](#13-post-apididget)
 - [2. Verifiable Credentials](#2-verifiable-credentials)
-  - [2.1. POST `/api/credentials/save`](#21-post-apicredentialssave)
+  - [2.1. POST `/api/credentials/store`](#21-post-apicredentialsstore)
   - [2.2. GET `/api/credentials/list`](#22-get-apicredentialslist)
   - [2.3. POST `/api/credentials/get`](#23-post-apicredentialsget)
 - [3. Verifiable Presentations](#3-verifiable-presentations)
@@ -20,9 +20,9 @@ Create a DID document and publish it to the Tangle.
 
 ### Request Body <!-- omit in toc -->
 
-- Content-Type: `application/json`
-
-> The request must contain a username and a password.
+> The request must contain:
+> - a username
+> - a password
 
 ```json
 {
@@ -34,8 +34,6 @@ Create a DID document and publish it to the Tangle.
 ### Response Body <!-- omit in toc -->
 
 #### On success <!-- omit in toc -->
-
-- Content-Type: `application/json`
 
 ```json
 204 No Content
@@ -58,7 +56,9 @@ Get yourself a JWT with a username and a password.
 
 - Content-Type: `application/json`
 
-> The request must contain a username and a password.
+> The request must contain:
+> - a username
+> - a password
 
 ```json
 {
@@ -94,7 +94,7 @@ Get the DID URL of the current user.
 
 ### Request Body <!-- omit in toc -->
 
-> The current user's password.
+> The request must contain the current user's password.
 
 ```json
 {
@@ -126,13 +126,15 @@ Get the DID URL of the current user.
 
 # 2. Verifiable Credentials
 
-## 2.1. POST `/api/credentials/save`
+## 2.1. POST `/api/credentials/store`
 
 Save a Verifiable Credential to local storage.
 
 ### Request Body <!-- omit in toc -->
 
-> A name for the credential used to identify it later and the credential itself. 
+> The request must contain:
+> - a name for the credential which will be used to identify it later
+> - the credential itself
 
 ```json
 {
@@ -195,7 +197,7 @@ Retrieve a Verifiable Credential by its name.
 
 ### Request Body <!-- omit in toc -->
 
-> The name of the credential that has been used when it was stored.
+> The request must contain the name of the credential that has been used when it was stored.
 
 ```json
 {
@@ -207,7 +209,7 @@ Retrieve a Verifiable Credential by its name.
 
 #### On success <!-- omit in toc -->
 
-> The Verifiable Credential
+> The Verifiable Credential.
 
 ```json
 {
@@ -233,7 +235,10 @@ Create a Verifiable Presentation from one or more locally saved credentials.
 
 ### Request Body <!-- omit in toc -->
 
-> The current user's password, an arbitrary challenge string and a list of credential which will be included in the presentation.
+> The request must contain:
+> - the current user's password
+> - an arbitrary challenge string
+> - a list of credential names which will be included in the presentation
 
 ```json
 {

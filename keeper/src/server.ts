@@ -26,7 +26,7 @@ const PATHS = {
   didLogin: API_ENDPOINT + '/did/login',
   didCreate: API_ENDPOINT + '/did/create',
   credentialGet: API_ENDPOINT + '/credentials/get',
-  credentialSave: API_ENDPOINT + '/credentials/save',
+  credentialStore: API_ENDPOINT + '/credentials/store',
   credentialList: API_ENDPOINT + '/credentials/list',
   presentationGet: API_ENDPOINT + '/presentations/get'
 }
@@ -167,7 +167,7 @@ SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) =
 })
 
 
-SERVER.put(PATHS.credentialSave, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.put(PATHS.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.verifiableCredential) {
     return res.status(400).send('Missing Verifiable Credential.')
   } else if (!isVerifiableCredential(req.body.verifiableCredential)) {
