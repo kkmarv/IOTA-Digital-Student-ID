@@ -1,6 +1,6 @@
 # keeper
 
-*keeper* is a RESTful DID management software designed for running on local hardware.
+*keeper* is a RESTful DID management software designed to run on local hardware.
 It uses the IOTA Stronghold framework to securely store DID private keys.
 
 Another app may use *keeper*'s REST API to create a DID by providing a username and a password. 

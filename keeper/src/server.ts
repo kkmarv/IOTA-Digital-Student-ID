@@ -22,13 +22,13 @@ const PORT = 8081
 const API_ENDPOINT = '/api'
 
 const PATHS = {
-  login: API_ENDPOINT + '/login',
   didGet: API_ENDPOINT + '/did/get',
+  didLogin: API_ENDPOINT + '/did/login',
   didCreate: API_ENDPOINT + '/did/create',
-  credentialGet: API_ENDPOINT + '/credentials/get',
-  credentialSave: API_ENDPOINT + '/credentials/save',
+  credentialGet: API_ENDPOINT + '/credentials/get/:name',
+  credentialStore: API_ENDPOINT + '/credentials/store',
   credentialList: API_ENDPOINT + '/credentials/list',
-  presentationGet: API_ENDPOINT + '/presentations/get'
+  presentationCreate: API_ENDPOINT + '/presentations/create'
 }
 
 const SERVER = express()
@@ -86,7 +86,7 @@ SERVER.put(PATHS.didCreate, async (req: Request, res: Response) => {
 })
 
 
-SERVER.post(PATHS.login, async (req: Request, res: Response) => {
+SERVER.post(PATHS.didLogin, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).send('Invalid format.')
   }
@@ -154,7 +154,7 @@ SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) =
   const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
 
   if (!stronghold) {
-    return res.status(401).send('Wrong username or password.')
+    return res.status(403).send('Wrong password.')
   }
 
   // Abort if Stronghold does not contain exactly one DID.
@@ -167,7 +167,7 @@ SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) =
 })
 
 
-SERVER.put(PATHS.credentialSave, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.put(PATHS.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.verifiableCredential) {
     return res.status(400).send('Missing Verifiable Credential.')
   } else if (!isVerifiableCredential(req.body.verifiableCredential)) {
@@ -195,12 +195,11 @@ SERVER.put(PATHS.credentialSave, authenticateJWT, async (req: Request, res: Resp
 })
 
 
-SERVER.post(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
-  if (!req.body.credentialName) {
-    return res.status(400).send('Missing credential name.')
-  }
+SERVER.get(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
+  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.params.name}.json`
 
-  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
+  console.log(credentialFile);
+
 
   // Abort if credential does NOT exist.
   if (!fs.existsSync(credentialFile)) {
@@ -240,7 +239,7 @@ SERVER.get(PATHS.credentialList, authenticateJWT, async (req: Request, res: Resp
 })
 
 
-SERVER.post(PATHS.presentationGet, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
     return res.status(400).send('Missing password.')
   } else if (!req.body.challenge) {
