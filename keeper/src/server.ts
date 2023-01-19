@@ -33,7 +33,7 @@ const PATHS = {
 
 const SERVER = express()
 SERVER.disable('x-powered-by')
-SERVER.use(cors({ origin: ['http://localhost:4200/', 'http://localhost:8080/'] }))
+SERVER.use(cors())
 SERVER.use(express.json())
 
 const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
