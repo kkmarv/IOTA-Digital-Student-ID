@@ -1,20 +1,20 @@
 # REST API <!-- omit in toc -->
 
 - [1. DIDs](#1-dids)
-  - [1.1. POST `/api/did/create`](#11-post-apididcreate)
+  - [1.1. PUT `/api/did/create`](#11-put-apididcreate)
   - [1.2. POST `/api/did/login`](#12-post-apididlogin)
   - [1.3. POST `/api/did/get`](#13-post-apididget)
 - [2. Verifiable Credentials](#2-verifiable-credentials)
-  - [2.1. POST `/api/credentials/store`](#21-post-apicredentialsstore)
+  - [2.1. PUT `/api/credentials/store`](#21-put-apicredentialsstore)
   - [2.2. GET `/api/credentials/list`](#22-get-apicredentialslist)
   - [2.3. POST `/api/credentials/get`](#23-post-apicredentialsget)
 - [3. Verifiable Presentations](#3-verifiable-presentations)
-  - [3.1. POST `/api/presentations/get`](#31-post-apipresentationsget)
+  - [3.1. POST `/api/presentations/create`](#31-post-apipresentationscreate)
 
 
 # 1. DIDs
 
-## 1.1. POST `/api/did/create`
+## 1.1. PUT `/api/did/create`
 
 Create a DID document and publish it to the Tangle.
 
@@ -126,7 +126,7 @@ Get the DID URL of the current user.
 
 # 2. Verifiable Credentials
 
-## 2.1. POST `/api/credentials/store`
+## 2.1. PUT `/api/credentials/store`
 
 Save a Verifiable Credential to local storage.
 
@@ -229,7 +229,7 @@ Retrieve a Verifiable Credential by its name.
 
 # 3. Verifiable Presentations
 
-## 3.1. POST `/api/presentations/get`
+## 3.1. POST `/api/presentations/create`
 
 Create a Verifiable Presentation from one or more locally saved credentials.
 

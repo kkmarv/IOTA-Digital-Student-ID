@@ -28,7 +28,7 @@ const PATHS = {
   credentialGet: API_ENDPOINT + '/credentials/get',
   credentialStore: API_ENDPOINT + '/credentials/store',
   credentialList: API_ENDPOINT + '/credentials/list',
-  presentationGet: API_ENDPOINT + '/presentations/get'
+  presentationCreate: API_ENDPOINT + '/presentations/create'
 }
 
 const SERVER = express()
@@ -240,7 +240,7 @@ SERVER.get(PATHS.credentialList, authenticateJWT, async (req: Request, res: Resp
 })
 
 
-SERVER.post(PATHS.presentationGet, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
     return res.status(400).send('Missing password.')
   } else if (!req.body.challenge) {
