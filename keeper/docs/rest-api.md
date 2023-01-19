@@ -7,7 +7,7 @@
 - [2. Verifiable Credentials](#2-verifiable-credentials)
   - [2.1. PUT `/api/credentials/store`](#21-put-apicredentialsstore)
   - [2.2. GET `/api/credentials/list`](#22-get-apicredentialslist)
-  - [2.3. POST `/api/credentials/get`](#23-post-apicredentialsget)
+  - [2.3. GET `/api/credentials/get/:name`](#23-get-apicredentialsgetname)
 - [3. Verifiable Presentations](#3-verifiable-presentations)
   - [3.1. POST `/api/presentations/create`](#31-post-apipresentationscreate)
 
@@ -191,19 +191,9 @@ List all names of Verifiable Credentials that are currently stored.
 | `500`      | Unknown error while retrieving one of the credentials. |
 
 
-## 2.3. POST `/api/credentials/get`
+## 2.3. GET `/api/credentials/get/:name`
 
-Retrieve a Verifiable Credential by its name.
-
-### Request Body <!-- omit in toc -->
-
-> The request must contain the name of the credential that has been used when it was stored.
-
-```json
-{
-  "credentialName": "..."
-}
-```
+Retrieve a Verifiable Credential by its `name`.
 
 ### Response Body <!-- omit in toc -->
 

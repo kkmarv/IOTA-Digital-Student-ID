@@ -25,7 +25,7 @@ const PATHS = {
   didGet: API_ENDPOINT + '/did/get',
   didLogin: API_ENDPOINT + '/did/login',
   didCreate: API_ENDPOINT + '/did/create',
-  credentialGet: API_ENDPOINT + '/credentials/get',
+  credentialGet: API_ENDPOINT + '/credentials/get/:name',
   credentialStore: API_ENDPOINT + '/credentials/store',
   credentialList: API_ENDPOINT + '/credentials/list',
   presentationCreate: API_ENDPOINT + '/presentations/create'
@@ -195,12 +195,11 @@ SERVER.put(PATHS.credentialStore, authenticateJWT, async (req: Request, res: Res
 })
 
 
-SERVER.post(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
-  if (!req.body.credentialName) {
-    return res.status(400).send('Missing credential name.')
-  }
+SERVER.get(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
+  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.params.name}.json`
 
-  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
+  console.log(credentialFile);
+
 
   // Abort if credential does NOT exist.
   if (!fs.existsSync(credentialFile)) {
