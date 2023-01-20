@@ -1,13 +1,14 @@
-# keeper
+# Keeper <!-- omit in toc -->
 
-*keeper* is a RESTful DID management software designed to run on local hardware.
-It uses the IOTA Stronghold framework to securely store DID private keys.
+*Keeper* is a RESTful wallet for DIDs and Verifiable Credentials designed to run on local hardware, enabling third party software to securely interact with local DIDs, create Verifiable Presentations and so on just by providing a username and a password. It uses IOTA Stronghold under the hood, which handles all private keys.
 
-Another app may use *keeper*'s REST API to create a DID by providing a username and a password. 
-The username is used to identify the Stronghold file while the password is used to encrypt it.
+## Content <!-- omit in toc -->
 
-*keeper* also provides the ability to store credentials and create Verifiable Presentations from them.
+- [1. User Registration](#1-user-registration)
+- [2. User Login](#2-user-login)
+- [3. Verifiable Presentation Request](#3-verifiable-presentation-request)
 
+# 1. User Registration
 
 ```mermaid
 ---
@@ -41,6 +42,8 @@ sequenceDiagram
     K-->U: 200 OK
 ```
 
+# 2. User Login
+
 ```mermaid
 ---
 title: User Login
@@ -64,6 +67,8 @@ sequenceDiagram
     K->>K: Create and sign JWT containing the username
     K-->-U: JWT
 ```
+
+# 3. Verifiable Presentation Request
 
 ```mermaid
 ---
