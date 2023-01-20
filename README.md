@@ -5,6 +5,8 @@ Organizations such as the [IOTA Foundation](https://www.iota.org/) are creating 
 
 To showcase a possible scenario where SSI would greatly benefit everyday life, this project aims to prototype a Digital Student ID for the use on a university website.
 
+# Contents <!-- omit in toc -->
+
 - [1. Verifiable Student Credential](#1-verifiable-student-credential)
   - [1.1. How it works](#11-how-it-works)
     - [1.1.1. Registration | Matriculation](#111-registration--matriculation)
@@ -26,21 +28,25 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
 ```mermaid
 sequenceDiagram
 
-Student ->> University: Hi University, I am did:iota:example:123<br>and I'd like to enroll myself.
-Note over University: The uni needs to know <br> whether the Student has control <br> of did:iota:example:123. <br> So it sends a challenge <br> to the Student.
-University ->> Student: Authenticate yourself, please.
-Note over Student: The Student<br>signs the challenge <br> with their private <br> key and sends it back.
-Student --x University: Sure.
-University ->> Tangle: I need document with ID <br> did:iota:example:123
-Tangle --x University: Sure.
-Note over University: The uni decrypts the signed <br> challenge with the Student's public key. <br> If it matches with the original challenge, <br> the Student has proven ownership of their DID.
-University ->> Student: I need your personal data.
-Note over Student: Now, the Student <br> can decide <br> whether to send <br> their data or not.
-Student --x University: Sure.
-Note over University: With the Student's personal data, <br> the uni needs to verify its validity.
-Note over University: If the data is valid, the uni creates <br> and signs a StudentCredential. <br> The uni also disposes all information <br> about the Student as everything is <br> contained within the StudentCredential.
-University --x Student: Here's your signed Student ID.
-Note over Student: With the StudentCredential <br> at hand, they are now able to <br> verify their status as a <br> student of University.
+participant S as Student
+participant U as University
+participant T as Tangle
+
+S ->> U: Hi University, I am did:iota:example:123<br>and I'd like to enroll myself.
+Note over U: The uni needs to know <br> whether the Student has control <br> of did:iota:example:123. <br> So it sends a challenge <br> to the Student.
+U ->> S: Authenticate yourself, please.
+Note over S: The Student<br>signs the challenge <br> with their private <br> key and sends it back.
+S --x U: Sure.
+U ->> T: I need document with ID <br> did:iota:example:123
+T --x U: Sure.
+Note over U: The uni decrypts the signed <br> challenge with the Student's public key. <br> If it matches with the original challenge, <br> the Student has proven ownership of their DID.
+U ->> S: I need your personal data.
+Note over S: Now, the Student <br> can decide <br> whether to send <br> their data or not.
+S --x U: Sure.
+Note over U: With the Student's personal data, <br> the uni needs to verify its validity.
+Note over U: If the data is valid, the uni creates <br> and signs a StudentCredential. <br> The uni also disposes all information <br> about the Student as everything is <br> contained within the StudentCredential.
+U --x S: Here's your signed Student ID.
+Note over S: With the StudentCredential <br> at hand, they are now able to <br> verify their status as a <br> student of University.
 ```
 
 ### 1.1.2. Login | Authentication
@@ -48,22 +54,26 @@ Note over Student: With the StudentCredential <br> at hand, they are now able to
 ```mermaid
 sequenceDiagram
 
-Student ->> University: Hi University, I am did:iota:example:123 <br> and I want to use your website.
-Note over University: As with the registration, <br> the uni needs to know <br> whether the Student is <br> who they claim to be.
-University --x Student: Sure thing. <br> But first we need your matriculation status. <br> And please sign this challenge.
-Note over Student: The Student creates a <br> Verifiable Presentation <br> of their StudentCredential, <br> includes the challenge, <br>signs and sends it.
-Student ->> University: Here's proof of my matriculation.
-University ->> Tangle: I need document with ID <br> did:iota:example:123
-Tangle --x University: Sure.
-Note over University: The uni is now able to <br> verify the Student's <br> matriculation status by verifying <br> the Presentation and the Credential.
-Note over University: If the validation is successful, <br> the Student currently is enrolled.
-University --x Student: You may proceed.
+participant S as Student
+participant U as University
+participant T as Tangle
+
+S ->> U: Hi University, I am did:iota:example:123 <br> and I want to use your website.
+Note over U: As with the registration, <br> the uni needs to know <br> whether the S is <br> who they claim to be.
+U --x S: Sure thing. <br> But first we need your matriculation status. <br> And please sign this challenge.
+Note over S: The Student creates a <br> Verifiable Presentation <br> of their StudentCredential, <br> includes the challenge, <br>signs and sends it.
+S ->> U: Here's proof of my matriculation.
+U ->> T: I need document with ID <br> did:iota:example:123
+T --x U: Sure.
+Note over U: The uni is now able to <br> verify the Student's <br> matriculation status by verifying <br> the Presentation and the Credential.
+Note over U: If the validation is successful, <br> the Student currently is enrolled.
+U --x S: You may proceed.
 ```
 
 ## 1.2. Contents
 
 The Student Credential makes several assertions about its holder.  
-For now it will contain a students personal information, which in a fully working ecosystem will not be necessary or desirable. This will be done via official government issuers. But as such infrastructure does not exist yet, the design decision was to include personal information in the Student Credential just for convenience.
+For now it will contain a students personal information, which in a fully working ecosystem will not be necessary nor desirable. This will be done via official government issuers. But as such infrastructure does not exist yet, the design decision was to include personal information in the Student Credential just for convenience.
 
 **Personal information**
 
