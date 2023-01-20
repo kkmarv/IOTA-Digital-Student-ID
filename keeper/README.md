@@ -14,7 +14,7 @@ The username is used to identify the Stronghold file while the password is used 
 title: User Registration
 ---
 sequenceDiagram
-    actor U as 
+    actor U as User
     participant K as Keeper
     participant S as Stronghold
     participant T as Tangle
@@ -46,7 +46,7 @@ sequenceDiagram
 title: User Login
 ---
 sequenceDiagram
-    actor U as 
+   actor U as User
     participant K as Keeper
     participant S as Stronghold
 
@@ -70,7 +70,7 @@ sequenceDiagram
 title: Verifiable Presentation Request
 ---
 sequenceDiagram
-    actor U as 
+    actor U as User
     participant K as Keeper
     participant S as Stronghold
 
