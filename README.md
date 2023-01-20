@@ -10,6 +10,7 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
     - [1.1.1. Registration | Matriculation](#111-registration--matriculation)
     - [1.1.2. Login | Authentication](#112-login--authentication)
   - [1.2. Contents](#12-contents)
+  - [1.3 User Navigation](#13-user-navigation)
 - [2. Setting up your environment](#2-setting-up-your-environment)
   - [2.1. Set up `node.js` using `nodeenv`](#21-set-up-nodejs-using-nodeenv)
     - [2.1.1. Create a virtual node environment](#211-create-a-virtual-node-environment)
@@ -78,6 +79,51 @@ For now it will contain a students personal information, which in a fully workin
 - Subject
   - Name
   - Degree
+
+## 1.3 User Navigation
+
+```mermaid
+stateDiagram-v2
+    [*] --> Login/Registration
+
+    state Login/Registration {
+        direction LR
+
+        state fork_state <<fork>>
+        state join_state <<join>>
+
+        [*] --> fork_state
+        fork_state --> EnterUsername
+        fork_state --> EnterPassword
+
+        join_state --> [*]
+        EnterUsername --> join_state
+        EnterPassword --> join_state
+    }   
+
+    Login/Registration --> ActionSelect
+
+    state ActionSelect {
+        direction LR
+        state if_state <<choice>>
+        
+        [*] --> if_state
+        if_state --> ...
+        ... --> [*]
+        if_state --> [*]
+        if_state --> Cafeteria
+        Cafeteria --> [*]
+
+        state Cafeteria {
+            direction LR
+            [*] --> SelectMeal
+            SelectMeal --> Pay
+            Pay --> [*]
+        }
+    }
+
+    ActionSelect --> [*]    
+```
 
 # 2. Setting up your environment
 
