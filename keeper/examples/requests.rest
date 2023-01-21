@@ -3,7 +3,7 @@
 @jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhdHJpY2siLCJpYXQiOjE2NzQwODQwMzQsImV4cCI6MTY3NDY4ODgzNH0.RKHeEvviXsujx82-IUGOjUa7LPG5vYdnelBAdCpvIlw
 @credentialName = walter
 
-PUT http://localhost:8081/api/did/create
+PUT http://localhost:8008/api/did/create
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8081/api/did/login
+POST http://localhost:8008/api/did/login
 Content-Type: application/json
 
 {
@@ -21,7 +21,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8081/api/did/get
+POST http://localhost:8008/api/did/get
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 ###
 
-PUT http://localhost:8081/api/credentials/store
+PUT http://localhost:8008/api/credentials/store
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
@@ -80,15 +80,15 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:8081/api/credentials/list
+GET http://localhost:8008/api/credentials/list
 Authorization: Bearer {{jwtToken}}
 ###
 
-GET http://localhost:8081/api/credentials/get/{{credentialName}}
+GET http://localhost:8008/api/credentials/get/{{credentialName}}
 Authorization: Bearer {{jwtToken}}
 ###
 
-POST http://localhost:8081/api/presentations/create
+POST http://localhost:8008/api/presentations/create
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
