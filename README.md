@@ -11,19 +11,25 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
   - [1.1. How it works](#11-how-it-works)
     - [1.1.1. Registration | Matriculation](#111-registration--matriculation)
     - [1.1.2. Login | Authentication](#112-login--authentication)
-  - [1.2. Contents](#12-contents)
-  - [1.3. User Navigation](#13-user-navigation)
-- [2. Setting up your environment](#2-setting-up-your-environment)
-  - [2.1. Set up `node.js` using `nodeenv`](#21-set-up-nodejs-using-nodeenv)
-    - [2.1.1. Create a virtual node environment](#211-create-a-virtual-node-environment)
+  - [1.2. Credential Contents](#12-credential-contents)
+- [2. Design](#2-design)
+  - [2.1. System Architecture](#21-system-architecture)
+  - [2.2. User Navigation](#22-user-navigation)
+- [3. Setting up your environment](#3-setting-up-your-environment)
+  - [3.1. Set up `node.js` using `nodeenv`](#31-set-up-nodejs-using-nodeenv)
+    - [3.1.1. Create a virtual node environment](#311-create-a-virtual-node-environment)
 
 # 1. Verifiable Student Credential
 
 ## 1.1. How it works
 
-**Precondition:** Identities for both, the university and the Student, already exist on the Tangle.
+Some high-level explanation
+
+The following steps expect that DIDs for both, the university and the Student, already exist on the Tangle. If you want to learn more about DID creation, see the [Keeper documentation](./keeper/README.md).
 
 ### 1.1.1. Registration | Matriculation
+
+The process of enrollment via the Student Credential.
 
 ```mermaid
 sequenceDiagram
@@ -51,6 +57,8 @@ Note over S: With the StudentCredential <br> at hand, they are now able to <br> 
 
 ### 1.1.2. Login | Authentication
 
+The process of authentication via the Student Credential.
+
 ```mermaid
 sequenceDiagram
 
@@ -70,7 +78,7 @@ Note over U: If the validation is successful, <br> the Student currently is enro
 U --x S: You may proceed.
 ```
 
-## 1.2. Contents
+## 1.2. Credential Contents
 
 The Student Credential makes several assertions about its holder.  
 For now it will contain a students personal information, which in a fully working ecosystem will not be necessary nor desirable. This will be done via official government issuers. But as such infrastructure does not exist yet, the design decision was to include personal information in the Student Credential just for convenience.
@@ -83,16 +91,48 @@ For now it will contain a students personal information, which in a fully workin
 
 **Study information**
 
-- University name
+- Name of the university
 - Current semester
 - Matriculation number
-- Subject
-  - Name
-  - Degree
+- Name of the study subject
+- Degree (Bachelor | Master)
 
-## 1.3. User Navigation
+# 2. Design
+
+## 2.1. System Architecture
+
+The overall architecture of this framework.
 
 ```mermaid
+---
+title: System Architecture
+---
+flowchart
+    subgraph University
+        UniversityKeeper(Keeper)
+        IssuanceService(Issuance Service)
+    end
+    
+    subgraph Student
+        StudentKeeper(Keeper)
+        Browser(Browser)
+    end
+    
+    StudentKeeper-.->Tangle
+    UniversityKeeper-.->Tangle
+    Browser-->IssuanceService
+    Browser--->StudentKeeper
+    IssuanceService-->UniversityKeeper
+```
+
+## 2.2. User Navigation
+
+The simple user navigation in the web app.
+
+```mermaid
+---
+title: User Navigation
+---
 stateDiagram-v2
     [*] --> Login/Registration
 
@@ -135,14 +175,14 @@ stateDiagram-v2
     ActionSelect --> [*]    
 ```
 
-# 2. Setting up your environment
+# 3. Setting up your environment
 
-## 2.1. Set up `node.js` using `nodeenv`
+## 3.1. Set up `node.js` using `nodeenv`
 
 You can always go ahead and install `node.js` globally on your system from [here](https://nodejs.org/).  
 The following steps will only guide you through the process of creating a virtual environment for `node.js` using `nodeenv`.
 
-### 2.1.1. Create a virtual node environment
+### 3.1.1. Create a virtual node environment
 
 > **IMPORTANT** This will require Python version 3 or greater and `pip` installed on your system.
 

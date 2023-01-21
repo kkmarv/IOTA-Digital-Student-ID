@@ -38,12 +38,12 @@ npm run dev
 title: Student Registration | Matriculation
 ---
 sequenceDiagram
-    actor S as 
+    actor S as Student
     participant U as University
     participant T as Tangle
 
     Note over S, U: The Student has to request a <br> challenge from the University first.
-    S->>+U: register(data, challenge)
+    S->>+U: register(data, challenge, challengeSignature)
     U->>U: getStudentDID(data)
     U->>U: getIssuerDID(data)
     U->>+T: resolve(issuerDID, studentDID)
@@ -51,7 +51,7 @@ sequenceDiagram
     U-->S: 503 Service Unavailable
     end
     T-->-U: issuerPubKey, studentPubKey
-    U->>U: verifyChallengeSignature(data, studentPubKey)
+    U->>U: verifyChallengeSignature(challenge, challengeSignature, studentPubKey)
     break on invalid signature
         U-->S: 401 Unauthorized
     end
@@ -71,10 +71,11 @@ sequenceDiagram
 title: Student Login
 ---
 sequenceDiagram
-    actor S as 
+    actor S as Student
     participant U as University
 
     Note over S, U: The Student has to request a <br> challenge from the University <br> first and sign it with the VP.
+    S->>S: createVP(studentCredential, challenge)
     S->>+U: login(vp)
     U->>U: verifyVP(vp)
     break on invalid signature, timestamp, etc.

@@ -18,15 +18,11 @@ sequenceDiagram
     actor U as User
     participant K as Keeper
     participant S as Stronghold
-    participant T as Tangle
+    participant T as Tangle Client
 
     U->>+K: register(username, password)
     K->>+S: build(username, password)
     break if file already exists
-        S-->K: error()
-        K-->U: 409 Conflict
-    end
-    break on wrong password
         S-->K: error()
         K-->U: 409 Conflict
     end
