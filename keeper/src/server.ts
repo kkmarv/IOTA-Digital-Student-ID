@@ -33,7 +33,7 @@ const PATHS = {
 
 const SERVER = express()
 SERVER.disable('x-powered-by')
-SERVER.use(cors({ origin: 'http://localhost:8080/' }))
+SERVER.use(cors())
 SERVER.use(express.json())
 
 const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
@@ -93,6 +93,8 @@ SERVER.post(PATHS.didLogin, async (req: Request, res: Response) => {
 
   const credentials = req.body as UserCredentials
   const stronghold = await buildStronghold(credentials.username, credentials.password)
+
+  stronghold?.flushChanges
 
   if (!stronghold) {
     return res.status(401).send('Wrong username or password.')

@@ -8,6 +8,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RegisterPageComponent } from './register-page/register-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { HOMEComponent } from './home/home.component';
+import { HomePageComponent } from './home-page/home-page.component';
+import { MensaPageComponent } from './mensa-page/mensa-page.component';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
@@ -16,6 +19,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
 
 
 
@@ -26,7 +32,10 @@ import { MatButtonModule } from '@angular/material/button';
   declarations: [
     AppComponent,
     RegisterPageComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    HOMEComponent,
+    HomePageComponent,
+    MensaPageComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +48,9 @@ import { MatButtonModule } from '@angular/material/button';
     FormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCardModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
