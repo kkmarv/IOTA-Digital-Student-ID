@@ -32,6 +32,9 @@ The following steps expect that DIDs for both, the university and the Student, a
 The process of enrollment via the Student Credential.
 
 ```mermaid
+%%---
+%%title: Registration | Matriculation
+%%---
 sequenceDiagram
 
 participant S as Student
@@ -60,6 +63,9 @@ Note over S: With the StudentCredential <br> at hand, they are now able to <br> 
 The process of authentication via the Student Credential.
 
 ```mermaid
+%%---
+%%title: Login | Authentication
+%%---
 sequenceDiagram
 
 participant S as Student
@@ -104,9 +110,9 @@ For now it will contain a students personal information, which in a fully workin
 The overall architecture of this framework.
 
 ```mermaid
----
-title: System Architecture
----
+%%---
+%%title: System Architecture
+%%---
 flowchart
     subgraph University
         UniversityKeeper(Keeper)
@@ -130,9 +136,9 @@ flowchart
 The simple user navigation in the web app.
 
 ```mermaid
----
-title: User Navigation
----
+%%---
+%%title: User Navigation
+%%---
 stateDiagram-v2
     [*] --> Login/Registration
 

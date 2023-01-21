@@ -11,9 +11,9 @@
 # 1. User Registration
 
 ```mermaid
----
-title: User Registration
----
+%%---
+%%title: User Registration
+%%---
 sequenceDiagram
     actor U as User
     participant K as Keeper
@@ -41,9 +41,9 @@ sequenceDiagram
 # 2. User Login
 
 ```mermaid
----
-title: User Login
----
+%%---
+%%title: User Login
+%%---
 sequenceDiagram
    actor U as User
     participant K as Keeper

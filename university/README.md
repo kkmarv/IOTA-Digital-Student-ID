@@ -67,9 +67,9 @@ sequenceDiagram
 # 3. Student Login
 
 ```mermaid
----
-title: Student Login
----
+%%---
+%%title: Student Login
+%%---
 sequenceDiagram
     actor S as Student
     participant U as University
