@@ -34,9 +34,9 @@ npm run dev
 # 2. Student Registration | Matriculation 
 
 ```mermaid
----
-title: Student Registration | Matriculation
----
+%%---
+%%title: Student Registration | Matriculation
+%%---
 sequenceDiagram
     actor S as Student
     participant U as University
