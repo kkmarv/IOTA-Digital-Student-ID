@@ -1,4 +1,4 @@
-# StudentCredential Issuance Service <!-- omit in toc -->
+# Student Credential Issuance Service <!-- omit in toc -->
 
 
 ## Content <!-- omit in toc -->
