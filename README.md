@@ -206,9 +206,13 @@ Your command line will need elevated privileges for this to work.
 nodeenv .node --node=18.12.1
 ```
 
-<details><summary><b>Good to know</b>: Node.js versions that will not work correctly</summary>
+<details><summary><b>Good to know</b>: Node.js versions that are known to not work</summary>
 
 <table>
+  <tr>
+		<td>Version</td>
+    <td>Incompatibility</td>
+	</tr>
 	<tr>
 		<td><code>18.8.0</code></td>
     <td>some problems with <a href="https://www.npmjs.com/package/@iota/identity-wasm">@iota/identity-wasm@0.6.0</a></td>
