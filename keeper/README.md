@@ -67,9 +67,9 @@ sequenceDiagram
 # 3. Verifiable Presentation Request
 
 ```mermaid
----
-title: Verifiable Presentation Request
----
+%%---
+%%title: Verifiable Presentation Request
+%%---
 sequenceDiagram
     actor U as User
     participant K as Keeper
