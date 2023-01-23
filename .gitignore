@@ -5,3 +5,15 @@ node_modules/
 # IDE files
 .vscode/
 .idea/
+
+# compiled TypeScript files
+dist/
+
+# IOTA Identity files
+*.hodl
+
+# configuration files
+.env
+
+# local keeper files
+vault/
