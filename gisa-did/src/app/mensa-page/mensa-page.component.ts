@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { DataService } from '../data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mensa-page',
@@ -7,11 +9,28 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MensaPageComponent implements OnInit {
 
-  constructor() { }
+  constructor(private data: DataService, private readonly router: Router) { }
 
   ngOnInit(): void {
+    if(this.data.loggedIn === false) this.router.navigate(["/login"]);
   }
 
-  balance: number = 100
+  state: String = "menu";
+  loadingState: String = "Loading...";
 
+  balance = this.data.miota;
+
+  buy(price: number) {
+    if(this.data.miota >= price) {
+      this.loadingState = "IOTA-Abwicklung durchführen...";
+      this.state = "loading";
+      const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+      sleep(Math.floor(Math.random() * 2000 + 5000))
+      .then(res => {
+        this.data.miota = this.data.miota - price;
+        this.balance = this.data.miota;
+        this.state = "menu";
+      })
+    } else console.error("Nicht genügend IOTA!");
+  }
 }

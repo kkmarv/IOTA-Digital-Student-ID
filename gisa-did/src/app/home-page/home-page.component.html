@@ -2,9 +2,10 @@
     <h1> Home </h1>
     <p>Login erfolgreich</p>
     <main>
-        <div style="color: white">[Platzhalter für QR-Code]</div>
-        <div class="mobile-space desktop-space"></div>
+        <!-- <p>{{ loggedIn }}</p> -->
         <button mat-raised-button color="primary" routerLink="/mensa">Mensa</button>
-        <button mat-raised-button color="primary" (click)="apiTest()">API Test</button>
+        <div class="mobile-space desktop-space"></div>
+        <button mat-raised-button color="warn" id="logout-button" (click)="logout()">Logout</button>
+        <!-- <button mat-raised-button color="primary" (click)="apiTest()">API Test</button> -->
     </main>
 </div>

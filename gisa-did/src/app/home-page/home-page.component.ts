@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { DataService } from '../data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -8,9 +10,16 @@ import { HttpClient } from '@angular/common/http';
 })
 export class HomePageComponent implements OnInit {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private data: DataService, private readonly router: Router) { }
+
+  loggedIn = this.data.loggedIn;
 
   ngOnInit(): void {
+    if(this.data.loggedIn === false) this.router.navigate(["/login"]);
+  }
+
+  logout() {
+    this.data.logout();
   }
 
   apiTest() {
