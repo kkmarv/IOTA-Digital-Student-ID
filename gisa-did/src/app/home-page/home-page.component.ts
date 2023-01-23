@@ -15,7 +15,7 @@ export class HomePageComponent implements OnInit {
   loggedIn = this.data.loggedIn;
 
   ngOnInit(): void {
-    if(this.data.loggedIn === false) this.router.navigate(["/login"]);
+    if(!this.data.loggedIn) this.router.navigate(["/login"]);
   }
 
   logout() {

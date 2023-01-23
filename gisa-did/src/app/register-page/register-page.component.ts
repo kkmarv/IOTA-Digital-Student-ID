@@ -17,6 +17,7 @@ export class RegisterPageComponent implements OnInit {
   loadingState: String = "Verifiable Presentation von Hochschule überprüfen lassen...";
 
   ngOnInit(): void {
+    if(this.data.loggedIn) this.router.navigate(["/home"]);
   }
 
   submitKeeperLogin(loginData: {username: string, password: string}) {
@@ -56,7 +57,11 @@ export class RegisterPageComponent implements OnInit {
   }
 
   submitUniversityLogin(data: any) {
-    //student registrieren
+    // console.log(data);
+    // console.log(data.birthday.toUTCString());
+    // console.log(data.birthday.toJSON());
+    // console.log(data.birthday.getMilliseconds());
+    //student registrieren plbcd
     let personalData = {
       "id": this.data.did,
       "challenge": this.data.challenge,
@@ -67,9 +72,9 @@ export class RegisterPageComponent implements OnInit {
       },
       "studentData": {
         "firstName": data.firstNames.split(" ")[0],
-        "middleNames": data.firstNames.slice(data.firstNames.split(" ").length+1),
+        "middleNames": this.getMiddleNames(data.firstNames),
         "familyName": data.lastName,
-        "birthDate": data.birthday.toLocaleDateString(),
+        "birthDate": data.birthday.toUTCString(),
         "photo": "https://thispersondoesnotexist.com/",
         "address": {
           "street": data.adress1,
@@ -134,12 +139,16 @@ export class RegisterPageComponent implements OnInit {
       })
   }
 
+  getMiddleNames(firstNames: String): String {
+    if(firstNames.split(" ").length > 1) {
+      return firstNames.slice(firstNames.split(" ")[0].length+1)
+    }
+    return "";
+  }
+
 
   log(lol: any) {
     console.log(lol);
 
   }
-
-
-
 }

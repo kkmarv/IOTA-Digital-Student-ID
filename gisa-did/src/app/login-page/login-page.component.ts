@@ -11,7 +11,9 @@ import { Router } from '@angular/router';
 export class LoginPageComponent implements OnInit {
 
   constructor(private http: HttpClient, private data: DataService, private readonly router: Router) { }
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    if(this.data.loggedIn) this.router.navigate(["/home"]);
+  }
 
   state: String = "loginKeeper";
   loadingState: String = "Loading...";

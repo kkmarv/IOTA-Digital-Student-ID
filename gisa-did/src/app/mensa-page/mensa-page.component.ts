@@ -12,7 +12,7 @@ export class MensaPageComponent implements OnInit {
   constructor(private data: DataService, private readonly router: Router) { }
 
   ngOnInit(): void {
-    if(this.data.loggedIn === false) this.router.navigate(["/login"]);
+    if(!this.data.loggedIn) this.router.navigate(["/login"]);
   }
 
   state: String = "menu";
@@ -29,8 +29,14 @@ export class MensaPageComponent implements OnInit {
       .then(res => {
         this.data.miota = this.data.miota - price;
         this.balance = this.data.miota;
-        this.state = "menu";
-      })
+        this.state = "purchaseSuccess";
+        sleep(2000)
+        .then(res => this.state = "menu");
+      });
     } else console.error("Nicht genügend IOTA!");
+  }
+
+  getRoundedEurPrice(miota: number) {
+    return Math.floor(miota*this.data.miotaToEur*100)/100;
   }
 }
