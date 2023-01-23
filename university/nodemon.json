@@ -1,0 +1,12 @@
+{
+  "ignore": [
+    ".git/**",
+    ".gitignore",
+    "**/node_modules/**",
+    "**/backend/src/scripts/**"
+  ],
+  "execMap": {
+    "ts": "node --loader ts-node/esm -r dotenv/config"
+  },
+  "ext": "ts"
+}
