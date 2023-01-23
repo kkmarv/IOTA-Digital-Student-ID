@@ -1,0 +1,31 @@
+{
+  "name": "digital-student-id",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "nodemon ./src/server/server.ts",
+    "start": "npm run build && node -r dotenv/config ./dist/server/server.js",
+    "did:load": "npm run build && node -r dotenv/config ./dist/scripts/load-did.js",
+    "did:create": "npm run build && node -r dotenv/config ./dist/scripts/create-did.js",
+    "did:resolve": "npm run build && node -r dotenv/config ./dist/scripts/resolve-did.js",
+    "did:manipulate": "npm run build && node -r dotenv/config ./dist/scripts/manipulate-did.js",
+    "stronghold:print": "npm run build && node -r dotenv/config ./dist/scripts/print-stronghold.js",
+    "vp:create": "npm run build && node -r dotenv/config ./dist/scripts/create-vp.js"
+  },
+  "dependencies": {
+    "@iota/identity-stronghold-nodejs": "^0.6.0",
+    "@iota/identity-wasm": "^0.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.14",
+    "@types/node": "^18.8.3",
+    "dotenv": "^16.0.3",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
