@@ -299,3 +299,20 @@ export const getImageSrc = (name: string): string => {
 
     return 'border-agency-logo.png';
 };
+
+export const checkIfCredentialRequest = (qrInput: string): boolean => {
+    if (qrInput.startsWith('credentialRequest',0)){
+        return true;
+    }
+    return false;
+};
+export const getSchemaAdress = (qrInput: string): [string, string] => {
+var values= qrInput.substring(19);
+//var splitted = values.split(",", 6);
+values=values.slice(0, -1); 
+var splitted = values.split(",", 2); 
+
+var schema = splitted[0]
+var address = splitted[1]
+return [schema, address]
+};

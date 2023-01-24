@@ -2,7 +2,7 @@
 const __DEV__ = process.env.NODE_ENV !== 'production';
 
 /** Determines if devnet should be used (instead of mainnet) */
-export const DEVNET = true;
+export const DEVNET = false;
 
 export const API_URL = __DEV__ ? 'http://localhost:4000' : 'https://selv01.iota.cafe';
 

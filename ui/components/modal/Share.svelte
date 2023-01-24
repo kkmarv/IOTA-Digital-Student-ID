@@ -54,6 +54,11 @@
             heading: 'Do you want to share this credential with SNS Bank?',
             label: 'Share credentials',
             closeText: 'Cancel'
+        },
+        Backend: {
+            heading: 'Do you want to share this credential with Backend?',
+            label: 'Share credentials',
+            closeText: 'Cancel'
         }
     };
 
@@ -145,6 +150,15 @@
                                 })
                             })
                         );
+                    } else if (props.shareWith === 'backend') {
+                        credentials.update((existingCredentials) =>
+                            Object.assign({}, existingCredentials, {
+                                bank: Object.assign({}, existingCredentials.bank, {
+                                    channelId: props.channelId,
+                                    password: props.password
+                                })
+                            })
+                        );
                     } else if (props.shareWith === 'insurance') {
                         credentials.update((existingCredentials) =>
                             Object.assign({}, existingCredentials, {
@@ -196,6 +210,13 @@
                     subheading: 'Company Details',
                     icon: 'sns.png'
                 });
+            } else if (credential === 'Student') {
+                acc.push({
+                    alias: 'Student',
+                    heading: 'Student',
+                    subheading: 'student Details',
+                    icon: 'sns.png'
+                });
             } else if (credential === 'Insurance') {
                 acc.push({
                     alias: 'company',
@@ -204,7 +225,6 @@
                     icon: 'sns.png'
                 });
             }
-
             return acc;
         }, []);
     }

@@ -1,16 +1,45 @@
 <script>
     import Scanner from '~/components/Scanner.svelte';
-
-    import { goto, parse, isChannelInfo, isVerifiablePresentation, isVerifiableCredential } from '~/lib/helpers';
-    import { socketConnectionState, modalStatus, error, currentPresentation, currentCredentialToAccept } from '~/lib/store';
+    import Keychain from '~/lib/keychain';
+    import { goto, parse, isChannelInfo, isVerifiablePresentation, isVerifiableCredential, checkIfCredentialRequest, getSchemaAdress } from '~/lib/helpers';
+    import { socketConnectionState, modalStatus, error, currentPresentation, currentCredentialToAccept, listOfCredentials,storedCredentials } from '~/lib/store';
     import { __IOS__ } from '~/lib/platform';
+import { Share } from '@capacitor/core';
 
+
+import { retrieveCredentials } from '~/lib/identity';
+
+
+
+
+async function doPost (verifiableCredential, address) {
+    let result = null
+    const res = await fetch(address, {
+        method: 'POST',
+        body: JSON.stringify({
+        verifiableCredential
+        })
+    })
+    const json = await res.json()
+    result = JSON.stringify(json)
+}
     async function handleScannerData(event) {
-        let parsedData = parse(event.detail);
+        let parsedData = parse(event.detail);      
+        if (checkIfCredentialRequest(event.detail)){
+        let schemaAdress=getSchemaAdress(event.detail);
+        let schema = schemaAdress[0];
+        let address = schemaAdress[1];
 
-        if (!parsedData) return goBack();
+        retrieveCredentials($listOfCredentials.values).then((credentials) => {
+            storedCredentials.set(credentials);
+        });
+        const Scredential = $storedCredentials.find((credential) => credential.id ===  'did:iota:7oQgVi6RgbpFz9utbuS3KKcYatWDxgP4N51KEQBQy2zj');
+        let t = Keychain.get('did:iota:7oQgVi6RgbpFz9utbuS3KKcYatWDxgP4N51KEQBQy2zj');
+        error.set('URL not found');
+        //doPost(x, address);
+        } 
 
-        //window.alert("Found something");
+
         if (isChannelInfo(parsedData)) {
             socketConnectionState.set({ state: 'registerMobileClient', payload: parsedData });
             goBack();
