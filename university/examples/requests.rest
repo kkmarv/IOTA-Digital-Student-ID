@@ -18,9 +18,9 @@ Content-Type: application/json
     "name": "Gender Studies"
   },
   "studentData": {
-    "firstName": "Dustin",
-    "middleNames": "Friedrich Wilfried",
-    "familyName": "Henker",
+    "firstName": "Walter",
+    "middleNames": "Hartwell",
+    "familyName": "White",
     "birthDate": "09.07.2000",
     "photo": "https://thispersondoesnotexist.com/",
     "address": {
