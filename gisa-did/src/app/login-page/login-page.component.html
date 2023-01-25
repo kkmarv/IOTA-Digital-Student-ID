@@ -1,24 +1,56 @@
 <div class="content">
     <h1>Anmelden</h1>
     <p>Falls du noch keine Identität hast, <a routerLink="/register">besorge dir eine</a>.</p>
-    <main>
-        <form #login="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="uploadFile()">
-            <div class="thin"></div>
-            <div class="login-upload">
-                <label for="file-input">Credential</label>
-                <input
-                  id="file-input"
-                  type="file"
-                  accept=".json, application/json"
-                  name="login"
-                  #loginInput
-                  (change)="changeFile($event)" required ngModel>
-            </div>
-            <div class="thin"></div>
-            <div class="ultrawide desktop-space"></div>
-            <div class="thin"></div>
-            <button mat-raised-button color="primary" type="submit" [disabled]="!login.valid">Login</button>
-            <div class="thin"></div>
-        </form>
+    <main *ngIf="state === 'loading'">
+      <mat-spinner></mat-spinner>
+      <div class="mobile-space desktop-space"></div>
+      <div class="white-text">{{ this.loadingState }}</div>
     </main>
+    <main *ngIf="state === 'loginKeeper'">
+      <p>Gib deine Login-Daten für den DID-Speicher an</p>
+      <form #loginKeeper="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="submitKeeperLogin(loginKeeper.value)">
+        <div class="thin"></div>
+        <mat-form-field appearance="fill">
+          <mat-label>Nutzername</mat-label>
+          <input matInput placeholder="petralustig1997" name="username" required ngModel>
+        </mat-form-field>
+        <div class="thin"></div>
+        <div class="thin"></div>
+        <mat-form-field appearance="fill">
+          <mat-label>Passwort</mat-label>
+          <input matInput placeholder="" name="password" type="password" required ngModel>
+        </mat-form-field>
+        <div class="thin"></div>
+        <div class="thin"></div>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!loginKeeper.valid">Absenden</button>
+      </form>
+    </main>
+    <main *ngIf="state === 'chooseCredential'">
+        <p>Mit welchem Credential möchtest du dich bei der Hochschule verifizieren?</p>
+        <form #chooseCredential="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="submitCredential(chooseCredential.value.credentialName)">
+            <div class="thin"></div>
+            <mat-form-field appearance="fill">
+              <mat-label>Credentials</mat-label>
+              <mat-select name="credentialName" ngModel required>
+                  <mat-option *ngFor="let credentialName of credentials" value="{{ credentialName }}">{{ credentialName }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <div class="thin"></div>
+            <div class="thin"></div>
+            <button mat-raised-button color="primary" type="submit" [disabled]="!chooseCredential.valid">Auswählen</button>
+            <div class="ultrawide mobile-space"></div>
+        </form>
+    </main>      <main *ngIf="state === 'passwordForPresentation'">
+        <p>Um mit deinen Daten nun eine Verifiable Presentation anzufordern, werden noch einmal deine Login-Daten für den DID-Speicher benötigt</p>
+        <form #passwordForPresentation="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="submitPasswordForLogin(passwordForPresentation.value.password)">
+          <div class="thin"></div>
+          <mat-form-field appearance="fill">
+            <mat-label>Passwort</mat-label>
+            <input matInput type="password" name="password" required ngModel>
+          </mat-form-field>
+          <div class="thin"></div>
+          <div class="thin"></div>
+          <button mat-raised-button color="primary" type="submit" [disabled]="!passwordForPresentation.valid">Absenden</button>
+        </form>
+      </main>
 </div>

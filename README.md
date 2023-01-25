@@ -16,8 +16,9 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
   - [2.1. System Architecture](#21-system-architecture)
   - [2.2. User Navigation](#22-user-navigation)
 - [3. Setting up your environment](#3-setting-up-your-environment)
-  - [3.1. Set up `node.js` using `nodeenv`](#31-set-up-nodejs-using-nodeenv)
-    - [3.1.1. Create a virtual node environment](#311-create-a-virtual-node-environment)
+  - [3.1. Quick Start Guide](#31-quick-start-guide)
+  - [3.2. Set up `node.js` using `nodeenv`](#32-set-up-nodejs-using-nodeenv)
+    - [3.2.1. Create a virtual node environment](#321-create-a-virtual-node-environment)
 
 # 1. Verifiable Student Credential
 
@@ -183,12 +184,36 @@ stateDiagram-v2
 
 # 3. Setting up your environment
 
-## 3.1. Set up `node.js` using `nodeenv`
+## 3.1. Quick Start Guide
+
+If you don't already have `node.js` installed on your system, download and install it from [here](https://nodejs.org/). 
+
+Next, after cloning/downloading the repository to your PC, open 3 terminals and navigate to:
+- /university
+- /keeper
+- /gisa-did
+
+Now go ahead and execute the following command in each of the terminals:
+```shell
+npm install
+```
+
+Finally, in the `/university` and `/keeper` teminals, execute
+```shell
+npm run dev
+```
+while in the remaining terminal, execute
+```shell
+npm start
+```
+On [localhost:4200](https://localhost:4200/) you should now have the fully functional web app running with the backend servers running as well.
+
+## 3.2. Set up `node.js` using `nodeenv`
 
 You can always go ahead and install `node.js` globally on your system from [here](https://nodejs.org/).  
 The following steps will only guide you through the process of creating a virtual environment for `node.js` using `nodeenv`.
 
-### 3.1.1. Create a virtual node environment
+### 3.2.1. Create a virtual node environment
 
 > **IMPORTANT** This will require Python version 3 or greater and `pip` installed on your system.
 

@@ -1,8 +1,7 @@
 import { Component, OnInit, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, retry } from 'rxjs/operators';
-import { Account, AccountBuilder, AutoSave, Network, Presentation, Credential, Timestamp, Duration, ProofOptions, init } from '@iota/identity-wasm/web/identity_wasm.js';
+import { DataService } from '../data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login-page',
@@ -11,71 +10,92 @@ import { Account, AccountBuilder, AutoSave, Network, Presentation, Credential, T
 })
 export class LoginPageComponent implements OnInit {
 
-  constructor(private http: HttpClient) { }
-
-  account?: Account;
-
+  constructor(private http: HttpClient, private data: DataService, private readonly router: Router) { }
   ngOnInit(): void {
-    init('../../assets/identity_wasm_bg.wasm')
-    .then(() => {
-      const builder = new AccountBuilder({
-        autopublish: false,
-        clientConfig: {
-          network: Network.devnet()
-        }
-      });
-      builder.createIdentity({
-        // privateKey: new Uint8Array([32])
-      }).then(res => this.account = res)
-      .then(() => console.log(this.account))
-    });
+    if(this.data.loggedIn) this.router.navigate(["/home"]);
   }
 
-  file: any;
+  state: String = "loginKeeper";
+  loadingState: String = "Loading...";
 
-  changeFile(e: any) {
-    this.file = e.target.files[0];
+  credentials: String[] = [];
+  credentialName: String = "";
+  
+  submitKeeperLogin(loginData: {username: string, password: string}) {
+    this.loadingState = "Bei DID-Speicher einloggen...";
+    this.state = "loading";
+    // einloggen:
+    this.http.post("http://localhost:8081/api/did/login", loginData)
+    .subscribe(res => {
+      this.data.username = loginData.username;
+      let tempToken: any;
+      tempToken = res;
+      if(tempToken.hasOwnProperty('jwt')) {
+        this.data.keeperToken = tempToken.jwt;
+      } else console.error("property jwt konnte nicht gefunden werden: ", tempToken);
+      this.loadingState = "DID anfordern...";
+      this.http.post("http://localhost:8081/api/did/get", { password: loginData.password }, {headers:{Authorization: ("Bearer " + this.data.keeperToken)}})
+      .subscribe((res: any) => {
+        this.data.did = res.did;
+        this.loadingState = "Challenge anfordern...";
+        //challenge mit der did anfordern
+        // let did = {
+        //   id: "did:iota:dev:FtAZ3Uv4bUhEAwJTkLwb74mxM3L3Qwi47CmDjFBZQAqD"
+        // }
+        this.http.post("http://localhost:8080/api/challenge", { id: res.did }, {responseType: "text"})
+        .subscribe(res => {
+          this.loadingState = "Challenge zwischenspeichern...";
+          this.data.challenge = res;
+          this.loadingState = "Liste aller gespeicherten Credentials anfordern...";
+          this.http.get("http://localhost:8081/api/credentials/list", {headers:{Authorization: ("Bearer " + this.data.keeperToken)}})
+          .subscribe( res => {
+            let tempRes: any = res;
+            if(tempRes.hasOwnProperty('credentials')) this.credentials = tempRes.credentials;
+            this.state = 'chooseCredential';
+          })
+          // this.data.loggedIn = true;
+        })
+      })
+    })
   }
 
-  uploadFile() {
-    let fileReader = new FileReader();
-    fileReader.onload = (e) => {
-        let vp = new Presentation({
-          verifiableCredential: Credential.fromJSON(fileReader.result),
-          holder: this.account!.did()
-          });
-          this.http.post("http://localhost:8080/api/challenge", {id: this.account!.did()}, {
-            headers: { "Access-Control-Allow-Origin": "http://localhost:4200" }
-          })
-          .subscribe(res => {
-            console.log("lol");
-            console.log(res);
-            const proof = new ProofOptions({
-              challenge: res.toString(),
-              expires: Timestamp.nowUTC().checkedAdd(Duration.minutes(10))
-            });
-            const signedVP = this.account!.createSignedPresentation("sign-0", vp, proof)
-            .then(signedVP => {
-              this.http.post("http://localhost:8080/api/login", signedVP.toJSON(), {
-                headers: { "Access-Control-Allow-Origin": "http://localhost:4200" }
-              })
-              .subscribe(res => {
-                console.log(res);
-              });
-            });
-          })
+  submitCredential(credential: String) {
+    this.data.credentialName = credential;
+    this.loadingState = "Credential anfordern...";
+    this.state = 'loading';
+    this.http.get(("http://localhost:8081/api/credentials/get/" + credential), {headers:{Authorization: ("Bearer " + this.data.keeperToken)}})
+    .subscribe(res => {
+      this.state = "passwordForPresentation";
+    })
+  }
+
+  submitPasswordForLogin(password: String) {
+    let body = {
+      "password": password,
+      "challenge": this.data.challenge,
+      "credentialName": [
+        this.data.credentialName
+      ]
     }
-    fileReader.readAsText(this.file);
+    this.loadingState = "Verifiable Presentation anfordern...";
+    this.state = "loading";
+    this.http.post("http://localhost:8081/api/presentations/create", body, {headers:{Authorization: ("Bearer " + this.data.keeperToken)}})
+      .subscribe(res => {
+        this.loadingState = "Verifiable Presentation von Hochschule überprüfen lassen...";
+        this.state = "loading";
+        //presentation an uni schicken
+        this.http.post("http://localhost:8080/api/student/login", res, {responseType: "text"})
+        .subscribe(res => {
+          if(res === "OK") {
+            this.data.loggedIn = true;
+            this.router.navigate(["/home"]);
+            // getElementsByName("body")[0].append("a");
+          };
+        })
+      })
   }
+
   log(inputEvent: any) {
-    let file: File = inputEvent.target.files[0]
-    console.log(file);
-    let fileReader = new FileReader();
-    fileReader.onload?(() => {
-      console.log(fileReader.result);
-      // console.error("lol");
-    }):
-    fileReader.readAsText(file);
-    console.log(fileReader.result);
+    console.log(inputEvent);
   }
 }
