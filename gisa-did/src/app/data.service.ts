@@ -62,7 +62,7 @@ export class DataService {
     this._credentialName = value;
   }
 
-  private _loggedIn: Boolean = true;
+  private _loggedIn: Boolean = false;
   public get loggedIn(): Boolean {
     return this._loggedIn;
   }
