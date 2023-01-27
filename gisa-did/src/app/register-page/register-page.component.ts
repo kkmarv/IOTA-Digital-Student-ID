@@ -127,7 +127,6 @@ export class RegisterPageComponent implements OnInit {
         //presentation an uni schicken
         this.http.post("http://localhost:8080/api/student/login", res, {responseType: "text"})
         .subscribe(res => {
-          console.log(res);
           if(res === "OK") {
             this.data.loggedIn = true;
             this.router.navigate(["/home"]);
