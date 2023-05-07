@@ -10,8 +10,8 @@ import {
   getUserDirectory,
   isUserCredentials,
   isVerifiableCredential, UserCredentials
-} from './helper'
-import { authenticateJWT } from './jwt'
+} from './helper.js'
+import { authenticateJWT } from './jwt.js'
 
 Identity.start()
 
