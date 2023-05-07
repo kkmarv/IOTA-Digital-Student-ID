@@ -7,7 +7,7 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
 
 # Contents <!-- omit in toc -->
 
-- [1. Verifiable Student Credential](#1-verifiable-student-credential)
+- [1. Verifiable StudentCredential](#1-verifiable-studentcredential)
   - [1.1. How it works](#11-how-it-works)
     - [1.1.1. Registration | Matriculation](#111-registration--matriculation)
     - [1.1.2. Login | Authentication](#112-login--authentication)
@@ -15,12 +15,12 @@ To showcase a possible scenario where SSI would greatly benefit everyday life, t
 - [2. Design](#2-design)
   - [2.1. System Architecture](#21-system-architecture)
   - [2.2. User Navigation](#22-user-navigation)
-- [3. Setting up your environment](#3-setting-up-your-environment)
+- [3. Setting up your local environment](#3-setting-up-your-local-environment)
   - [3.1. Quick Start Guide](#31-quick-start-guide)
   - [3.2. Set up `node.js` using `nodeenv`](#32-set-up-nodejs-using-nodeenv)
     - [3.2.1. Create a virtual node environment](#321-create-a-virtual-node-environment)
 
-# 1. Verifiable Student Credential
+# 1. Verifiable StudentCredential
 
 ## 1.1. How it works
 
@@ -30,7 +30,7 @@ The following steps expect that DIDs for both, the university and the Student, a
 
 ### 1.1.1. Registration | Matriculation
 
-The process of enrollment via the Student Credential.
+The process of enrollment via the StudentCredential.
 
 ```mermaid
 %%---
@@ -61,7 +61,7 @@ Note over S: With the StudentCredential <br> at hand, they are now able to <br> 
 
 ### 1.1.2. Login | Authentication
 
-The process of authentication via the Student Credential.
+The process of authentication via the StudentCredential.
 
 ```mermaid
 %%---
@@ -74,7 +74,7 @@ participant U as University
 participant T as Tangle
 
 S ->> U: Hi University, I am did:iota:example:123 <br> and I want to use your website.
-Note over U: As with the registration, <br> the uni needs to know <br> whether the S is <br> who they claim to be.
+Note over U: As with the registration, <br> the uni needs to know <br> whether the Student is <br> who they claim to be.
 U --x S: Sure thing. <br> But first we need your matriculation status. <br> And please sign this challenge.
 Note over S: The Student creates a <br> Verifiable Presentation <br> of their StudentCredential, <br> includes the challenge, <br>signs and sends it.
 S ->> U: Here's proof of my matriculation.
@@ -87,8 +87,8 @@ U --x S: You may proceed.
 
 ## 1.2. Credential Contents
 
-The Student Credential makes several assertions about its holder.  
-For now it will contain a students personal information, which in a fully working ecosystem will not be necessary nor desirable. This will be done via official government issuers. But as such infrastructure does not exist yet, the design decision was to include personal information in the Student Credential just for convenience.
+The StudentCredential makes several assertions about its holder.  
+For now it will contain a students personal information, which in a fully working ecosystem will not be necessary nor desirable. This will be done via official government issuers. But as such infrastructure does not exist yet, the design decision was to include personal information in the StudentCredential just for convenience.
 
 **Personal information**
 
@@ -182,16 +182,16 @@ stateDiagram-v2
     ActionSelect --> [*]    
 ```
 
-# 3. Setting up your environment
+# 3. Setting up your local environment
 
 ## 3.1. Quick Start Guide
 
 If you don't already have `node.js` installed on your system, download and install it from [here](https://nodejs.org/). 
 
-Next, after cloning/downloading the repository to your PC, open 3 terminals and navigate to:
-- /university
-- /keeper
-- /gisa-did
+Next, after cloning/downloading the repository, open 3 different terminal sessions and and navigate to the following paths in one terminal each:
+- `/university`
+- `/keeper`
+- `/gisa-did`
 
 Now go ahead and execute the following command in each of the terminals:
 ```shell
@@ -202,7 +202,7 @@ Finally, in the `/university` and `/keeper` teminals, execute
 ```shell
 npm run dev
 ```
-while in the remaining terminal, execute
+while in the `/gisa-did` terminal, execute
 ```shell
 npm start
 ```
@@ -231,7 +231,7 @@ Your command line will need elevated privileges for this to work.
 nodeenv .node --node=18.12.1
 ```
 
-<details><summary><b>Good to know</b>: Node.js versions that are known to not work</summary>
+<details><summary><b>Good to know</b>: Node.js versions that are known not to work:</summary>
 
 <table>
   <tr>

@@ -1,6 +1,6 @@
 # Keeper <!-- omit in toc -->
 
-*Keeper* is a RESTful wallet for DIDs and Verifiable Credentials designed to run on local hardware, enabling third party software to securely interact with local DIDs, create Verifiable Presentations and so on just by providing a username and a password. It uses IOTA Stronghold under the hood, which handles all private keys.
+*Keeper* is a RESTful wallet for DIDs and Verifiable Credentials designed to run on local hardware, enabling third party software to securely interact with local DIDs, create Verifiable Presentations, just by providing a username and a password. It uses [IOTA Stronghold](https://wiki.iota.org/stronghold.rs/welcome/) under the hood, which handles all private keys.
 
 ## Content <!-- omit in toc -->
 
