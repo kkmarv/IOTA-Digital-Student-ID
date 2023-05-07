@@ -1,9 +1,13 @@
+# Server Config
+@port = 8081
+@host = localhost
+# Student Identity
 @username = "heisenberg58"
 @password = "?!chemistry%Heck&Yeah420"
-@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhdHJpY2siLCJpYXQiOjE2NzQwODQwMzQsImV4cCI6MTY3NDY4ODgzNH0.RKHeEvviXsujx82-IUGOjUa7LPG5vYdnelBAdCpvIlw
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4MzQ2NDU4OCwiZXhwIjoxNjg0MDY5Mzg4fQ.eqTIc3oVXU5zGeXSimqusBiKCQ58Z3mOdhNQEK_rDu4
 @credentialName = walter
 
-PUT http://localhost:8008/api/did/create
+PUT http://{{host}}:{{port}}/api/did/create
 Content-Type: application/json
 
 {
@@ -12,7 +16,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8008/api/did/login
+POST http://{{host}}:{{port}}/api/did/login
 Content-Type: application/json
 
 {
@@ -21,7 +25,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8008/api/did/get
+POST http://{{host}}:{{port}}/api/did/get
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
@@ -30,7 +34,7 @@ Content-Type: application/json
 }
 ###
 
-PUT http://localhost:8008/api/credentials/store
+PUT http://{{host}}:{{port}}/api/credentials/store
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
@@ -80,15 +84,15 @@ Content-Type: application/json
 }
 ###
 
-GET http://localhost:8008/api/credentials/list
+GET http://{{host}}:{{port}}/api/credentials/list
 Authorization: Bearer {{jwtToken}}
 ###
 
-GET http://localhost:8008/api/credentials/get/{{credentialName}}
+GET http://{{host}}:{{port}}/api/credentials/get/{{credentialName}}
 Authorization: Bearer {{jwtToken}}
 ###
 
-POST http://localhost:8008/api/presentations/create
+POST http://{{host}}:{{port}}/api/presentations/create
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
