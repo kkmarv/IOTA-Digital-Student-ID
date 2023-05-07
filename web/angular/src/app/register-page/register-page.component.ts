@@ -88,8 +88,10 @@ export class RegisterPageComponent implements OnInit {
     }
     this.loadingState = "Credential anfordern...";
     this.state = "loading";
+    console.warn(personalData);
     this.http.post("http://localhost:8080/api/student/register", personalData)
     .subscribe(res => {
+      console.log(res);
       this.data.credential = res;
       this.state = "nameCredential";
     })
@@ -127,6 +129,7 @@ export class RegisterPageComponent implements OnInit {
         //presentation an uni schicken
         this.http.post("http://localhost:8080/api/student/login", res, {responseType: "text"})
         .subscribe(res => {
+          console.log(res);
           if(res === "OK") {
             this.data.loggedIn = true;
             this.router.navigate(["/home"]);

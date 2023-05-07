@@ -41,7 +41,7 @@
             <div class="ultrawide mobile-space"></div>
         </form>
     </main>      <main *ngIf="state === 'passwordForPresentation'">
-        <p>Um mit deinen Daten nun eine Verifiable Presentation anzufordern, werden noch einmal deine Login-Daten für den DID-Speicher benötigt</p>
+        <p>Um mit deinen Daten nun eine Verifiable Presentation anzufordern, werden noch einmal deine Login-Datenfür den DID-Speicher benötigt</p>
         <form #passwordForPresentation="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="submitPasswordForLogin(passwordForPresentation.value.password)">
           <div class="thin"></div>
           <mat-form-field appearance="fill">
