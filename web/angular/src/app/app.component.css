@@ -1,0 +1,27 @@
+div#main {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    align-content: center;
+}
+
+div#main > img#iotaLogo {
+    position:absolute;
+    bottom:0;
+    right:0;
+    width: 30%;
+}
+
+button#logout-button {
+    position: fixed;
+    bottom: 5vh;
+    right: 5vh;
+}
+
+
+@media screen and (min-width: 900px) {
+    div#main > img#iotaLogo {
+        width: 20%;
+    }
+}

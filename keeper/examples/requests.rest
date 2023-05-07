@@ -1,7 +1,9 @@
-@username = "Patrick"
-@password = "blep"
+@username = "heisenberg58"
+@password = "?!chemistry%Heck&Yeah420"
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlBhdHJpY2siLCJpYXQiOjE2NzQwODQwMzQsImV4cCI6MTY3NDY4ODgzNH0.RKHeEvviXsujx82-IUGOjUa7LPG5vYdnelBAdCpvIlw
+@credentialName = walter
 
-PUT http://localhost:8081/api/did/create
+PUT http://localhost:8008/api/did/create
 Content-Type: application/json
 
 {
@@ -10,8 +12,7 @@ Content-Type: application/json
 }
 ###
 
-@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1hcnZpbiIsImlhdCI6MTY3NDA1MzUyNywiZXhwIjoxNjc0NjU4MzI3fQ.kW_HuRlMLTPYlSRQ5WTq4XdH5C55Ii5VJc2QUK7cwRs
-POST http://localhost:8081/api/login
+POST http://localhost:8008/api/did/login
 Content-Type: application/json
 
 {
@@ -20,7 +21,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:8081/api/did/get
+POST http://localhost:8008/api/did/get
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
@@ -29,66 +30,71 @@ Content-Type: application/json
 }
 ###
 
-@credentialName = "Zunder"
-PUT http://localhost:8081/api/credentials/save
+PUT http://localhost:8008/api/credentials/store
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
 {
-  "credentialName": {{credentialName}},
+  "credentialName": "{{credentialName}}",
   "verifiableCredential": {
-    "@context": "https://www.w3.org/2018/credentials/v1",
-    "type": [
-      "VerifiableCredential",
-      "StudentCredential"
-    ],
-    "credentialSubject": {
-      "id": "did:iota:dev:8dQAzVbbf6FLW9ckwyCBnPmcMGcUV9LYJoXtgQkHcNQy",
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": [
+    "VerifiableCredential",
+    "StudentCredential"
+  ],
+  "credentialSubject": {
+      "id": "did:iota:dev:DS5Do6Sry4vPYPtpZbMcgXUk865hybcSKcmcF8dRhJbK",
       "currentTerm": 1,
-      "matriculationNumber": 1668712065824,
-      "providerName": "Anhalt University of Applied Sciences",
+      "matriculationNumber": 1674059055349,
+      "providerName": "Example University of Applied Sciences",
       "studentData": {
         "address": {
-          "city": "Musterstetten",
-          "country": "Germany",
-          "county": "Bavaria",
-          "houseNumber": 123,
-          "postalCode": 123456,
-          "street": "Musterweg"
+          "city": "Albuquerque",
+          "country": "USA",
+          "county": "New Mexico",
+          "houseNumber": 308,
+          "postalCode": 87104,
+          "street": "Negra Arroyo Lane"
         },
-        "birthDate": "09.07.2000",
-        "familyName": "Henke",
-        "firstName": "Dustin",
-        "middleNames": "Walter Bruno",
-        "photo": "https://thispersondoesnotexist.com/"
+        "birthDate": "07.09.1958",
+        "familyName": "White",
+        "firstName": "Walter",
+        "middleNames": "Hartwell",
+        "photo": "https://vignette.wikia.nocookie.net/breakingbad/images/e/e7/BB-S5B-Walt-590.jpg/revision/latest?cb=20130928055404/"
       },
       "studySubject": {
-        "degree": "Bachelor of Arts",
-        "name": "Gender Studies"
+        "degree": "Master of Science",
+        "name": "Chemistry"
       }
     },
-    "issuer": "did:iota:dev:4akBffVm1d1RBdywx4kMMZ4u5ErNRqms5xTZowjxLXAP",
-    "issuanceDate": "2022-11-17T19:07:45Z",
+    "issuer": "did:iota:dev:3T5kxWs9w24U93VMaJgpr6fzJ6YacEsg8mdob7vcZ5oB",
+    "issuanceDate": "2023-01-18T16:24:15Z",
     "expirationDate": "2023-04-01T00:00:00Z",
     "nonTransferable": true,
     "proof": {
       "type": "JcsEd25519Signature2020",
-      "verificationMethod": "did:iota:dev:4akBffVm1d1RBdywx4kMMZ4u5ErNRqms5xTZowjxLXAP#key-sign-student",
-      "signatureValue": "3r8GbeJ9fzjH3p4AVeNj9p72KDmDusXhEEyBMb6tnSBs4LLcLrBaRtAdRbPczCXsS14fcbFKmvXTSWsYHX6YNFrT"
+      "verificationMethod": "did:iota:dev:3T5kxWs9w24U93VMaJgpr6fzJ6YacEsg8mdob7vcZ5oB#key-sign-student",
+      "signatureValue": "2CyrVdZtncXfDdRWrHzAx7ZVM247FQ5wxoaYSGtVa9RJEEDxJukehJxiTGKgG8zNXbW7ki44Pb8m9tFqC6eSBZec"
     }
   }
 }
 ###
 
-GET http://localhost:8081/api/credentials/list
+GET http://localhost:8008/api/credentials/list
 Authorization: Bearer {{jwtToken}}
 ###
 
-POST http://localhost:8081/api/credentials/get
+GET http://localhost:8008/api/credentials/get/{{credentialName}}
+Authorization: Bearer {{jwtToken}}
+###
+
+POST http://localhost:8008/api/presentations/create
 Authorization: Bearer {{jwtToken}}
 Content-Type: application/json
 
 {
-  "credentialName": {{credentialName}}
+  "password": {{password}},
+  "credentialName": "{{credentialName}}",
+  "challenge": "This is a challenge."
 }
 ###

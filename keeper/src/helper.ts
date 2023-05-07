@@ -2,11 +2,11 @@ import crypto from 'crypto'
 
 
 interface ExtendedProofDocument {
-  created: string,
-  creator: string,
-  nonce: string
-  type: string,
-  verificationMethod: string
+  "created": string,
+  "creator": string,
+  "nonce": string
+  "type": string,
+  "verificationMethod": string
 }
 
 interface ProofDataModel {
@@ -23,9 +23,9 @@ interface CredentialDataModel {
 
 interface PresentationDataModel {
   "@context": string[],
-  type: string[],
-  holder?: string,
-  verifiableCredential: VerifiableCredentialDataModel[]
+  "type": string[],
+  "holder"?: string,
+  "verifiableCredential": VerifiableCredentialDataModel[]
 }
 
 type VerifiableCredentialDataModel = CredentialDataModel & ProofDataModel;
