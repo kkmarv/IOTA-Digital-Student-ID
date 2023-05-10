@@ -1,9 +1,8 @@
 <script lang="ts">
+  export let password: string = "";
+  export let username: string = "";
   export let buttonText: string;
   export let submitAction: (username: string, password: string) => void;
-
-  let password: string = "";
-  let username: string = "";
 </script>
 
 <form>

@@ -1,12 +1,38 @@
 <script lang="ts">
-  import Login from "./lib/Login.svelte";
   import Register from "./lib/Register.svelte";
+  import CredentialForm from "./lib/CredentialForm.svelte";
+  import * as identity from "@iota/identity-wasm/web/identity_wasm";
 
   let activeTab = "login";
+  let isIotaReady = false;
+  let account: identity.Account;
 
-  const switchTab = (tab: "login" | "register") => {
+  let username = "";
+  let password = "";
+
+  const ACCOUNT_BUILDER = identity.init().then(
+    () => {
+      isIotaReady = true;
+      console.log("Ready");
+
+      return new identity.AccountBuilder({
+        autosave: identity.AutoSave.every(),
+        autopublish: false,
+        clientConfig: { network: identity.Network.devnet() },
+      });
+    },
+    () => {
+      console.log("Fail");
+    }
+  );
+
+  function switchTab(tab: "login" | "register") {
     activeTab = tab;
-  };
+  }
+
+  function register(username: string, password: string) {
+    console.log(username, password);
+  }
 </script>
 
 <div class="tabs">
@@ -29,9 +55,19 @@
 </div>
 
 {#if activeTab === "login"}
-  <Login />
+  <CredentialForm
+    buttonText={"Login"}
+    submitAction={register}
+    {username}
+    {password}
+  />
 {:else if activeTab === "register"}
-  <Register />
+  <CredentialForm
+    buttonText={"Register"}
+    submitAction={register}
+    {username}
+    {password}
+  />
 {/if}
 
 <style>
