@@ -246,7 +246,7 @@ SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res:
     return res.status(400).send('Missing password.')
   } else if (!req.body.challenge) {
     return res.status(400).send('Missing challenge.')
-  } else if (!req.body.credentialName) {
+  } else if (!(req.body.credentialNames && Array.isArray(req.body.credentialNames))) {
     return res.status(400).send('Missing credential name.')
   }
 
@@ -256,16 +256,21 @@ SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res:
     return res.status(401).send('Wrong username or password.')
   }
 
-  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
+  let credentials: Identity.Credential[] = []
+  await Promise.all(req.body.credentialNames.map(async (credentialName: string) => {
+    const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
 
-  // Abort if credential does NOT exist.
-  if (!fs.existsSync(credentialFile)) {
-    return res.status(404).send('Credential with this name does not exist.')
-  }
+    console.log(credentialName);
 
-  // Read content of the credential file.
-  const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
-  const credential = Identity.Credential.fromJSON(JSON.parse(credentialData))
+    // Abort if credential does NOT exist.
+    if (!fs.existsSync(credentialFile)) {
+      return res.status(404).send(`Credential with name ${credentialName} does not exist.`)
+    }
+
+    // Read content of the credential file and convert it to a Credential object.
+    const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
+    credentials.push(Identity.Credential.fromJSON(JSON.parse(credentialData)))
+  }))
 
   const builder = new Identity.AccountBuilder({
     autopublish: BASE_ACCOUNT_BUILDER_OPTIONS.autopublish,
@@ -280,7 +285,7 @@ SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res:
 
   // Create the Verifiable Presentation
   const vp = new Identity.Presentation({
-    verifiableCredential: credential,
+    verifiableCredential: credentials,
     holder: did
   })
 
