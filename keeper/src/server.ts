@@ -55,8 +55,8 @@ SERVER.put(PATHS.didCreate, async (req: Request, res: Response) => {
     return res.status(409).send('Username already taken.')
   }
 
-  // Abort if Stronghold Already contains a DID.
-  // Means that this exact user has registered already.
+  // Abort if Stronghold Already contains a DID
+  // Means that this exact user has registered already
   const didList = await stronghold.didList()
   if (didList.length != 0) {
     return res.status(409).send('Username already taken.')
@@ -71,8 +71,8 @@ SERVER.put(PATHS.didCreate, async (req: Request, res: Response) => {
 
   const account = await builder.createIdentity()
 
-  // Publish the DID document to the Tangle.
-  // Fails if client cannot connect establish a connection.
+  // Publish the DID document to the Tangle
+  // Fails if client cannot connect establish a connection
   try {
     await account.publish()
   } catch (err) {
@@ -100,7 +100,7 @@ SERVER.post(PATHS.didLogin, async (req: Request, res: Response) => {
     return res.status(401).send('Wrong username or password.')
   }
 
-  // Abort if Stronghold does not contain exactly one DID.
+  // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
     return res.status(500).send('Corrupt Stronghold storage file.')
@@ -119,13 +119,13 @@ SERVER.post(PATHS.didLogin, async (req: Request, res: Response) => {
 /**
  * Create a Stronghold object.
  * 
- * @param username Name of the Stronghold file.
- * @param password Password of the Stronghold file.
- * @param strongholdShouldExist Wether the Stronghold should exist already or not.
+ * @param username Name of the Stronghold file
+ * @param password Password of the Stronghold file
+ * @param strongholdShouldExist Wether you expect the Stronghold to already exist
  * @returns
- * - A Stronghold object on successful creation.
+ * - A Stronghold object on successful creation
  * - Null if `password` is wrong or if `strongholdShouldExist` 
- * is set to true and the Stronghold file does not exist. 
+ * is set to true and the Stronghold file does not exist
  */
 async function buildStronghold(username: string, password: string, strongholdShouldExist = true): Promise<Stronghold | null> {
   const strongholdPath = getStrongholdPath(username)
@@ -134,8 +134,8 @@ async function buildStronghold(username: string, password: string, strongholdSho
     return null
   }
 
-  // Build Stronghold storage file in /identities/<username>.hodl.
-  // Building fails if file already exists but password is wrong.
+  // Build Stronghold storage file in /identities/<username>.hodl
+  // Building fails if file already exists but password is wrong
   let stronghold: Stronghold
   try {
     stronghold = await Stronghold.build(strongholdPath, password)
@@ -159,7 +159,7 @@ SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) =
     return res.status(403).send('Wrong password.')
   }
 
-  // Abort if Stronghold does not contain exactly one DID.
+  // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
     return res.status(500).send('Corrupt Stronghold storage file.')
@@ -176,17 +176,17 @@ SERVER.put(PATHS.credentialStore, authenticateJWT, async (req: Request, res: Res
     return res.status(422).send('Not a Verifiable Credential.')
   }
 
-  // Construct a file path for the credential.
+  // Construct a file path for the credential
   const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
 
-  // Abort if credential file already exists.
+  // Abort if credential file already exists
   if (fs.existsSync(credentialFile)) {
     return res.status(409).send('Credential with same name already exists.')
   }
 
   const credential = JSON.stringify(req.body.verifiableCredential)
 
-  // Save the credential to a json file.
+  // Save the credential to a json file
   fs.writeFile(credentialFile, credential, (err) => {
     if (err) {
       console.error(err)
@@ -203,12 +203,12 @@ SERVER.get(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Respo
   console.log(credentialFile);
 
 
-  // Abort if credential does NOT exist.
+  // Abort if credential does NOT exist
   if (!fs.existsSync(credentialFile)) {
     return res.status(404).send('Credential with this name does not exist.')
   }
 
-  // Read content of the credential file.
+  // Read content of the credential file
   fs.readFile(credentialFile, { encoding: 'utf8' }, (err, data) => {
     if (err) {
       return res.status(500).send('Error while reading the credential file.')
@@ -262,12 +262,12 @@ SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res:
 
     console.log(credentialName);
 
-    // Abort if credential does NOT exist.
+    // Abort if credential does NOT exist
     if (!fs.existsSync(credentialFile)) {
       return res.status(404).send(`Credential with name ${credentialName} does not exist.`)
     }
 
-    // Read content of the credential file and convert it to a Credential object.
+    // Read content of the credential file and convert it to a Credential object
     const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
     credentials.push(Identity.Credential.fromJSON(JSON.parse(credentialData)))
   }))
@@ -279,7 +279,7 @@ SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res:
     storage: stronghold
   })
 
-  // Retrieve DID from Stronghold.
+  // Retrieve DID from Stronghold
   const did = (await stronghold.didList())[0]
   const account = await builder.loadIdentity(did)
 
@@ -289,7 +289,7 @@ SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res:
     holder: did
   })
 
-  // Create a proof.
+  // Create a proof
   const proof = new Identity.ProofOptions({
     challenge: req.body.challenge,
     expires: Identity.Timestamp.nowUTC().checkedAdd(Identity.Duration.minutes(10))
