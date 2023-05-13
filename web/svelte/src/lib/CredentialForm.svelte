@@ -3,6 +3,7 @@
   export let username: string = "";
   export let buttonText: string;
   export let submitAction: (username: string, password: string) => void;
+  export let submitDisabled = false;
 </script>
 
 <form>
@@ -16,10 +17,12 @@
   </div>
   <button
     type="submit"
+    disabled={submitDisabled}
     on:click|preventDefault={() => {
       submitAction(username, password);
-    }}>{buttonText}</button
-  >
+    }}
+    >{buttonText}
+  </button>
 </form>
 
 <style>

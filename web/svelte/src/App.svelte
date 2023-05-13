@@ -1,44 +1,71 @@
 <script lang="ts">
-  import Register from "./lib/Register.svelte";
   import CredentialForm from "./lib/CredentialForm.svelte";
-  import * as identity from "@iota/identity-wasm/web/identity_wasm";
+  import * as Identity from "@iota/identity-wasm/web/identity_wasm";
+  import { fetchApi } from "./lib/helper";
+  import { KEEPER_API } from "./lib/constants";
 
+  // UI States
   let activeTab = "login";
   let isIotaReady = false;
-  let account: identity.Account;
+  let isRegistering = false;
 
+  // User Inputs
   let username = "";
   let password = "";
 
-  const ACCOUNT_BUILDER = identity.init().then(
+  let account: Identity.Account;
+
+  const ACCOUNT_BUILDER = Identity.init().then(
     () => {
       isIotaReady = true;
       console.log("Ready");
 
-      return new identity.AccountBuilder({
-        autosave: identity.AutoSave.every(),
+      return new Identity.AccountBuilder({
+        autosave: Identity.AutoSave.every(),
         autopublish: false,
-        clientConfig: { network: identity.Network.devnet() },
+        clientConfig: { network: Identity.Network.devnet() },
       });
     },
-    () => {
-      console.log("Fail");
-    }
+    () => console.error("Fail")
   );
 
   function switchTab(tab: "login" | "register") {
+    if (isRegistering) return;
     activeTab = tab;
   }
 
-  function register(username: string, password: string) {
-    console.log(username, password);
+  async function register(username: string, password: string) {
+    isRegistering = true;
+    await fetchApi(
+      "PUT",
+      KEEPER_API.register,
+      JSON.stringify({
+        username: username,
+        password: password,
+      })
+    );
+    isRegistering = false;
+  }
+
+  async function login(username: string, password: string) {
+    await fetchApi(
+      "POST",
+      KEEPER_API.login,
+      JSON.stringify({
+        username: username,
+        password: password,
+      })
+    );
   }
 </script>
+
+<div class="keeper"><h1 class="logo">keeper</h1></div>
 
 <div class="tabs">
   <div
     class="tab"
     class:selected={activeTab === "login"}
+    class:disabled={isRegistering === true}
     on:click={() => switchTab("login")}
     on:keydown={() => switchTab("login")}
   >
@@ -57,16 +84,17 @@
 {#if activeTab === "login"}
   <CredentialForm
     buttonText={"Login"}
-    submitAction={register}
-    {username}
-    {password}
+    submitAction={login}
+    bind:username
+    bind:password
   />
 {:else if activeTab === "register"}
   <CredentialForm
     buttonText={"Register"}
     submitAction={register}
-    {username}
-    {password}
+    submitDisabled={isRegistering}
+    bind:username
+    bind:password
   />
 {/if}
 
@@ -83,5 +111,24 @@
   }
   .tab.selected {
     border-bottom: 2px solid black;
+  }
+  .tab.disabled {
+    filter: contrast(25%);
+  }
+  .tab:hover {
+    border-bottom: 2px solid #535bf2;
+  }
+  .keeper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+  }
+  .logo {
+    float: left;
+    margin: 0.5em;
+    font-size: min(10vw, 50px);
+    cursor: pointer;
   }
 </style>
