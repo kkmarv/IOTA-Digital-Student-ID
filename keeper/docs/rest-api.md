@@ -16,7 +16,7 @@
 
 ## 1.1. PUT `/api/did/create`
 
-Create a DID document and publish it to the Tangle.
+Create an empty DID document and publish it to the Tangle.
 
 ### Request Body <!-- omit in toc -->
 
@@ -50,7 +50,7 @@ Create a DID document and publish it to the Tangle.
 
 ## 1.2. POST `/api/did/login`
 
-Get yourself a JWT with a username and a password.
+Get yourself a JWT by providing username and password.
 
 ### Request Body <!-- omit in toc -->
 
@@ -69,7 +69,7 @@ Get yourself a JWT with a username and a password.
 
 #### On success <!-- omit in toc -->
 
-> A JWT containing the username.
+> Returns a JWT containing the current username.
 
 ```json
 {
@@ -83,7 +83,7 @@ Get yourself a JWT with a username and a password.
 | ---------- | ------------------------------------------ |
 | `400`      | Missing username or password.              |
 | `401`      | Wrong password or the user does not exist. |
-| `500`      | Corrupt Stronghold storage file.           |
+| `500`      | Corrupted Stronghold storage file.         |
 
 
 ## 1.3. POST `/api/did/get`
@@ -104,7 +104,7 @@ Get the DID URL of the current user.
 
 #### On success <!-- omit in toc -->
 
-> The DID URL which corresponds to the current user.
+> Returns the DID URL which corresponds to the current user.
 
 ```json
 {
@@ -119,14 +119,14 @@ Get the DID URL of the current user.
 | `400`      | Missing password or authorization header. |
 | `401`      | Invalid JWT Token.                        |
 | `403`      | Wrong password.                           |
-| `500`      | Corrupt Stronghold storage file.          |
+| `500`      | Corrupted Stronghold storage file.        |
 
 
 # 2. Verifiable Credentials
 
 ## 2.1. PUT `/api/credentials/store`
 
-Save a Verifiable Credential to local storage.
+Save a Verifiable Credential to keeper's local storage.
 
 ### Request Body <!-- omit in toc -->
 
@@ -170,7 +170,7 @@ List all names of Verifiable Credentials that are currently stored.
 
 #### On success <!-- omit in toc -->
 
-> A list of all credential names.
+> Returns a list of all credential names.
 
 ```json
 {
@@ -197,7 +197,7 @@ Retrieve a Verifiable Credential by its `name`.
 
 #### On success <!-- omit in toc -->
 
-> The Verifiable Credential.
+> Returns the Verifiable Credential.
 
 ```json
 {
@@ -242,7 +242,7 @@ Create a Verifiable Presentation from one or more locally saved credentials.
 
 #### On success <!-- omit in toc -->
 
-> The Verifiable Presentation.
+> Returns the Verifiable Presentation. Remember that Verifiable Presentations are not saved within keeper.
 
 ```json
 {
