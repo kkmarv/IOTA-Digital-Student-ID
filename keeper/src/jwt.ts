@@ -8,7 +8,7 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(400).send('Missing authorization header.');
+    return res.status(400).json('Missing authorization header.');
   }
 
   // Remove the 'Bearer' keyword from the token.
@@ -16,7 +16,7 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
 
   jwt.verify(token, TOKEN_SECRET, (err, jwtPayload) => {
     if (err) {
-      return res.status(401).send('Invalid JWT Token.');
+      return res.status(401).json('Invalid JWT Token.');
     }
 
     // Insert user data into request for further processing.
