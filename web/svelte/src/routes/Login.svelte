@@ -43,6 +43,8 @@
 
   async function login(username: string, password: string) {
     const requestSucceeded = await requestAccessToken(username, password);
+    console.log('succed');
+
     if (requestSucceeded) navigate('/landing');
     else console.log('Invalid Login');
   }
@@ -91,13 +93,13 @@
       padding-bottom: 1px;
       cursor: pointer;
       &.selected {
-        border-bottom: 2px solid black;
+        border-bottom: 2px solid #535bf2;
       }
       &.disabled {
         filter: contrast(25%);
       }
       &:hover {
-        border-bottom: 2px solid #535bf2;
+        border-bottom: 2px solid #a94dc1;
       }
     }
   }

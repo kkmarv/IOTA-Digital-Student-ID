@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Route } from 'svelte-routing';
-  import { APP_ROUTES } from '../lib/constants';
   import { verifyAccessToken } from '../lib/auth';
   import AccessDenied from './AccessDenied.svelte';
 
@@ -11,6 +10,6 @@
   {#if hasAccess}
     <Route {path}><slot /></Route>
   {:else}
-    <Route path={APP_ROUTES.landing}><AccessDenied /></Route>
+    <Route {path}><AccessDenied /></Route>
   {/if}
 {/await}

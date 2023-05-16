@@ -3,7 +3,7 @@
 </div>
 
 <style lang="scss">
-  @import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&display=swap");
+  @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&display=swap');
   .keeper {
     position: fixed;
     top: 0;
@@ -12,8 +12,11 @@
     z-index: 100;
   }
   .logo {
-    font-family: "Chakra Petch";
-    color: black;
+    background: linear-gradient(10deg, #a94dc1 0%, #535bf2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'Chakra Petch';
+    // color: linear-gradient(10deg, #a94dc1 0%, #535bf2 100%);
     float: left;
     margin: 0.5em;
     font-size: min(10vw, 50px);

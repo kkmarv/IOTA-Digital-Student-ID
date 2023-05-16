@@ -1,7 +1,6 @@
 import { KEEPER_API_ROUTES } from "./constants"
 
 export const ACCESS_TOKEN_KEY = "accessToken"
-export const ACCESS_TOKEN_VALUE = localStorage.getItem(ACCESS_TOKEN_KEY)
 
 
 export async function requestAccessToken(username: string, password: string): Promise<boolean> {
@@ -12,21 +11,20 @@ export async function requestAccessToken(username: string, password: string): Pr
   })
 
   // Save JWT to local storage
-  if (response?.ok) {
-    const body = await response.json()
-    localStorage.setItem(ACCESS_TOKEN_KEY, body.jwt)
-    localStorage.getItem(ACCESS_TOKEN_KEY)
-    return true
-  }
-  return false
+  if (!response?.ok) return false
+  const body = await response.json()
+  if (!body?.jwt) return false
+  localStorage.setItem(ACCESS_TOKEN_KEY, body.jwt)
+  return true
 }
 
 export async function verifyAccessToken(): Promise<boolean> {
-  if (!ACCESS_TOKEN_VALUE) return false
+  const accessTokenValue = localStorage.getItem(ACCESS_TOKEN_KEY)
+  if (!accessTokenValue) return false
 
   const response = await fetch(KEEPER_API_ROUTES.verifyAccessToken, {
     method: "GET",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${ACCESS_TOKEN_VALUE}` }
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessTokenValue}` }
   })
   return response?.ok
 }
