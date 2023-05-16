@@ -32,6 +32,7 @@
     isRegistering = true
     const response = await fetch(KEEPER_API_ROUTES.registerNewUser, {
       method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: username,
         password: password,

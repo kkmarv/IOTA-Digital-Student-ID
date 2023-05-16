@@ -10,7 +10,7 @@
 
 <Router>
   <nav>
-    <a href={APP_ROUTES.landing}><Logo /></a>
+    <Logo />
   </nav>
 
   <Route path={APP_ROUTES.login}><Login activeTab="login" /></Route>

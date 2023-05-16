@@ -30,8 +30,8 @@ interface PresentationDataModel {
   "verifiableCredential": VerifiableCredentialDataModel[]
 }
 
-type VerifiableCredentialDataModel = CredentialDataModel & ProofDataModel;
-type VerifiablePresentationDataModel = PresentationDataModel & ProofDataModel;
+type VerifiableCredentialDataModel = CredentialDataModel & ProofDataModel
+type VerifiablePresentationDataModel = PresentationDataModel & ProofDataModel
 export type UserCredentials = { username: string, password: string }
 export type JsonWebToken = { jwt: string }
 
@@ -53,13 +53,12 @@ export function isUserCredentials(payload: any): payload is UserCredentials {
     typeof p.username === 'string' &&
     p.username.length > 0 &&
     p.password &&
-    typeof p.password === 'string' &&
-    true
+    typeof p.password === 'string'
   ))
 }
 
 export function isVerifiablePresentation(payload: VerifiablePresentationDataModel | unknown): payload is VerifiablePresentationDataModel {
-  return !!(payload as VerifiablePresentationDataModel).verifiableCredential?.length;
+  return !!(payload as VerifiablePresentationDataModel).verifiableCredential?.length
 };
 
 /**
