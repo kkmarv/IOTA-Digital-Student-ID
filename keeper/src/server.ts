@@ -1,34 +1,32 @@
-import { Stronghold } from '@iota/identity-stronghold-nodejs'
 import Identity from '@iota/identity-wasm/node/identity_wasm.js'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
-import fs from 'fs'
-import jwt from 'jsonwebtoken'
 import path from 'path'
+import fs from 'fs'
 import {
-  getStrongholdPath,
+  buildStronghold,
   getUserDirectory,
+  isJsonWebToken,
   isUserCredentials,
   isVerifiableCredential, UserCredentials
 } from './helper.js'
-import { authenticateJWT } from './jwt.js'
+import { authenticateJWT, issueJWT } from './jwt.js'
 
 Identity.start()
 
-const TOKEN_SECRET = 'youraccesstokensecret'
-
-
 const PORT = 8081
-const API_ENDPOINT = '/api'
+const API_ROOT = '/api'
 
-const PATHS = {
-  didGet: API_ENDPOINT + '/did/get',
-  didLogin: API_ENDPOINT + '/did/login',
-  didCreate: API_ENDPOINT + '/did/create',
-  credentialGet: API_ENDPOINT + '/credentials/get/:name',
-  credentialStore: API_ENDPOINT + '/credentials/store',
-  credentialList: API_ENDPOINT + '/credentials/list',
-  presentationCreate: API_ENDPOINT + '/presentations/create'
+const ROUTES = {
+  didGet: API_ROOT + '/did/get',
+  didCreate: API_ROOT + '/did/create',
+  authTokenCreate: API_ROOT + '/auth/create',
+  authTokenVerify: API_ROOT + '/auth/verify',
+  authTokenDelete: API_ROOT + '/auth/delete',
+  credentialGet: API_ROOT + '/credentials/get/:name',
+  credentialStore: API_ROOT + '/credentials/store',
+  credentialList: API_ROOT + '/credentials/list',
+  presentationCreate: API_ROOT + '/presentations/create'
 }
 
 const SERVER = express()
@@ -43,7 +41,7 @@ const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
 }
 
 
-SERVER.put(PATHS.didCreate, async (req: Request, res: Response) => {
+SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).json('Invalid format of JSON request.')
   }
@@ -86,9 +84,9 @@ SERVER.put(PATHS.didCreate, async (req: Request, res: Response) => {
 })
 
 
-SERVER.post(PATHS.didLogin, async (req: Request, res: Response) => {
+SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
-    return res.status(400).json('Invalid format of JSON request.')
+    return res.status(400).json('Missing username or password.')
   }
 
   const credentials = req.body as UserCredentials
@@ -103,52 +101,26 @@ SERVER.post(PATHS.didLogin, async (req: Request, res: Response) => {
   // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
-    return res.status(500).json('Corrupt Stronghold storage file.')
+    return res.status(500).json('Corrupted Stronghold storage file.')
   }
 
-  // Generate an access token
-  const accessToken = jwt.sign(
-    { username: credentials.username },
-    TOKEN_SECRET,
-    { expiresIn: '7d' } // TODO make shorter
-  )
+  const accessToken = issueJWT(credentials.username)
 
   return res.status(200).json({ jwt: accessToken })
 })
 
-/**
- * Create a Stronghold object.
- * 
- * @param username Name of the Stronghold file
- * @param password Password of the Stronghold file
- * @param strongholdShouldExist Wether you expect the Stronghold to already exist
- * @returns
- * - A Stronghold object on successful creation
- * - Null if `password` is wrong or if `strongholdShouldExist` 
- * is set to true and the Stronghold file does not exist
- */
-async function buildStronghold(username: string, password: string, strongholdShouldExist = true): Promise<Stronghold | null> {
-  const strongholdPath = getStrongholdPath(username)
 
-  if (strongholdShouldExist && !fs.existsSync(strongholdPath)) {
-    return null
-  }
-
-  // Build Stronghold storage file in /identities/<username>.hodl
-  // Building fails if file already exists but password is wrong
-  let stronghold: Stronghold
-  try {
-    stronghold = await Stronghold.build(strongholdPath, password)
-  } catch (err) {
-    console.error(err)
-    return null
-  }
-
-  return stronghold
-}
+SERVER.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
+  res.sendStatus(204)
+})
 
 
-SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.get(ROUTES.authTokenDelete, authenticateJWT, async (req: Request, res: Response) => {
+  // TODO
+})
+
+
+SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
     return res.status(400).json('Missing password.')
   }
@@ -162,14 +134,14 @@ SERVER.post(PATHS.didGet, authenticateJWT, async (req: Request, res: Response) =
   // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
-    return res.status(500).json('Corrupt Stronghold storage file.')
+    return res.status(500).json('Corrupted Stronghold storage file.')
   }
 
   return res.status(200).json({ did: didList[0] })
 })
 
 
-SERVER.put(PATHS.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.verifiableCredential) {
     return res.status(400).json('Missing Verifiable Credential.')
   } else if (!isVerifiableCredential(req.body.verifiableCredential)) {
@@ -197,7 +169,7 @@ SERVER.put(PATHS.credentialStore, authenticateJWT, async (req: Request, res: Res
 })
 
 
-SERVER.get(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
   const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.params.name}.json`
 
   console.log(credentialFile);
@@ -220,7 +192,7 @@ SERVER.get(PATHS.credentialGet, authenticateJWT, async (req: Request, res: Respo
 })
 
 
-SERVER.get(PATHS.credentialList, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Response) => {
   const userDirectory = getUserDirectory(req.body.jwtPayload.username)
 
   fs.readdir(userDirectory, (err, files) => {
@@ -241,7 +213,7 @@ SERVER.get(PATHS.credentialList, authenticateJWT, async (req: Request, res: Resp
 })
 
 
-SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
+SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
     return res.status(400).json('Missing password.')
   } else if (!req.body.challenge) {
@@ -304,5 +276,5 @@ SERVER.post(PATHS.presentationCreate, authenticateJWT, async (req: Request, res:
 
 // Start the REST server.
 SERVER.listen(PORT, () => {
-  console.log(`Keeper listening at http://localhost:${PORT}${API_ENDPOINT}`)
+  console.log(`Keeper listening at http://localhost:${PORT}${API_ROOT}`)
 })

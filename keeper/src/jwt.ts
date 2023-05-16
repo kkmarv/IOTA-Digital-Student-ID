@@ -1,8 +1,22 @@
-import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken'
+import { NextFunction, Request, Response } from 'express';
+import { hostname } from 'os';
 
 const TOKEN_SECRET = 'youraccesstokensecret';
+const TOKEN_EXPIRES_IN = '7d' // TODO make shorter
 
+export function issueJWT(username: string) {
+  return jwt.sign(
+    { username: username },
+    TOKEN_SECRET,
+    {
+      subject: username,
+      audience: 'https://keeper.local',
+      issuer: `keeper@${hostname()}`,
+      expiresIn: TOKEN_EXPIRES_IN
+    }
+  )
+}
 
 export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;

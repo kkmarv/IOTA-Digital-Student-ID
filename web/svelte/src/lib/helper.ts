@@ -1,29 +1,40 @@
+import type { httpMethod } from './types'
+
+
 export async function fetchApi(
-  method: "GET" | "POST" | "PUT",
+  method: httpMethod,
   url: string,
-  body?: string
+  additionalHeaders: HeadersInit = null,
+  body?: BodyInit
 ): Promise<Response> {
-  let response: Response;
+  let response: Response
+  const headers = {
+    "Content-Type": "application/json",
+    ...additionalHeaders
+  }
+
+  console.log(`Requesting ${method} ${url}`)
+  console.dir(headers, { colors: true })
+  console.dir(body, { colors: true })
 
   try {
     response = await fetch(url, {
       method: method,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+      headers: headers,
       body: body,
-    });
+    })
   } catch (error) {
-    console.log("An error occurred: ", error.message);
+    console.error(`Error requesting ${method} ${url}: `, error.message)
   }
 
-  handleErrors(response);
-  return response;
+  isResponseSuccessful(response)
+  return response
 }
 
-async function handleErrors(response?: Response) {
-  if (response?.ok) return;
-  const message = await response.json();
-  console.log(message);
+async function isResponseSuccessful(response?: Response) {
+  if (!response?.ok) {
+    console.log(response)
+    return
+  }
 }
+

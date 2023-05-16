@@ -36,7 +36,7 @@ Get yourself a JWT by providing username and password.
 
 #### On success <!-- omit in toc -->
 
-> Returns a JWT containing the current username.
+> Returns a JWT containing several assertions about keeper and its user.
 
 ```json
 {

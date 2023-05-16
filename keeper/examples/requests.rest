@@ -4,10 +4,11 @@
 # Student Identity
 @username = "heisenberg58"
 @password = "?!chemistry%Heck&Yeah420"
-@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4MzQ2NDU4OCwiZXhwIjoxNjg0MDY5Mzg4fQ.eqTIc3oVXU5zGeXSimqusBiKCQ58Z3mOdhNQEK_rDu4
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4NDE3MjI1MCwiZXhwIjoxNjg0Nzc3MDUwLCJhdWQiOiJodHRwczovL2tlZXBlci5sb2NhbCIsImlzcyI6ImtlZXBlckBEZWxsLTJWQjlSNzMiLCJzdWIiOiJoZWlzZW5iZXJnNTgifQ.0loLdTrpTEbF7WF68LhRd_ByEJrLYiSGnyRS8P44_qs
 @credentialName = walter
 
-PUT http://{{host}}:{{port}}/api/did/create
+
+POST http://{{host}}:{{port}}/api/auth/create
 Content-Type: application/json
 
 {
@@ -16,7 +17,12 @@ Content-Type: application/json
 }
 ###
 
-POST http://{{host}}:{{port}}/api/did/login
+GET http://{{host}}:{{port}}/api/auth/verify
+Content-Length: 0
+Authorization: Bearer {{jwtToken}}
+###
+
+PUT http://{{host}}:{{port}}/api/did/create
 Content-Type: application/json
 
 {

@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let password: string = "";
-  export let username: string = "";
+  export let password: string = '';
+  export let username: string = '';
   export let buttonText: string;
   export let submitAction: (username: string, password: string) => void;
   export let submitDisabled = false;
