@@ -16,7 +16,6 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-family: 'Chakra Petch';
-    // color: linear-gradient(10deg, #a94dc1 0%, #535bf2 100%);
     float: left;
     margin: 0.5em;
     font-size: min(10vw, 50px);

@@ -1,69 +1,69 @@
 <script lang="ts">
-  import * as identity from "@iota/identity-wasm/web/identity_wasm";
+  import * as identity from '@iota/identity-wasm/web/identity_wasm'
 
-  let did: identity.DID;
-  let builder;
-  let account: identity.Account;
+  let did: identity.DID
+  let builder
+  let account: identity.Account
 
-  let wantEnroll = false;
-  let isEnrolled = false;
-  let loggedIn = false;
+  let wantEnroll = false
+  let isEnrolled = false
+  let loggedIn = false
 
-  let credential;
-  let challenge: string;
+  let credential
+  let challenge: string
 
   const studentData = {
     address: {
-      city: "Albuquerque",
-      country: "USA",
-      county: "New Mexico",
+      city: 'Albuquerque',
+      country: 'USA',
+      county: 'New Mexico',
       houseNumber: 308,
       postalCode: 87104,
-      street: "Negra Arroyo Lane",
+      street: 'Negra Arroyo Lane',
     },
-    birthDate: "07.09.1958",
-    familyName: "White",
-    firstName: "Walter",
-    middleNames: "Hartwell",
+    birthDate: '07.09.1958',
+    familyName: 'White',
+    firstName: 'Walter',
+    middleNames: 'Hartwell',
     photo:
-      "https://vignette.wikia.nocookie.net/breakingbad/images/e/e7/BB-S5B-Walt-590.jpg/revision/latest?cb=20130928055404/",
-  };
+      'https://vignette.wikia.nocookie.net/breakingbad/images/e/e7/BB-S5B-Walt-590.jpg/revision/latest?cb=20130928055404/',
+  }
   const studySubject = {
-    degree: "Master of Science",
-    name: "Chemistry",
-  };
+    degree: 'Master of Science',
+    name: 'Chemistry',
+  }
 
   identity.init().then(async () => {
     builder = new identity.AccountBuilder({
       autosave: identity.AutoSave.every(),
       autopublish: false,
       clientConfig: { network: identity.Network.devnet() },
-    });
-  });
+    })
+  })
 
   async function onCreateDID() {
-    account = await builder.createIdentity();
-    await account.publish();
-    did = account.did();
+    account = await builder.createIdentity()
+    await account.publish()
+    did = account.did()
   }
 
   async function onEnroll() {
     console.log({
       id: did.toString(),
-    });
+    })
 
-    const challengeRes = await fetch("http://localhost:8080/api/challenge/", {
-      method: "POST",
+    const challengeRes = await fetch('http://localhost:8080/api/challenge/', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         id: did.toString(),
       }),
-    });
+    })
 
-    challenge = await challengeRes.text();
-    console.log(challenge);
+    challenge = await challengeRes.text()
+    console.log(challenge)
 
     console.log({
       id: did.toString(),
@@ -71,60 +71,51 @@
       challengeSignature: challenge,
       studentData: studentData,
       studySubject: studySubject,
-    });
+    })
 
-    const registerRes = await fetch(
-      "http://localhost:8080/api/student/register/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: did,
-          challenge: challenge,
-          challengeSignature: challenge,
-          studentData: studentData,
-          studySubject: studySubject,
-        }),
-      }
-    );
+    const registerRes = await fetch('http://localhost:8080/api/student/register/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: did,
+        challenge: challenge,
+        challengeSignature: challenge,
+        studentData: studentData,
+        studySubject: studySubject,
+      }),
+    })
 
-    credential = await registerRes.json();
-    console.log(credential);
+    credential = await registerRes.json()
+    console.log(credential)
   }
 
   async function onLogin() {
-    credential = identity.Credential.fromJSON(credential);
+    credential = identity.Credential.fromJSON(credential)
 
     const vp = new identity.Presentation({
       verifiableCredential: credential,
       holder: account.did(),
-    });
-    console.log(vp.toJSON());
+    })
+    console.log(vp.toJSON())
 
     const proof = new identity.ProofOptions({
       challenge: challenge,
-      expires: identity.Timestamp.nowUTC().checkedAdd(
-        identity.Duration.minutes(10)
-      ),
-    });
+      expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
+    })
 
-    const signedVP = await account.createSignedPresentation(
-      "sign-0",
-      vp,
-      proof
-    );
+    const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
 
-    const loginRes = await fetch("http://localhost:8080/api/student/login/", {
-      method: "POST",
+    const loginRes = await fetch('http://localhost:8080/api/student/login/', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(signedVP.toJSON()),
-    });
+    })
 
-    if (loginRes.ok) loggedIn = true;
+    if (loginRes.ok) loggedIn = true
   }
 </script>
 
@@ -136,7 +127,7 @@
       <div>Your DID: {did}</div>
       <button
         on:click={() => {
-          wantEnroll = true;
+          wantEnroll = true
         }}>Begin enrollment</button
       >
     {/if}
@@ -168,17 +159,11 @@
         </div>
         <div>
           <label for="houseNumberInput">House Number</label>
-          <input
-            id="houseNumberInput"
-            bind:value={studentData.address.houseNumber}
-          />
+          <input id="houseNumberInput" bind:value={studentData.address.houseNumber} />
         </div>
         <div>
           <label for="postalCodeInput">Postal Code</label>
-          <input
-            id="postalCodeInput"
-            bind:value={studentData.address.postalCode}
-          />
+          <input id="postalCodeInput" bind:value={studentData.address.postalCode} />
         </div>
         <div>
           <label for="cityInput">City</label>

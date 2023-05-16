@@ -14,12 +14,14 @@ export async function requestAccessToken(username: string, password: string): Pr
   if (!response?.ok) return false
   const body = await response.json()
   if (!body?.jwt) return false
-  localStorage.setItem(ACCESS_TOKEN_KEY, body.jwt)
+  await localStorage.setItem(ACCESS_TOKEN_KEY, body.jwt)
   return true
 }
 
 export async function verifyAccessToken(): Promise<boolean> {
   const accessTokenValue = localStorage.getItem(ACCESS_TOKEN_KEY)
+  console.log("verify: ", accessTokenValue)
+
   if (!accessTokenValue) return false
 
   const response = await fetch(KEEPER_API_ROUTES.verifyAccessToken, {

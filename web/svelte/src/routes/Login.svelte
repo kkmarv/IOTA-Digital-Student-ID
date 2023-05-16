@@ -1,52 +1,53 @@
 <script lang="ts">
-  import { KEEPER_API_ROUTES } from '../lib/constants';
-  import { navigate } from 'svelte-routing';
-  import { verifyAccessToken, requestAccessToken } from '../lib/auth';
-  import CredentialForm from '../components/CredentialForm.svelte';
-  import Loading from '../components/Loading.svelte';
+  import { onMount } from 'svelte'
+  import { navigate } from 'svelte-routing'
+  import { KEEPER_API_ROUTES } from '../lib/constants'
+  import { verifyAccessToken, requestAccessToken } from '../lib/auth'
+  import CredentialForm from '../components/CredentialForm.svelte'
+  import Loading from '../components/Loading.svelte'
 
   // Skip login if already logged in
-  let hasLoaded = false;
-  (async () => {
-    if (await verifyAccessToken()) navigate('/landing', { replace: true });
-    hasLoaded = true;
-  })();
+  let hasLoaded = false
+  onMount(async () => {
+    if (await verifyAccessToken()) navigate('/landing', { replace: true })
+    hasLoaded = true
+  })
 
-  type tab = 'login' | 'register';
+  type tab = 'login' | 'register'
 
   // UI States
-  export let activeTab: tab = 'login';
-  let isRegistering = false;
+  export let activeTab: tab = 'login'
+  let isRegistering = false
 
   // User Inputs
-  let username = '';
-  let password = '';
+  let username = ''
+  let password = ''
 
   function switchTab(tab: tab) {
-    if (isRegistering) return;
-    activeTab = tab;
+    if (isRegistering) return
+    activeTab = tab
   }
 
   async function register(username: string, password: string) {
-    isRegistering = true;
+    isRegistering = true
     const response = await fetch(KEEPER_API_ROUTES.registerNewUser, {
       method: 'PUT',
       body: JSON.stringify({
         username: username,
         password: password,
       }),
-    });
-    isRegistering = false;
-    if (response?.ok) login(username, password);
-    else console.log('Something went wrong while registering');
+    })
+    isRegistering = false
+    if (response?.ok) login(username, password)
+    else console.log('Something went wrong while registering')
   }
 
   async function login(username: string, password: string) {
-    const requestSucceeded = await requestAccessToken(username, password);
-    console.log('succed');
+    const requestSucceeded = await requestAccessToken(username, password)
+    console.log('succed')
 
-    if (requestSucceeded) navigate('/landing');
-    else console.log('Invalid Login');
+    if (requestSucceeded) navigate('/landing')
+    else console.log('Invalid Login')
   }
 </script>
 
@@ -59,14 +60,16 @@
       class:selected={activeTab === 'login'}
       class:disabled={isRegistering === true}
       on:click={() => switchTab('login')}
-      on:keydown={() => switchTab('login')}>
+      on:keydown={() => switchTab('login')}
+    >
       Login
     </div>
     <div
       class="tab"
       class:selected={activeTab === 'register'}
       on:click={() => switchTab('register')}
-      on:keydown={() => switchTab('register')}>
+      on:keydown={() => switchTab('register')}
+    >
       Register
     </div>
   </div>
@@ -79,7 +82,8 @@
       bind:password
       buttonText={'Register'}
       submitAction={register}
-      submitDisabled={isRegistering} />
+      submitDisabled={isRegistering}
+    />
   {/if}
 {/if}
 
