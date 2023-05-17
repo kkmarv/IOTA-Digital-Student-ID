@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { KEEPER_API_ROUTES } from '../lib/constants'
-  import { verifyAccessToken, requestAccessToken } from '../lib/auth'
   import CredentialForm from '../components/CredentialForm.svelte'
   import Loading from '../components/Loading.svelte'
+  import { requestAccessToken, verifyAccessToken } from '../lib/auth'
+  import { KEEPER_API_ROUTES } from '../lib/constants'
   import { hasError } from '../lib/helper'
 
   // Skip login if already logged in

@@ -1,11 +1,11 @@
 <script>
-  import { Router, Route } from 'svelte-routing'
+  import { Route, Router } from 'svelte-routing'
   import { APP_ROUTES } from '../lib/constants'
   import Landing from '../routes/Landing.svelte'
   import Login from '../routes/Login.svelte'
-  import Logo from './Logo.svelte'
   import NotFound from '../routes/NotFound.svelte'
   import AuthGuard from './AuthGuard.svelte'
+  import Logo from './Logo.svelte'
 </script>
 
 <Router>
