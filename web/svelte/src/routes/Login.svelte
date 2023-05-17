@@ -5,6 +5,7 @@
   import { verifyAccessToken, requestAccessToken } from '../lib/auth'
   import CredentialForm from '../components/CredentialForm.svelte'
   import Loading from '../components/Loading.svelte'
+  import { hasError } from '../lib/helper'
 
   // Skip login if already logged in
   let hasLoaded = false
@@ -39,16 +40,15 @@
       }),
     })
     isRegistering = false
-    if (response?.ok) login(username, password)
-    else console.log('Something went wrong while registering')
+
+    if (!(await hasError(response))) {
+      login(username, password)
+    }
   }
 
   async function login(username: string, password: string) {
     const requestSucceeded = await requestAccessToken(username, password)
-    console.log('succed')
-
     if (requestSucceeded) navigate('/landing')
-    else console.log('Invalid Login')
   }
 </script>
 
