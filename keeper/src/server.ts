@@ -9,7 +9,7 @@ import {
   buildStronghold,
   getUserDirectory,
   isUserCredentials,
-  isVerifiableCredential
+  isVerifiableCredential,
 } from './helper.js'
 import { authenticateJWT, issueJWT } from './jwt.js'
 
@@ -27,7 +27,7 @@ const ROUTES = {
   credentialGet: API_ROOT + '/credentials/get/:name',
   credentialStore: API_ROOT + '/credentials/store',
   credentialList: API_ROOT + '/credentials/list',
-  presentationCreate: API_ROOT + '/presentations/create'
+  presentationCreate: API_ROOT + '/presentations/create',
 }
 
 const SERVER = express()
@@ -38,9 +38,8 @@ SERVER.use(express.json())
 const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
   autopublish: false,
   autosave: Identity.AutoSave.every(),
-  clientConfig: { network: Identity.Network.devnet() }
+  clientConfig: { network: Identity.Network.devnet() },
 }
-
 
 SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
@@ -65,7 +64,7 @@ SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
     autopublish: BASE_ACCOUNT_BUILDER_OPTIONS.autopublish,
     autosave: BASE_ACCOUNT_BUILDER_OPTIONS.autosave,
     clientConfig: BASE_ACCOUNT_BUILDER_OPTIONS.clientConfig,
-    storage: stronghold
+    storage: stronghold,
   })
 
   const account = await builder.createIdentity()
@@ -83,7 +82,6 @@ SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
 
   return res.sendStatus(204)
 })
-
 
 SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
@@ -110,16 +108,13 @@ SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   return res.status(200).json({ jwt: accessToken })
 })
 
-
 SERVER.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
   res.sendStatus(204)
 })
 
-
 SERVER.get(ROUTES.authTokenDelete, authenticateJWT, async (req: Request, res: Response) => {
   // TODO
 })
-
 
 SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
@@ -140,7 +135,6 @@ SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) 
 
   return res.status(200).json({ did: didList[0] })
 })
-
 
 SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.verifiableCredential) {
@@ -169,12 +163,10 @@ SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
   })
 })
 
-
 SERVER.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
   const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.params.name}.json`
 
   console.log(credentialFile)
-
 
   // Abort if credential does NOT exist
   if (!fs.existsSync(credentialFile)) {
@@ -192,7 +184,6 @@ SERVER.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Resp
   })
 })
 
-
 SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Response) => {
   const userDirectory = getUserDirectory(req.body.jwtPayload.username)
 
@@ -203,7 +194,7 @@ SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
 
     const credentialFiles: string[] = []
 
-    files.forEach(file => {
+    files.forEach((file) => {
       if (path.extname(file) === '.json') {
         credentialFiles.push(path.basename(file, '.json'))
       }
@@ -212,7 +203,6 @@ SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
     res.status(200).json({ credentials: credentialFiles })
   })
 })
-
 
 SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
@@ -230,26 +220,28 @@ SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
   }
 
   let credentials: Identity.Credential[] = []
-  await Promise.all(req.body.credentialNames.map(async (credentialName: string) => {
-    const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
+  await Promise.all(
+    req.body.credentialNames.map(async (credentialName: string) => {
+      const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
 
-    console.log(credentialName)
+      console.log(credentialName)
 
-    // Abort if credential does NOT exist
-    if (!fs.existsSync(credentialFile)) {
-      return res.status(404).json({ reason: FAILURE_REASONS.verifiableCredentialNameWrong })
-    }
+      // Abort if credential does NOT exist
+      if (!fs.existsSync(credentialFile)) {
+        return res.status(404).json({ reason: FAILURE_REASONS.verifiableCredentialNameWrong })
+      }
 
-    // Read content of the credential file and convert it to a Credential object
-    const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
-    credentials.push(Identity.Credential.fromJSON(JSON.parse(credentialData)))
-  }))
+      // Read content of the credential file and convert it to a Credential object
+      const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
+      credentials.push(Identity.Credential.fromJSON(JSON.parse(credentialData)))
+    })
+  )
 
   const builder = new Identity.AccountBuilder({
     autopublish: BASE_ACCOUNT_BUILDER_OPTIONS.autopublish,
     autosave: BASE_ACCOUNT_BUILDER_OPTIONS.autosave,
     clientConfig: BASE_ACCOUNT_BUILDER_OPTIONS.clientConfig,
-    storage: stronghold
+    storage: stronghold,
   })
 
   // Retrieve DID from Stronghold
@@ -259,21 +251,20 @@ SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
   // Create the Verifiable Presentation
   const vp = new Identity.Presentation({
     verifiableCredential: credentials,
-    holder: did
+    holder: did,
   })
 
   // Create a proof
   const proof = new Identity.ProofOptions({
     challenge: req.body.challenge,
-    expires: Identity.Timestamp.nowUTC().checkedAdd(Identity.Duration.minutes(10))
+    expires: Identity.Timestamp.nowUTC().checkedAdd(Identity.Duration.minutes(10)),
   })
 
   // Sign the presentation.
-  const signedVP = await account.createSignedPresentation("sign-0", vp, proof)
+  const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
 
   return res.status(200).json(signedVP.toJSON())
 })
-
 
 // Start the REST server.
 SERVER.listen(PORT, () => {

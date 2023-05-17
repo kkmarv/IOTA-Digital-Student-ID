@@ -30,5 +30,5 @@ export const FAILURE_REASONS = {
   diskWriteFailure: 'Unknown error while saving credential to a file.',
 
   // Tangle
-  tangleNoConnection: 'Keeper could not connect to the Tangle.'
+  tangleNoConnection: 'Keeper could not connect to the Tangle.',
 }
