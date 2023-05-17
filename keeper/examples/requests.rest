@@ -4,7 +4,7 @@
 # Student Identity
 @username = "heisenberg58"
 @password = "?!chemistry%Heck&Yeah420"
-@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4NDE3MjI1MCwiZXhwIjoxNjg0Nzc3MDUwLCJhdWQiOiJodHRwczovL2tlZXBlci5sb2NhbCIsImlzcyI6ImtlZXBlckBEZWxsLTJWQjlSNzMiLCJzdWIiOiJoZWlzZW5iZXJnNTgifQ.0loLdTrpTEbF7WF68LhRd_ByEJrLYiSGnyRS8P44_qs
+@jwtToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4NDM0MDU1MCwiZXhwIjoxNjg0OTQ1MzUwLCJhdWQiOiJodHRwczovL2tlZXBlci5sb2NhbCIsImlzcyI6ImtlZXBlckBEZWxsLTJWQjlSNzMiLCJzdWIiOiJoZWlzZW5iZXJnNTgifQ.DvCf2UdxB1XjIHgmwnfNfUNovMMseUYUTgRhH7ZN1NI
 @credentialName = walter
 
 
@@ -18,7 +18,6 @@ Content-Type: application/json
 ###
 
 GET http://{{host}}:{{port}}/api/auth/verify
-Content-Length: 0
 Authorization: Bearer {{jwtToken}}
 ###
 
