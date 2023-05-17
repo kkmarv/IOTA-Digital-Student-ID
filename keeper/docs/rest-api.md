@@ -12,6 +12,7 @@
   - [3.3. GET `/api/credentials/get/:name`](#33-get-apicredentialsgetname)
 - [4. Verifiable Presentations](#4-verifiable-presentations)
   - [4.1. POST `/api/presentations/create`](#41-post-apipresentationscreate)
+- [5. Error Responses](#5-error-responses)
 
 # 1. Authentication
 
@@ -267,3 +268,14 @@ Create a Verifiable Presentation from one or more locally saved credentials.
 | `401`      | Invalid JWT Token.                                                    |
 | `404`      | Credential with this name does not exist.                             |
 | `500`      | Unknown error while retrieving one of the credentials.                |
+
+# 5. Error Responses
+
+You can expect that every failing request responds with a short description explaining why.
+
+### Response Body <!-- omit in toc -->
+```json
+{
+  "reason": "Because it doesn't work."
+}
+```
