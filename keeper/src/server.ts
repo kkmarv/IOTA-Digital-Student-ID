@@ -11,6 +11,7 @@ import {
   isVerifiableCredential, UserCredentials
 } from './helper.js'
 import { authenticateJWT, issueJWT } from './jwt.js'
+import { HTTP_ERROR_MESSAGES } from './constants.js'
 
 Identity.start()
 
@@ -43,21 +44,21 @@ const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
 
 SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
-    return res.status(400).json('Invalid format of JSON request.')
+    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.credentialsMissing })
   }
 
   const credentials = req.body as UserCredentials
   const stronghold = await buildStronghold(credentials.username, credentials.password, false)
 
   if (!stronghold) {
-    return res.status(409).json('Username already taken.')
+    return res.status(409).json({ reason: HTTP_ERROR_MESSAGES.userDuplicate })
   }
 
   // Abort if Stronghold already contains a DID
   // Means that this exact user has registered already
   const didList = await stronghold.didList()
   if (didList.length != 0) {
-    return res.status(409).json('Username already taken.')
+    return res.status(409).json({ reason: HTTP_ERROR_MESSAGES.userDuplicate })
   }
 
   const builder = new Identity.AccountBuilder({
@@ -75,7 +76,7 @@ SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
     await account.publish()
   } catch (err) {
     console.error(err)
-    return res.status(503).json(`Error while publishing the DID. ${account.document().id()} `)
+    return res.status(503).json({ reason: HTTP_ERROR_MESSAGES.tangleNoConnection })
   }
 
   console.dir(account.document().toJSON(), { depth: null })
@@ -86,7 +87,7 @@ SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
 
 SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
-    return res.status(400).json('Missing username or password.')
+    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.credentialsMissing })
   }
 
   const credentials = req.body as UserCredentials
@@ -95,13 +96,13 @@ SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   stronghold?.flushChanges
 
   if (!stronghold) {
-    return res.status(401).json('Wrong username or password.')
+    return res.status(401).json({ reason: HTTP_ERROR_MESSAGES.credentialsWrong })
   }
 
   // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
-    return res.status(500).json('Corrupted Stronghold storage file.')
+    return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.didDuplicate })
   }
 
   const accessToken = issueJWT(credentials.username)
@@ -122,19 +123,19 @@ SERVER.get(ROUTES.authTokenDelete, authenticateJWT, async (req: Request, res: Re
 
 SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
-    return res.status(400).json('Missing password.')
+    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.passwordMissing })
   }
 
   const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
 
   if (!stronghold) {
-    return res.status(403).json('Wrong password.')
+    return res.status(403).json({ reason: HTTP_ERROR_MESSAGES.passwordWrong })
   }
 
   // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
-    return res.status(500).json('Corrupted Stronghold storage file.')
+    return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.didDuplicate })
   }
 
   return res.status(200).json({ did: didList[0] })
@@ -143,9 +144,9 @@ SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) 
 
 SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.verifiableCredential) {
-    return res.status(400).json('Missing Verifiable Credential.')
+    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialMissing })
   } else if (!isVerifiableCredential(req.body.verifiableCredential)) {
-    return res.status(422).json('Not a Verifiable Credential.')
+    return res.status(422).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialInvalid })
   }
 
   // Construct a file path for the credential
@@ -153,7 +154,7 @@ SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
 
   // Abort if credential file already exists
   if (fs.existsSync(credentialFile)) {
-    return res.status(409).json('Credential with same name already exists.')
+    return res.status(409).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialDuplicate })
   }
 
   const credential = JSON.stringify(req.body.verifiableCredential)
@@ -162,7 +163,7 @@ SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
   fs.writeFile(credentialFile, credential, (err) => {
     if (err) {
       console.error(err)
-      return res.status(500).json('Error while saving credential.')
+      return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.diskWriteFailure })
     }
     return res.sendStatus(204)
   })
@@ -172,21 +173,21 @@ SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
 SERVER.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
   const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.params.name}.json`
 
-  console.log(credentialFile);
+  console.log(credentialFile)
 
 
   // Abort if credential does NOT exist
   if (!fs.existsSync(credentialFile)) {
-    return res.status(404).json('Credential with this name does not exist.')
+    return res.status(404).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialNameWrong })
   }
 
   // Read content of the credential file
   fs.readFile(credentialFile, { encoding: 'utf8' }, (err, data) => {
     if (err) {
-      return res.status(500).json('Error while reading the credential file.')
+      return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.diskReadFailure })
     }
-    const credential = JSON.parse(data)
 
+    const credential = JSON.parse(data)
     return res.status(200).json(credential)
   })
 })
@@ -197,7 +198,7 @@ SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
 
   fs.readdir(userDirectory, (err, files) => {
     if (err) {
-      return res.status(500).json('Error while retrieving credentials.')
+      return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.diskReadFailure })
     }
 
     const credentialFiles: string[] = []
@@ -215,28 +216,28 @@ SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
 
 SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
-    return res.status(400).json('Missing password.')
+    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.passwordMissing })
   } else if (!req.body.challenge) {
-    return res.status(400).json('Missing challenge.')
+    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.challengeMissing })
   } else if (!(req.body.credentialNames && Array.isArray(req.body.credentialNames))) {
-    return res.status(400).json('Missing credential name.')
+    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialNameMissing })
   }
 
   const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
 
   if (!stronghold) {
-    return res.status(401).json('Wrong username or password.')
+    return res.status(401).json({ reason: HTTP_ERROR_MESSAGES.credentialsMissing })
   }
 
   let credentials: Identity.Credential[] = []
   await Promise.all(req.body.credentialNames.map(async (credentialName: string) => {
     const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
 
-    console.log(credentialName);
+    console.log(credentialName)
 
     // Abort if credential does NOT exist
     if (!fs.existsSync(credentialFile)) {
-      return res.status(404).json(`Credential with name ${credentialName} does not exist.`)
+      return res.status(404).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialNameWrong })
     }
 
     // Read content of the credential file and convert it to a Credential object
