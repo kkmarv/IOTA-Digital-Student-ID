@@ -1,4 +1,4 @@
-export const HTTP_ERROR_MESSAGES = {
+export const FAILURE_REASONS = {
   // Credentials
   credentialsMissing: 'Missing username or password.',
   credentialsWrong: 'Wrong username or password.',

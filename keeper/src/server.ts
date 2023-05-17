@@ -1,17 +1,17 @@
 import Identity from '@iota/identity-wasm/node/identity_wasm.js'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import { FAILURE_REASONS } from './constants.js'
 import {
+  UserCredentials,
   buildStronghold,
   getUserDirectory,
-  isJsonWebToken,
   isUserCredentials,
-  isVerifiableCredential, UserCredentials
+  isVerifiableCredential
 } from './helper.js'
 import { authenticateJWT, issueJWT } from './jwt.js'
-import { HTTP_ERROR_MESSAGES } from './constants.js'
 
 Identity.start()
 
@@ -44,21 +44,21 @@ const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
 
 SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
-    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.credentialsMissing })
+    return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
 
   const credentials = req.body as UserCredentials
   const stronghold = await buildStronghold(credentials.username, credentials.password, false)
 
   if (!stronghold) {
-    return res.status(409).json({ reason: HTTP_ERROR_MESSAGES.userDuplicate })
+    return res.status(409).json({ reason: FAILURE_REASONS.userDuplicate })
   }
 
   // Abort if Stronghold already contains a DID
   // Means that this exact user has registered already
   const didList = await stronghold.didList()
   if (didList.length != 0) {
-    return res.status(409).json({ reason: HTTP_ERROR_MESSAGES.userDuplicate })
+    return res.status(409).json({ reason: FAILURE_REASONS.userDuplicate })
   }
 
   const builder = new Identity.AccountBuilder({
@@ -76,7 +76,7 @@ SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
     await account.publish()
   } catch (err) {
     console.error(err)
-    return res.status(503).json({ reason: HTTP_ERROR_MESSAGES.tangleNoConnection })
+    return res.status(503).json({ reason: FAILURE_REASONS.tangleNoConnection })
   }
 
   console.dir(account.document().toJSON(), { depth: null })
@@ -87,7 +87,7 @@ SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
 
 SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
-    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.credentialsMissing })
+    return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
 
   const credentials = req.body as UserCredentials
@@ -96,13 +96,13 @@ SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   stronghold?.flushChanges
 
   if (!stronghold) {
-    return res.status(401).json({ reason: HTTP_ERROR_MESSAGES.credentialsWrong })
+    return res.status(401).json({ reason: FAILURE_REASONS.credentialsWrong })
   }
 
   // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
-    return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.didDuplicate })
+    return res.status(500).json({ reason: FAILURE_REASONS.didDuplicate })
   }
 
   const accessToken = issueJWT(credentials.username)
@@ -123,19 +123,19 @@ SERVER.get(ROUTES.authTokenDelete, authenticateJWT, async (req: Request, res: Re
 
 SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
-    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.passwordMissing })
+    return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
   }
 
   const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
 
   if (!stronghold) {
-    return res.status(403).json({ reason: HTTP_ERROR_MESSAGES.passwordWrong })
+    return res.status(403).json({ reason: FAILURE_REASONS.passwordWrong })
   }
 
   // Abort if Stronghold does not contain exactly one DID
   const didList = await stronghold.didList()
   if (didList.length != 1) {
-    return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.didDuplicate })
+    return res.status(500).json({ reason: FAILURE_REASONS.didDuplicate })
   }
 
   return res.status(200).json({ did: didList[0] })
@@ -144,9 +144,9 @@ SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) 
 
 SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.verifiableCredential) {
-    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialMissing })
+    return res.status(400).json({ reason: FAILURE_REASONS.verifiableCredentialMissing })
   } else if (!isVerifiableCredential(req.body.verifiableCredential)) {
-    return res.status(422).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialInvalid })
+    return res.status(422).json({ reason: FAILURE_REASONS.verifiableCredentialInvalid })
   }
 
   // Construct a file path for the credential
@@ -154,7 +154,7 @@ SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
 
   // Abort if credential file already exists
   if (fs.existsSync(credentialFile)) {
-    return res.status(409).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialDuplicate })
+    return res.status(409).json({ reason: FAILURE_REASONS.verifiableCredentialDuplicate })
   }
 
   const credential = JSON.stringify(req.body.verifiableCredential)
@@ -163,7 +163,7 @@ SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
   fs.writeFile(credentialFile, credential, (err) => {
     if (err) {
       console.error(err)
-      return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.diskWriteFailure })
+      return res.status(500).json({ reason: FAILURE_REASONS.diskWriteFailure })
     }
     return res.sendStatus(204)
   })
@@ -178,13 +178,13 @@ SERVER.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Resp
 
   // Abort if credential does NOT exist
   if (!fs.existsSync(credentialFile)) {
-    return res.status(404).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialNameWrong })
+    return res.status(404).json({ reason: FAILURE_REASONS.verifiableCredentialNameWrong })
   }
 
   // Read content of the credential file
   fs.readFile(credentialFile, { encoding: 'utf8' }, (err, data) => {
     if (err) {
-      return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.diskReadFailure })
+      return res.status(500).json({ reason: FAILURE_REASONS.diskReadFailure })
     }
 
     const credential = JSON.parse(data)
@@ -198,7 +198,7 @@ SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
 
   fs.readdir(userDirectory, (err, files) => {
     if (err) {
-      return res.status(500).json({ reason: HTTP_ERROR_MESSAGES.diskReadFailure })
+      return res.status(500).json({ reason: FAILURE_REASONS.diskReadFailure })
     }
 
     const credentialFiles: string[] = []
@@ -216,17 +216,17 @@ SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
 
 SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
-    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.passwordMissing })
+    return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
   } else if (!req.body.challenge) {
-    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.challengeMissing })
+    return res.status(400).json({ reason: FAILURE_REASONS.challengeMissing })
   } else if (!(req.body.credentialNames && Array.isArray(req.body.credentialNames))) {
-    return res.status(400).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialNameMissing })
+    return res.status(400).json({ reason: FAILURE_REASONS.verifiableCredentialNameMissing })
   }
 
   const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
 
   if (!stronghold) {
-    return res.status(401).json({ reason: HTTP_ERROR_MESSAGES.credentialsMissing })
+    return res.status(401).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
 
   let credentials: Identity.Credential[] = []
@@ -237,7 +237,7 @@ SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
 
     // Abort if credential does NOT exist
     if (!fs.existsSync(credentialFile)) {
-      return res.status(404).json({ reason: HTTP_ERROR_MESSAGES.verifiableCredentialNameWrong })
+      return res.status(404).json({ reason: FAILURE_REASONS.verifiableCredentialNameWrong })
     }
 
     // Read content of the credential file and convert it to a Credential object

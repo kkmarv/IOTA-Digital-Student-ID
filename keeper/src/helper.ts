@@ -1,6 +1,6 @@
-import fs from 'fs'
-import crypto from 'crypto'
 import { Stronghold } from '@iota/identity-stronghold-nodejs'
+import crypto from 'crypto'
+import fs from 'fs'
 
 
 interface ExtendedProofDocument {
