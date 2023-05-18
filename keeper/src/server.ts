@@ -3,7 +3,7 @@ import cors from 'cors'
 import express, { Request, Response } from 'express'
 import fs from 'fs'
 import path from 'path'
-import { FAILURE_REASONS } from './constants.js'
+import { API_ROOT, FAILURE_REASONS, PORT, ROUTES } from './constants.js'
 import {
   UserCredentials,
   buildStronghold,
@@ -15,25 +15,10 @@ import { authenticateJWT, issueJWT } from './jwt.js'
 
 Identity.start()
 
-const PORT = 8081
-const API_ROOT = '/api'
-
-const ROUTES = {
-  didGet: API_ROOT + '/did/get',
-  didCreate: API_ROOT + '/did/create',
-  authTokenCreate: API_ROOT + '/auth/create',
-  authTokenVerify: API_ROOT + '/auth/verify',
-  authTokenDelete: API_ROOT + '/auth/delete',
-  credentialGet: API_ROOT + '/credentials/get/:name',
-  credentialStore: API_ROOT + '/credentials/store',
-  credentialList: API_ROOT + '/credentials/list',
-  presentationCreate: API_ROOT + '/presentations/create',
-}
-
-const SERVER = express()
-SERVER.disable('x-powered-by')
-SERVER.use(cors())
-SERVER.use(express.json())
+const keeper = express()
+keeper.disable('x-powered-by')
+keeper.use(cors())
+keeper.use(express.json())
 
 const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
   autopublish: false,
@@ -41,7 +26,7 @@ const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
   clientConfig: { network: Identity.Network.devnet() },
 }
 
-SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
+keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
@@ -83,7 +68,7 @@ SERVER.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   return res.sendStatus(204)
 })
 
-SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
+keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
@@ -108,15 +93,11 @@ SERVER.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   return res.status(200).json({ jwt: accessToken })
 })
 
-SERVER.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
+keeper.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
   res.sendStatus(204)
 })
 
-SERVER.get(ROUTES.authTokenDelete, authenticateJWT, async (req: Request, res: Response) => {
-  // TODO
-})
-
-SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
+keeper.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
     return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
   }
@@ -136,7 +117,7 @@ SERVER.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) 
   return res.status(200).json({ did: didList[0] })
 })
 
-SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
+keeper.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.verifiableCredential) {
     return res.status(400).json({ reason: FAILURE_REASONS.verifiableCredentialMissing })
   } else if (!isVerifiableCredential(req.body.verifiableCredential)) {
@@ -163,7 +144,7 @@ SERVER.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
   })
 })
 
-SERVER.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
+keeper.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
   const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.params.name}.json`
 
   console.log(credentialFile)
@@ -184,7 +165,7 @@ SERVER.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Resp
   })
 })
 
-SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Response) => {
+keeper.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Response) => {
   const userDirectory = getUserDirectory(req.body.jwtPayload.username)
 
   fs.readdir(userDirectory, (err, files) => {
@@ -204,7 +185,7 @@ SERVER.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
   })
 })
 
-SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
+keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   if (!req.body.password) {
     return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
   } else if (!req.body.challenge) {
@@ -260,13 +241,13 @@ SERVER.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
     expires: Identity.Timestamp.nowUTC().checkedAdd(Identity.Duration.minutes(10)),
   })
 
-  // Sign the presentation.
+  // Sign the presentation
   const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
 
   return res.status(200).json(signedVP.toJSON())
 })
 
-// Start the REST server.
-SERVER.listen(PORT, () => {
+// Start the REST server
+keeper.listen(PORT, () => {
   console.log(`Keeper listening at http://localhost:${PORT}${API_ROOT}`)
 })
