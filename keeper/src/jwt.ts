@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { hostname } from 'os'
-import { FAILURE_REASONS, TOKEN_EXPIRES_IN, TOKEN_SECRET } from './constants'
+import { FAILURE_REASONS, TOKEN_EXPIRES_IN, TOKEN_SECRET } from './constants.js'
 
 export function issueJWT(username: string) {
   return jwt.sign({ username: username }, TOKEN_SECRET, {
