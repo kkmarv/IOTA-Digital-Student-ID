@@ -1,13 +1,13 @@
 // API endpoint configuration
-export const PORT = 8081
-export const API_ROOT = '/api'
+const PORT = 8081
+const API_ROOT = '/api'
 
 // JWT configuration
-export const TOKEN_SECRET = 'youraccesstokensecret' // TODO read from env file
-export const TOKEN_EXPIRES_IN = '7d' // TODO make shorter
+const TOKEN_SECRET = 'youraccesstokensecret' // TODO read from env file
+const TOKEN_EXPIRES_IN = '7d' // TODO make shorter
 
 // API Routes
-export const ROUTES = {
+const ROUTES = {
   didGet: API_ROOT + '/did/get',
   didCreate: API_ROOT + '/did/create',
   authTokenCreate: API_ROOT + '/auth/token/create',
@@ -18,7 +18,7 @@ export const ROUTES = {
   presentationCreate: API_ROOT + '/presentations/create',
 }
 
-export const FAILURE_REASONS = {
+const FAILURE_REASONS = {
   // Authentication
   jwtMissing: 'Missing authorization header.',
   jwtInvalid: 'Invalid JWT.',

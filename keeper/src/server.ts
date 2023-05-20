@@ -3,7 +3,6 @@ import cors from 'cors'
 import express, { Request, Response } from 'express'
 import fs from 'fs'
 import path from 'path'
-import { API_ROOT, FAILURE_REASONS, PORT, ROUTES } from './constants.js'
 import {
   UserCredentials,
   buildStronghold,
@@ -20,9 +19,7 @@ keeper.disable('x-powered-by')
 keeper.use(cors())
 keeper.use(express.json())
 
-
-
-const BASE_ACCOUNT_BUILDER_OPTIONS: Identity.AccountBuilderOptions = {
+const accBuilderBaseOptions: Identity.AccountBuilderOptions = {
   autopublish: false,
   autosave: Identity.AutoSave.every(),
   clientConfig: { network: Identity.Network.devnet() },
@@ -48,9 +45,9 @@ keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   }
 
   const builder = new Identity.AccountBuilder({
-    autopublish: BASE_ACCOUNT_BUILDER_OPTIONS.autopublish,
-    autosave: BASE_ACCOUNT_BUILDER_OPTIONS.autosave,
-    clientConfig: BASE_ACCOUNT_BUILDER_OPTIONS.clientConfig,
+    autopublish: accBuilderBaseOptions.autopublish,
+    autosave: accBuilderBaseOptions.autosave,
+    clientConfig: accBuilderBaseOptions.clientConfig,
     storage: stronghold,
   })
 
@@ -221,9 +218,9 @@ keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
   )
 
   const builder = new Identity.AccountBuilder({
-    autopublish: BASE_ACCOUNT_BUILDER_OPTIONS.autopublish,
-    autosave: BASE_ACCOUNT_BUILDER_OPTIONS.autosave,
-    clientConfig: BASE_ACCOUNT_BUILDER_OPTIONS.clientConfig,
+    autopublish: accBuilderBaseOptions.autopublish,
+    autosave: accBuilderBaseOptions.autosave,
+    clientConfig: accBuilderBaseOptions.clientConfig,
     storage: stronghold,
   })
 
