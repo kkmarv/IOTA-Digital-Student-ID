@@ -1,28 +1,26 @@
 import { NextFunction, Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
 import { hostname } from 'os'
 import { FAILURE_REASONS, TOKEN_EXPIRES_IN, TOKEN_SECRET } from './constants.js'
 
+const keeperIdentifier = `keeper@${hostname()}`
+
 export function issueJWT(username: string) {
-  return jwt.sign({ username: username }, TOKEN_SECRET, {
-    subject: username,
-    audience: 'https://keeper.local',
-    issuer: `keeper@${hostname()}`,
+  return jwt.sign({}, TOKEN_SECRET, {
+    audience: keeperIdentifier,
     expiresIn: TOKEN_EXPIRES_IN,
+    issuer: keeperIdentifier,
+    subject: username,
   })
 }
 
 export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization
+  const accessToken = req.cookies?.accessToken
 
-  if (!authHeader) {
-    return res.status(400).json({ reason: FAILURE_REASONS.jwtMissing })
-  }
-
-  // Remove the 'Bearer' keyword and verify the token
-  const token = authHeader.replace('Bearer ', '')
-  jwt.verify(token, TOKEN_SECRET, (err, jwtPayload) => {
-    if (err) {
+  jwt.verify(accessToken, TOKEN_SECRET, (err: Error | null, jwtPayload?: JwtPayload | string) => {
+    if (!jwtPayload) {
+      return res.status(400).json({ reason: FAILURE_REASONS.jwtMissing })
+    } else if (err) {
       return res.status(401).json({ reason: FAILURE_REASONS.jwtInvalid })
     }
 

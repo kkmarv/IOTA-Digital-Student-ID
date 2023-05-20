@@ -1,4 +1,4 @@
-import identity from '@iota/identity-wasm/node/'
+import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import assert from 'assert'
 import cors from 'cors'
 import crypto from 'crypto'

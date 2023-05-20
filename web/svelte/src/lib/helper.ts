@@ -7,4 +7,3 @@ export async function hasError(response: Response): Promise<string> {
   }
   return null
 }
-
