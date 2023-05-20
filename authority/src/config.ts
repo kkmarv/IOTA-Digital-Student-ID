@@ -1,58 +1,36 @@
-import assert from "assert";
-import { AutoSave, DID, Duration, Network } from "@iota/identity-wasm/node";
-import { Stronghold } from "@iota/identity-stronghold-nodejs";
-import { urlRegex } from "./globals.js";
+import { Stronghold } from '@iota/identity-stronghold-nodejs'
+import { AutoSave, DID, Duration, Network } from '@iota/identity-wasm/node'
+import assert from 'assert'
 
 // Silence all console logs when not in dev mode
-if (process.env.NODE_ENV !== "development") console.log = function () {};
+if (process.env.NODE_ENV !== 'development') console.log = function () {}
 
 // Ensure that all required env variables are defined and of valid format.
-assert(process.env.STRONGHOLD_PASS, "Please specify a password.");
-assert(process.env.INSTITUTION_NAME, "Please specify an institution name.");
-assert(
-  process.env.INSTITUTION_WEBSITE,
-  "Please specify a website that represents the institution."
-);
-assert(
-  process.env.INSTITUTION_WEBSITE.match(urlRegex),
-  "Given website could not be parsed as a valid URL."
-);
+assert(process.env.STRONGHOLD_PASS, 'Please specify a password.')
+assert(process.env.INSTITUTION_NAME, 'Please specify an institution name.')
+assert(process.env.INSTITUTION_WEBSITE, 'Please specify a website that represents the institution.')
+assert(process.env.INSTITUTION_WEBSITE.match(URL_REGEX), 'Given website could not be parsed as a valid URL.')
 if (process.env.PRIMARY_NODE_URL !== undefined) {
-  assert(
-    process.env.PRIMARY_NODE_URL.match(urlRegex),
-    "Primary node URL is not a valid URL."
-  );
+  assert(process.env.PRIMARY_NODE_URL.match(URL_REGEX), 'Primary node URL is not a valid URL.')
 }
 
 // Build the Stronghold storage
-const strongholdPath = process.env.STRONGHOLD_PATH || "./identity.hodl";
-const stronghold = await Stronghold.build(
-  strongholdPath,
-  process.env.STRONGHOLD_PASS
-);
+const strongholdPath = process.env.STRONGHOLD_PATH || './identity.hodl'
+const stronghold = await Stronghold.build(strongholdPath, process.env.STRONGHOLD_PASS)
 
 // Parse the DID and check if it exists in Stronghold
-const didUrl = process.env.INSTITUTION_DID
-  ? DID.parse(process.env.INSTITUTION_DID)
-  : undefined;
+const didUrl = process.env.INSTITUTION_DID ? DID.parse(process.env.INSTITUTION_DID) : undefined
 if (didUrl) {
-  assert(
-    stronghold.didExists(didUrl),
-    "Given DID does not exist in Stronghold."
-  );
+  assert(stronghold.didExists(didUrl), 'Given DID does not exist in Stronghold.')
 }
 
 // Options for connecting to the Tangle network.
 const tangleClient = {
   // The Tangle network to use.
-  network: process.env.INSTITUTION_NETWORK
-    ? Network.tryFromName(process.env.INSTITUTION_NETWORK)
-    : Network.devnet(),
+  network: process.env.INSTITUTION_NETWORK ? Network.tryFromName(process.env.INSTITUTION_NETWORK) : Network.devnet(),
   // The node to use for Tangle operations - defaults to load balancer if undefined.
-  primaryNode: process.env.PRIMARY_NODE_URL
-    ? { url: process.env.PRIMARY_NODE_URL }
-    : undefined,
-};
+  primaryNode: process.env.PRIMARY_NODE_URL ? { url: process.env.PRIMARY_NODE_URL } : undefined,
+}
 
 const cfg = {
   // Expose the Web service on this port.
@@ -60,14 +38,11 @@ const cfg = {
   // Expose the API service on this port.
   apiPort: 8080,
   // The first day of the summer semester.
-  ssStart: process.env.SS_START || "04-01",
+  ssStart: process.env.SS_START || '04-01',
   // The first day of the winter semester.
-  wsStart: process.env.WS_START || "10-01",
+  wsStart: process.env.WS_START || '10-01',
   // Development mode ("development" is used for debug)
-  devMode:
-    process.env.NODE_ENV && process.env.NODE_ENV === "development"
-      ? true
-      : false,
+  devMode: process.env.NODE_ENV && process.env.NODE_ENV === 'development' ? true : false,
   institution: {
     // Your DID.
     did: didUrl,
@@ -97,6 +72,6 @@ const cfg = {
       pass: process.env.STRONGHOLD_PASS,
     },
   },
-};
+}
 
-export default cfg;
+export default cfg
