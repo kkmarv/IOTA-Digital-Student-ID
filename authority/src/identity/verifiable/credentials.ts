@@ -1,13 +1,13 @@
-import nextSemesterStart from '../util/time.js'
+import nextSemesterStart from "../util/time.js";
 import {
   Credential,
   RevocationBitmap,
-  Timestamp
-} from '@iota/identity-wasm/node/identity_wasm.js'
-import { UniversityID } from '../digitalIDs/UniversityID.js'
-import { LibraryAccess } from '../subjects/LibraryAccess.js'
-import { StudyData } from '../subjects/Matriculation.js'
-import { CredentialType } from '../types.js'
+  Timestamp,
+} from "@iota/identity-wasm/node";
+import { UniversityID } from "../digitalIDs/UniversityID.js";
+import { LibraryAccess } from "../subjects/LibraryAccess.js";
+import { StudyData } from "../subjects/Matriculation.js";
+import { CredentialType } from "../types.js";
 
 /**
  * A Verifiable {@link Credential} to assess the matriculation of its holder.
@@ -32,11 +32,10 @@ export class StudentVC extends Credential {
       // termsOfUse: undefined, // TODO define tos
       // refreshService: undefined, // TODO define service
       // evidence: undefined, // TODO define evidence
-      nonTransferable: true
-    })
+      nonTransferable: true,
+    });
   }
 }
-
 
 /**
  * A Verifiable {@link Credential} to assess the library access of its holder.
@@ -48,14 +47,14 @@ export class LibraryCardVC extends Credential {
       type: CredentialType.UNIVERSITY_LIBRARY_CARD,
       issuer: issuer.id,
       credentialStatus: {
-        id: issuer.id + '#', // TODO + revocationBitmapFragment,
-        type: RevocationBitmap.type()
+        id: issuer.id + "#", // TODO + revocationBitmapFragment,
+        type: RevocationBitmap.type(),
       },
       credentialSubject: subject,
       issuanceDate: Timestamp.nowUTC(),
       expirationDate: nextSemesterStart(),
       credentialSchema: undefined, // TODO define credentialSchema
-      nonTransferable: true
-    })
+      nonTransferable: true,
+    });
   }
 }
