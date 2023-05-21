@@ -12,7 +12,7 @@ export const ROUTES = {
   didCreate: API_ROOT + '/did/create',
   authTokenCreate: API_ROOT + '/auth/token/create',
   authTokenVerify: API_ROOT + '/auth/token/verify',
-  credentialGet: API_ROOT + '/credentials/get/:name',
+  credentialGet: API_ROOT + '/credentials/get/:credentialName',
   credentialStore: API_ROOT + '/credentials/store',
   credentialList: API_ROOT + '/credentials/list',
   presentationCreate: API_ROOT + '/presentations/create',
@@ -51,7 +51,7 @@ export const FAILURE_REASONS = {
 
   // Disk operations
   diskReadFailure: 'Unknown error while reading the credential file(s).',
-  diskWriteFailure: 'Unknown error while saving credential to a file.',
+  diskWriteFailure: 'Unknown error while saving the credential to a file.',
 
   // Tangle
   tangleNoConnection: 'Keeper could not connect to the Tangle.',

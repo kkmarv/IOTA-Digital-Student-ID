@@ -25,7 +25,7 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
     }
 
     // Insert JWT contents into request for further processing
-    req.body.jwtPayload = jwtPayload
+    req.body.username = jwtPayload.sub
 
     return next()
   })

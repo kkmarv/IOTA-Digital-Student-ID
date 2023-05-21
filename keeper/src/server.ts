@@ -1,4 +1,5 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
 import fs from 'fs'
@@ -12,13 +13,12 @@ import {
   isVerifiableCredential,
 } from './helper.js'
 import { authenticateJWT, issueJWT } from './jwt.js'
-import cookieParser from 'cookie-parser'
 
 identity.start()
 
 const corsOptions = {
   origin: `http://localhost:5173`, // Vite dev server
-  allowedHeaders: ['Authorization', 'Content-Type'],
+  allowedHeaders: ['Content-Type'],
   credentials: true,
 }
 
@@ -39,8 +39,8 @@ keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {
     return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
 
-  const credentials = req.body as UserCredentials
-  const stronghold = await buildStronghold(credentials.username, credentials.password, false)
+  const { username, password } = req.body as UserCredentials
+  const stronghold = await buildStronghold(username, password, false)
 
   if (!stronghold) {
     return res.status(409).json({ reason: FAILURE_REASONS.userDuplicate })
@@ -81,8 +81,8 @@ keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
     return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
 
-  const credentials = req.body as UserCredentials
-  const stronghold = await buildStronghold(credentials.username, credentials.password)
+  const { username, password } = req.body
+  const stronghold = await buildStronghold(username, password)
 
   stronghold?.flushChanges
 
@@ -97,7 +97,7 @@ keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   }
 
   // Create JWT and set a cookie
-  const accessToken = issueJWT(credentials.username)
+  const accessToken = issueJWT(username)
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     secure: true,
@@ -112,11 +112,13 @@ keeper.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Re
 })
 
 keeper.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
-  if (!req.body.password) {
+  const { username, password } = req.body
+
+  if (!password) {
     return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
   }
 
-  const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
+  const stronghold = await buildStronghold(username, password)
 
   if (!stronghold) {
     return res.status(403).json({ reason: FAILURE_REASONS.passwordWrong })
@@ -132,21 +134,23 @@ keeper.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) 
 })
 
 keeper.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
-  if (!req.body.verifiableCredential) {
+  const { username, credentialName, verifiableCredential } = req.body
+
+  if (!verifiableCredential) {
     return res.status(400).json({ reason: FAILURE_REASONS.verifiableCredentialMissing })
-  } else if (!isVerifiableCredential(req.body.verifiableCredential)) {
+  } else if (!isVerifiableCredential(verifiableCredential)) {
     return res.status(422).json({ reason: FAILURE_REASONS.verifiableCredentialInvalid })
   }
 
   // Construct a file path for the credential
-  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)} /${req.body.credentialName}.json`
+  const credentialFile = `${getUserDirectory(username)}/${credentialName}.json`
 
   // Abort if credential file already exists
   if (fs.existsSync(credentialFile)) {
     return res.status(409).json({ reason: FAILURE_REASONS.verifiableCredentialDuplicate })
   }
 
-  const credential = JSON.stringify(req.body.verifiableCredential)
+  const credential = JSON.stringify(verifiableCredential)
 
   // Save the credential to a json file
   fs.writeFile(credentialFile, credential, (err) => {
@@ -159,7 +163,14 @@ keeper.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
 })
 
 keeper.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
-  const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.params.name}.json`
+  const { username } = req.body
+  const { credentialName } = req.params
+
+  if (!credentialName) {
+    return res.status(400).json(FAILURE_REASONS.verifiableCredentialNameMissing)
+  }
+
+  const credentialFile = `${getUserDirectory(username)}/${credentialName}.json`
 
   console.log(credentialFile)
 
@@ -180,7 +191,8 @@ keeper.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Resp
 })
 
 keeper.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Response) => {
-  const userDirectory = getUserDirectory(req.body.jwtPayload.username)
+  const { username } = req.body
+  const userDirectory = getUserDirectory(username)
 
   fs.readdir(userDirectory, (err, files) => {
     if (err) {
@@ -188,49 +200,45 @@ keeper.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
     }
 
     const credentialFiles: string[] = []
-
     files.forEach((file) => {
       if (path.extname(file) === '.json') {
         credentialFiles.push(path.basename(file, '.json'))
       }
     })
-
     res.status(200).json({ credentials: credentialFiles })
   })
 })
 
 keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
-  if (!req.body.password) {
+  const { username, password, challenge, credentialNames } = req.body
+
+  if (!password) {
     return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
-  } else if (!req.body.challenge) {
+  } else if (!challenge) {
     return res.status(400).json({ reason: FAILURE_REASONS.challengeMissing })
-  } else if (!(req.body.credentialNames && Array.isArray(req.body.credentialNames))) {
+  } else if (!(credentialNames && Array.isArray(credentialNames))) {
     return res.status(400).json({ reason: FAILURE_REASONS.verifiableCredentialNameMissing })
   }
 
-  const stronghold = await buildStronghold(req.body.jwtPayload.username, req.body.password)
+  const stronghold = await buildStronghold(username, password)
 
   if (!stronghold) {
     return res.status(401).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
 
-  let credentials: identity.Credential[] = []
-  await Promise.all(
-    req.body.credentialNames.map(async (credentialName: string) => {
-      const credentialFile = `${getUserDirectory(req.body.jwtPayload.username)}/${req.body.credentialName}.json`
+  const credentials: identity.Credential[] = []
+  for (const credName of credentialNames) {
+    const credentialFile = `${getUserDirectory(username)}/${credName}.json`
 
-      console.log(credentialName)
+    // Abort if credential does NOT exist
+    if (!fs.existsSync(credentialFile)) {
+      return res.status(404).json({ reason: FAILURE_REASONS.verifiableCredentialNameWrong })
+    }
 
-      // Abort if credential does NOT exist
-      if (!fs.existsSync(credentialFile)) {
-        return res.status(404).json({ reason: FAILURE_REASONS.verifiableCredentialNameWrong })
-      }
-
-      // Read content of the credential file and convert it to a Credential object
-      const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
-      credentials.push(identity.Credential.fromJSON(JSON.parse(credentialData)))
-    })
-  )
+    // Read content of the credential file and convert it to a Credential object
+    const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
+    credentials.push(identity.Credential.fromJSON(JSON.parse(credentialData)))
+  }
 
   const builder = new identity.AccountBuilder({
     autopublish: accBuilderBaseOptions.autopublish,
@@ -251,7 +259,7 @@ keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
 
   // Create a proof
   const proof = new identity.ProofOptions({
-    challenge: req.body.challenge,
+    challenge: challenge,
     expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
   })
 
