@@ -15,17 +15,19 @@ export function issueJWT(username: string) {
 }
 
 export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const accessToken = req.cookies?.accessToken
+  const { accessToken } = req.cookies
+
+  if (!accessToken) {
+    return res.status(400).json({ reason: FAILURE_REASONS.jwtMissing })
+  }
 
   jwt.verify(accessToken, TOKEN_SECRET, (err: Error | null, jwtPayload?: JwtPayload | string) => {
-    if (!jwtPayload) {
-      return res.status(400).json({ reason: FAILURE_REASONS.jwtMissing })
-    } else if (err) {
+    if (err) {
       return res.status(401).json({ reason: FAILURE_REASONS.jwtInvalid })
     }
 
     // Insert JWT contents into request for further processing
-    req.body.username = jwtPayload.sub
+    req.body.username = jwtPayload!.sub
 
     return next()
   })
