@@ -1,7 +1,10 @@
+const KEEPER_API = 'http://localhost:8081/api/'
+
 export const KEEPER_API_ROUTES = {
-  registerNewUser: 'http://localhost:8081/api/did/create',
-  createAccessToken: 'http://localhost:8081/api/auth/token/create',
-  verifyAccessToken: 'http://localhost:8081/api/auth/token/verify',
+  signData: KEEPER_API + 'did/sign',
+  registerNewUser: KEEPER_API + 'did/create',
+  createAccessToken: KEEPER_API + 'auth/token/create',
+  verifyAccessToken: KEEPER_API + 'auth/token/verify',
 }
 
 export const APP_ROUTES = {

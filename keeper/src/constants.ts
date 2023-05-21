@@ -9,6 +9,7 @@ export const TOKEN_EXPIRES_IN = '30m'
 // API Routes
 export const ROUTES = {
   didGet: API_ROOT + '/did/get',
+  didSign: API_ROOT + '/did/sign',
   didCreate: API_ROOT + '/did/create',
   authTokenCreate: API_ROOT + '/auth/token/create',
   authTokenVerify: API_ROOT + '/auth/token/verify',
@@ -22,6 +23,7 @@ export const FAILURE_REASONS = {
   // Authentication
   jwtMissing: 'Missing JWT.',
   jwtInvalid: 'Invalid JWT.',
+  jwtExpired: 'Expired JWT',
 
   // Credentials
   credentialsMissing: 'Missing username or password.',

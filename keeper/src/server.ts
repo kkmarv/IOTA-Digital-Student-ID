@@ -34,6 +34,39 @@ const accBuilderBaseOptions: identity.AccountBuilderOptions = {
   clientConfig: { network: identity.Network.devnet() },
 }
 
+keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
+  if (!isUserCredentials(req.body)) {
+    return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
+  }
+
+  const { username, password } = req.body
+  const stronghold = await buildStronghold(username, password)
+
+  if (!stronghold) {
+    return res.status(401).json({ reason: FAILURE_REASONS.credentialsWrong })
+  }
+
+  // Abort if Stronghold does not contain exactly one DID
+  const didList = await stronghold.didList()
+  if (didList.length != 1) {
+    return res.status(500).json({ reason: FAILURE_REASONS.didDuplicate })
+  }
+
+  // Create JWT and set a cookie
+  const accessToken = issueJWT(username, didList[0].toString())
+  res.cookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: true,
+  })
+
+  return res.sendStatus(204)
+})
+
+keeper.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
+  res.sendStatus(204)
+})
+
 keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
@@ -76,41 +109,6 @@ keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   return res.sendStatus(204)
 })
 
-keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
-  if (!isUserCredentials(req.body)) {
-    return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
-  }
-
-  const { username, password } = req.body
-  const stronghold = await buildStronghold(username, password)
-
-  stronghold?.flushChanges
-
-  if (!stronghold) {
-    return res.status(401).json({ reason: FAILURE_REASONS.credentialsWrong })
-  }
-
-  // Abort if Stronghold does not contain exactly one DID
-  const didList = await stronghold.didList()
-  if (didList.length != 1) {
-    return res.status(500).json({ reason: FAILURE_REASONS.didDuplicate })
-  }
-
-  // Create JWT and set a cookie
-  const accessToken = issueJWT(username)
-  res.cookie('accessToken', accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: true,
-  })
-
-  return res.sendStatus(204)
-})
-
-keeper.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
-  res.sendStatus(204)
-})
-
 keeper.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
   const { username, password } = req.body
 
@@ -131,6 +129,37 @@ keeper.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) 
   }
 
   return res.status(200).json({ did: didList[0] })
+})
+
+keeper.post(ROUTES.didSign, authenticateJWT, async (req: Request, res: Response) => {
+  const { username, password, did, data, challenge } = req.body
+
+  if (!password) {
+    return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
+  }
+
+  const stronghold = await buildStronghold(username, password)
+  if (!stronghold) {
+    return res.status(401).json({ reason: FAILURE_REASONS.passwordWrong })
+  }
+
+  const builder = new identity.AccountBuilder({
+    autopublish: accBuilderBaseOptions.autopublish,
+    autosave: accBuilderBaseOptions.autosave,
+    clientConfig: accBuilderBaseOptions.clientConfig,
+    storage: stronghold,
+  })
+
+  const proof = new identity.ProofOptions({
+    challenge: challenge,
+    expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
+  })
+
+  const account = await builder.loadIdentity(identity.DID.parse(did))
+  const signedData = await account.createSignedData('sign-0', { data }, proof)
+  console.log(signedData)
+
+  return res.status(200).json({ signedData: signedData })
 })
 
 keeper.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
@@ -210,7 +239,7 @@ keeper.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
 })
 
 keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
-  const { username, password, challenge, credentialNames } = req.body
+  const { username, password, did, challenge, credentialNames } = req.body
 
   if (!password) {
     return res.status(400).json({ reason: FAILURE_REASONS.passwordMissing })
@@ -221,9 +250,8 @@ keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
   }
 
   const stronghold = await buildStronghold(username, password)
-
   if (!stronghold) {
-    return res.status(401).json({ reason: FAILURE_REASONS.credentialsMissing })
+    return res.status(401).json({ reason: FAILURE_REASONS.passwordWrong })
   }
 
   const credentials: identity.Credential[] = []
@@ -247,8 +275,6 @@ keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
     storage: stronghold,
   })
 
-  // Retrieve DID from Stronghold
-  const did = (await stronghold.didList())[0]
   const account = await builder.loadIdentity(did)
 
   // Create the Verifiable Presentation

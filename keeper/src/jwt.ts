@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from 'express'
-import jwt, { JwtPayload } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import { hostname } from 'os'
 import { FAILURE_REASONS, TOKEN_EXPIRES_IN, TOKEN_SECRET } from './constants.js'
 
 const keeperIdentifier = `keeper@${hostname()}`
 
-export function issueJWT(username: string) {
-  return jwt.sign({}, TOKEN_SECRET, {
+export function issueJWT(username: string, did: string) {
+  return jwt.sign({ username: username }, TOKEN_SECRET, {
     audience: keeperIdentifier,
     expiresIn: TOKEN_EXPIRES_IN,
     issuer: keeperIdentifier,
-    subject: username,
+    subject: did,
   })
 }
 
@@ -21,13 +21,18 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
     return res.status(400).json({ reason: FAILURE_REASONS.jwtMissing })
   }
 
-  jwt.verify(accessToken, TOKEN_SECRET, (err: Error | null, jwtPayload?: JwtPayload | string) => {
+  jwt.verify(accessToken, TOKEN_SECRET, (err: jwt.VerifyErrors | null, jwtPayload: any) => {
     if (err) {
-      return res.status(401).json({ reason: FAILURE_REASONS.jwtInvalid })
+      if (err instanceof jwt.TokenExpiredError) {
+        return res.status(403).json({ reason: FAILURE_REASONS.jwtExpired })
+      } else {
+        return res.status(401).json({ reason: FAILURE_REASONS.jwtInvalid })
+      }
     }
 
     // Insert JWT contents into request for further processing
-    req.body.username = jwtPayload!.sub
+    req.body.did = jwtPayload.sub
+    req.body.username = jwtPayload.username
 
     return next()
   })

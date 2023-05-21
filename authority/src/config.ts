@@ -1,6 +1,7 @@
 import { Stronghold } from '@iota/identity-stronghold-nodejs'
-import { AutoSave, DID, Duration, Network } from '@iota/identity-wasm/node'
+import { AutoSave, DID, Duration, Network } from '@iota/identity-wasm/node/identity_wasm.js'
 import assert from 'assert'
+import { URL_REGEX } from './constants.js'
 
 // Silence all console logs when not in dev mode
 if (process.env.NODE_ENV !== 'development') console.log = function () {}
