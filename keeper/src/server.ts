@@ -26,7 +26,7 @@ const keeper = express()
 keeper.disable('x-powered-by')
 keeper.use(cors(corsOptions))
 keeper.use(cookieParser())
-keeper.use(express.json())
+keeper.use(express.json()) // look into nicer options
 
 const accBuilderBaseOptions: identity.AccountBuilderOptions = {
   autopublish: false,
@@ -65,6 +65,10 @@ keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
 
 keeper.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
   res.sendStatus(204)
+})
+
+keeper.get(ROUTES.authTokenDelete, authenticateJWT, (req: Request, res: Response) => {
+  res.clearCookie('accessToken').sendStatus(204)
 })
 
 keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {

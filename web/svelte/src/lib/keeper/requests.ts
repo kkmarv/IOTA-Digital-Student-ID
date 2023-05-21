@@ -44,6 +44,14 @@ export async function register(username: string, password: string) {
   return !(await hasError(response))
 }
 
+export async function logout() {
+  const response = await fetch(route.deleteAccessToken, {
+    method: 'GET',
+    credentials: 'include',
+  })
+  return !(await hasError(response))
+}
+
 async function hasError(response: Response): Promise<string> {
   if (!response) return 'Network error.'
   else if (!response.ok) {

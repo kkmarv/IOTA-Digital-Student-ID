@@ -1,11 +1,13 @@
 <script>
   import { onMount } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import { verifyAccessToken } from '../lib/keeper/requests'
+  import keeper from '../lib/keeper'
   import { appRoutes } from '../components/Router.svelte'
 
   onMount(async () => {
-    if (!(await verifyAccessToken())) navigate(appRoutes.login)
+    if (!(await keeper.verifyAccessToken())) {
+      navigate(appRoutes.login)
+    }
   })
 </script>
 

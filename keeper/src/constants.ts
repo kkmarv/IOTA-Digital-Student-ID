@@ -13,6 +13,7 @@ export const ROUTES = {
   didCreate: API_ROOT + '/did/create',
   authTokenCreate: API_ROOT + '/auth/token/create',
   authTokenVerify: API_ROOT + '/auth/token/verify',
+  authTokenDelete: API_ROOT + '/auth/token/delete',
   credentialGet: API_ROOT + '/credentials/get/:credentialName',
   credentialStore: API_ROOT + '/credentials/store',
   credentialList: API_ROOT + '/credentials/list',
@@ -23,7 +24,7 @@ export const FAILURE_REASONS = {
   // Authentication
   jwtMissing: 'Missing JWT.',
   jwtInvalid: 'Invalid JWT.',
-  jwtExpired: 'Expired JWT',
+  jwtExpired: 'Login Expired.',
 
   // Credentials
   credentialsMissing: 'Missing username or password.',

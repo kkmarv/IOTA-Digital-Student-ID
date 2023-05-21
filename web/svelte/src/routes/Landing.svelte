@@ -1,6 +1,7 @@
 <script lang="ts">
   import io, { Socket } from 'socket.io-client'
   import keeper from '../lib/keeper'
+  import Logout from '../components/Logout.svelte'
 
   let socket: Socket
   let server = 'http://localhost:3000'
@@ -50,4 +51,5 @@
     <input bind:value={message} type="text" placeholder="Enter a message" />
     <button on:click={() => sendMessage()}>Send</button>
   </div>
+  <Logout />
 </div>

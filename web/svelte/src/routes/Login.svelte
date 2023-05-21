@@ -9,7 +9,7 @@
   // Skip login if already logged in
   let hasLoaded = false
   onMount(async () => {
-    if (await keeper.verifyAccessToken()) navigate('/landing', { replace: true })
+    if (await keeper.verifyAccessToken()) navigate(appRoutes.landing, { replace: true })
     hasLoaded = true
   })
 
@@ -30,7 +30,7 @@
 
   async function login(username: string, password: string) {
     const success = await keeper.createAccessToken(username, password)
-    if (success) navigate(appRoutes.landing)
+    if (success) navigate(appRoutes.landing, { replace: true })
   }
 
   async function register(username: string, password: string) {
