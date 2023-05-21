@@ -1,11 +1,16 @@
-<script>
+<script context="module">
   import { Route, Router } from 'svelte-routing'
-  import { APP_ROUTES } from '../lib/constants'
   import Landing from '../routes/Landing.svelte'
   import Login from '../routes/Login.svelte'
   import NotFound from '../routes/NotFound.svelte'
   import AuthGuard from './AuthGuard.svelte'
   import Logo from './Logo.svelte'
+
+  export const appRoutes = {
+    login: '/login',
+    register: '/register',
+    landing: '/landing',
+  }
 </script>
 
 <Router>
@@ -13,10 +18,10 @@
     <Logo />
   </nav>
 
-  <Route path={APP_ROUTES.login}><Login activeTab="login" /></Route>
-  <Route path={APP_ROUTES.register}><Login activeTab="register" /></Route>
+  <Route path={appRoutes.login}><Login activeTab="login" /></Route>
+  <Route path={appRoutes.register}><Login activeTab="register" /></Route>
   <AuthGuard>
-    <Route path={APP_ROUTES.landing}><Landing /></Route>
+    <Route path={appRoutes.landing}><Landing /></Route>
   </AuthGuard>
   <Route path="*"><NotFound /></Route>
 </Router>

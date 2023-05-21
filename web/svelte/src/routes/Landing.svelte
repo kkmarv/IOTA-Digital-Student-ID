@@ -1,7 +1,6 @@
 <script lang="ts">
   import io, { Socket } from 'socket.io-client'
-  import { KEEPER_API_ROUTES } from '../lib/constants'
-  import { hasError } from '../lib/helper'
+  import keeper from '../lib/keeper'
 
   let socket: Socket
   let server = 'http://localhost:3000'
@@ -12,29 +11,19 @@
     socket.emit('message', message)
   }
 
-  async function requestDataSignature(data: any, password: string): Promise<any> {
-    const response = await fetch(KEEPER_API_ROUTES.signData, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        password: password,
-        challenge: data,
-      }),
-    })
-    if (await hasError(response)) return null
-    else return await response.json()
-  }
-
   function setServer() {
     socket = io(server)
     socket.on('connect', () => {
       console.log('WebSocket connected')
     })
 
-    socket.on('auth', (data) => {
+    socket.on('authRequest', (data) => {
       const { challenge } = data
-      requestDataSignature(challenge, password).then((result) => console.log(result))
+      keeper.signData(challenge, password).then((signedChallenge) => {
+        if (signedChallenge) {
+          socket.emit('authRequest', signedChallenge)
+        }
+      })
     })
 
     socket.on('message', (message: any) => {

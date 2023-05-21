@@ -1,10 +1,10 @@
-<script lang="ts">
-  import { APP_ROUTES } from '../lib/constants'
+<script>
+  import { appRoutes } from '../components/Router.svelte'
 </script>
 
 <div class="keeper">
   <h1 class="logo">
-    <a href={APP_ROUTES.landing}>keeper</a>
+    <a href={appRoutes.landing}>keeper</a>
   </h1>
 </div>
 

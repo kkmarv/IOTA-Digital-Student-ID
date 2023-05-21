@@ -3,14 +3,13 @@
   import { navigate } from 'svelte-routing'
   import CredentialForm from '../components/CredentialForm.svelte'
   import Loading from '../components/Loading.svelte'
-  import { requestAccessToken, verifyAccessToken } from '../lib/auth'
-  import { KEEPER_API_ROUTES } from '../lib/constants'
-  import { hasError } from '../lib/helper'
+  import { appRoutes } from '../components/Router.svelte'
+  import keeper from '../lib/keeper/'
 
   // Skip login if already logged in
   let hasLoaded = false
   onMount(async () => {
-    if (await verifyAccessToken()) navigate('/landing', { replace: true })
+    if (await keeper.verifyAccessToken()) navigate('/landing', { replace: true })
     hasLoaded = true
   })
 
@@ -29,26 +28,16 @@
     activeTab = tab
   }
 
-  async function register(username: string, password: string) {
-    isRegistering = true
-    const response = await fetch(KEEPER_API_ROUTES.registerNewUser, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
-    })
-    isRegistering = false
-
-    if (!(await hasError(response))) {
-      login(username, password)
-    }
+  async function login(username: string, password: string) {
+    const success = await keeper.createAccessToken(username, password)
+    if (success) navigate(appRoutes.landing)
   }
 
-  async function login(username: string, password: string) {
-    const requestSucceeded = await requestAccessToken(username, password)
-    if (requestSucceeded) navigate('/landing')
+  async function register(username: string, password: string) {
+    isRegistering = true
+    const success = await keeper.register(username, password)
+    isRegistering = false
+    if (success) login(username, password)
   }
 </script>
 
@@ -82,7 +71,7 @@
       bind:username
       bind:password
       buttonText={'Register'}
-      submitAction={register}
+      submitAction={() => register(username, password)}
       submitDisabled={isRegistering}
     />
   {/if}
