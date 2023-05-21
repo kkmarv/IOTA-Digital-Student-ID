@@ -5,15 +5,16 @@ import { Server as HTTPServer } from 'http'
 import { Socket, Server as WSServer } from 'socket.io'
 import cfg from './config.js'
 import { API_ENDPOINT } from './constants.js'
-import { AuthenticationResponse, HelloResponse, randomString } from './helper.js'
+import { randomString } from './helper.js'
+import { ClientToServerEvents, ServerToClientEvents } from './socketIOTyping.js'
 
 const authority = express()
 authority.disable('x-powered-by')
 authority.use(cors())
 // authority.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {customCss}));
-
+identity.VerifierOptions
 const httpServer = new HTTPServer(authority)
-const wsServer = new WSServer(httpServer, { cors: { origin: '*' } })
+const wsServer = new WSServer<ClientToServerEvents, ServerToClientEvents>(httpServer, { cors: { origin: '*' } })
 
 const clients = new Map<string, string>()
 
@@ -31,11 +32,14 @@ setInterval(() => {
   }
 }, 10 * 60 * 1000) // every 10 minutes
 
-wsServer.on('connection', (socket: Socket) => {
+wsServer.on('connection', (socket) => {
   console.log('A client connected')
 
-  socket.on('registerClient', (data: HelloResponse | null) => {
-    if (data === null) return console.log('Did not send any data')
+  socket.on('registerClient', (data) => {
+    if (data === null) {
+      socket.disconnect(true)
+      return console.log('Did not send any data. Disconnecting client')
+    }
 
     const { did } = data
     console.log('Registering client:', did)
@@ -44,7 +48,8 @@ wsServer.on('connection', (socket: Socket) => {
     try {
       identity.DID.parse(did)
     } catch (err) {
-      return console.log('Invalid DID!')
+      socket.disconnect(true)
+      return console.log('Invalid DID! Disconnecting client')
     }
 
     const challenge = randomString(32)
@@ -53,7 +58,7 @@ wsServer.on('connection', (socket: Socket) => {
     socket.emit('authRequest', { challenge: challenge })
   })
 
-  socket.on('authRequest', async (data: AuthenticationResponse) => {
+  socket.on('authRequest', async (data) => {
     const { challenge, verificationMethod } = data.signedData.proof
     const did = verificationMethod.split('#')[0]
 
@@ -64,7 +69,7 @@ wsServer.on('connection', (socket: Socket) => {
     const verifierOptions = new VerifierOptions({
       challenge: challenge,
       allowExpired: false,
-      // purpose: identity.ProofPurpose.authentication(), // TODO
+      // purpose: identity.ProofPurpose.authentication(), // TODO requires method relationship
     })
 
     // Create Tangle Resolver for the devnet
@@ -76,15 +81,11 @@ wsServer.on('connection', (socket: Socket) => {
     const isSignatureValid = clientDocument.verifyData(data.signedData, verifierOptions)
 
     if (!isSignatureValid) {
-      return console.log('Authentication failure')
+      socket.disconnect(true)
+      return console.log('Authentication failure. Disconnecting client')
     }
 
     console.log('Authentication success')
-  })
-
-  socket.on('message', (message: string) => {
-    console.log('Received message:', message)
-    socket.emit('message', 'Server received your message: ' + message)
   })
 
   socket.on('disconnect', () => {

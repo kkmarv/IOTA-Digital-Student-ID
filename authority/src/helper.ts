@@ -13,16 +13,3 @@ export function randomString(length: number): string {
 
   return randomString
 }
-
-export interface AuthenticationResponse {
-  signedData: {
-    proof: {
-      challenge: string
-      verificationMethod: string
-    }
-  }
-}
-
-export interface HelloResponse {
-  did: string
-}
