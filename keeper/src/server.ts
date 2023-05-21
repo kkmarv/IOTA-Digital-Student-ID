@@ -156,6 +156,7 @@ keeper.post(ROUTES.didSign, authenticateJWT, async (req: Request, res: Response)
 
   const proof = new identity.ProofOptions({
     challenge: challenge,
+    purpose: identity.ProofPurpose.authentication(),
     expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
   })
 

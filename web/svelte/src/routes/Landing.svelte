@@ -14,8 +14,9 @@
 
   function setServer() {
     socket = io(server)
-    socket.on('connect', () => {
-      console.log('WebSocket connected')
+    socket.on('connect', async () => {
+      console.log(`WebSocket connected (${server})`)
+      socket.emit('registerClient', await keeper.getDid(password))
     })
 
     socket.on('authRequest', (data) => {
@@ -25,10 +26,6 @@
           socket.emit('authRequest', signedChallenge)
         }
       })
-    })
-
-    socket.on('message', (message: any) => {
-      console.log(message)
     })
 
     socket.on('disconnect', () => {
@@ -46,10 +43,6 @@
   <div>
     <input bind:value={server} type="text" placeholder="Enter a URL" />
     <button on:click={() => setServer()}>Connect</button>
-  </div>
-  <div>
-    <input bind:value={message} type="text" placeholder="Enter a message" />
-    <button on:click={() => sendMessage()}>Send</button>
   </div>
   <Logout />
 </div>

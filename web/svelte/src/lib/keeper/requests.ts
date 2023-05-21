@@ -23,10 +23,7 @@ export async function signData(data: any, password: string): Promise<any> {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      password: password,
-      challenge: data,
-    }),
+    body: JSON.stringify({ password: password, challenge: data }),
   })
   if (await hasError(response)) return null
   return await response.json()
@@ -36,10 +33,7 @@ export async function register(username: string, password: string) {
   const response = await fetch(route.registerNewUser, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      username: username,
-      password: password,
-    }),
+    body: JSON.stringify({ username: username, password: password }),
   })
   return !(await hasError(response))
 }
@@ -50,6 +44,17 @@ export async function logout() {
     credentials: 'include',
   })
   return !(await hasError(response))
+}
+
+export async function getDid(password: string) {
+  const response = await fetch(route.getDid, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: password }),
+  })
+  if (await hasError(response)) return null
+  return await response.json()
 }
 
 async function hasError(response: Response): Promise<string> {
