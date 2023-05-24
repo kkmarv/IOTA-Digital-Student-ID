@@ -43,7 +43,7 @@ wsServer.on('connection', (socket) => {
 
     const { did } = data
     console.log('Registering client:', did)
-
+    
     // Parse the DID
     try {
       identity.DID.parse(did)

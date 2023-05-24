@@ -1,16 +1,10 @@
-# node.js & npm files
 .node/
-node_modules/
 
-# IDE files
+node_modules/
+dist/
+
 .vscode/
 .idea/
 
-# compiled TypeScript files
-dist/
-
-# IOTA Identity files
 *.hodl
-
-# configuration files
 .env

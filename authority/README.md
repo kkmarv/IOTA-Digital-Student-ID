@@ -1,5 +1,4 @@
-# Student Credential Issuance Service <!-- omit in toc -->
-
+# Student Credential Issuance as example authority <!-- omit in toc -->
 
 ## Content <!-- omit in toc -->
 
@@ -10,7 +9,8 @@
 
 # 1. Usage
 
-If you want to run your own development server, you'll need to create a `.env` file inside the `/backend` directory and fill it with your information.
+If you want to run your own development server, you'll need to create a `.env` file inside the `/backend` directory and
+fill it with your information.
 
 Then, simply run
 
@@ -31,7 +31,7 @@ npm run dev
 | `PRIMARY_NODE_URL`    | `undefined`       | The primary node URL used for operations on the Tangle.      |
 | `NODE_ENV`            | `undefined`       | Set it to `development` to enable some debug console prints. |
 
-# 2. Student Registration | Matriculation 
+# 2. Student Registration | Matriculation
 
 ```mermaid
 %%---
