@@ -29,7 +29,7 @@ export async function signData(data: any, password: string): Promise<any> {
   return await response.json()
 }
 
-export async function register(username: string, password: string) {
+export async function register(username: string, password: string): Promise<boolean> {
   const response = await fetch(route.registerNewUser, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
@@ -38,7 +38,7 @@ export async function register(username: string, password: string) {
   return !(await hasError(response))
 }
 
-export async function logout() {
+export async function logout(): Promise<boolean> {
   const response = await fetch(route.deleteAccessToken, {
     method: 'GET',
     credentials: 'include',
@@ -46,7 +46,7 @@ export async function logout() {
   return !(await hasError(response))
 }
 
-export async function getDid(password: string) {
+export async function getDid(password: string): Promise<any> {
   const response = await fetch(route.getDid, {
     method: 'POST',
     credentials: 'include',

@@ -5,12 +5,7 @@
 
   let socket: Socket
   let server = 'http://localhost:3000'
-  let message = ''
-  let password: ''
-
-  function sendMessage() {
-    socket.emit('message', message)
-  }
+  let password = ''
 
   function setServer() {
     socket = io(server)

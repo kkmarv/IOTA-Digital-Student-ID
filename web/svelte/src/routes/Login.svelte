@@ -6,13 +6,6 @@
   import { appRoutes } from '../components/Router.svelte'
   import keeper from '../lib/keeper/'
 
-  // Skip login if already logged in
-  let hasLoaded = false
-  onMount(async () => {
-    if (await keeper.verifyAccessToken()) navigate(appRoutes.landing, { replace: true })
-    hasLoaded = true
-  })
-
   type tab = 'login' | 'register'
 
   // UI States
@@ -22,6 +15,13 @@
   // User Inputs
   let username = ''
   let password = ''
+
+  // Skip login if already logged in
+  let hasLoaded = false
+  onMount(async () => {
+    if (await keeper.verifyAccessToken()) navigate(appRoutes.landing, { replace: true })
+    hasLoaded = true
+  })
 
   function switchTab(tab: tab) {
     if (isRegistering) return
@@ -65,15 +65,9 @@
   </div>
 
   {#if activeTab === 'login'}
-    <CredentialForm bind:username bind:password buttonText={'Login'} submitAction={login} />
+    <CredentialForm bind:username bind:password buttonText="Login" onSubmit={login} />
   {:else if activeTab === 'register'}
-    <CredentialForm
-      bind:username
-      bind:password
-      buttonText={'Register'}
-      submitAction={() => register(username, password)}
-      submitDisabled={isRegistering}
-    />
+    <CredentialForm bind:username bind:password buttonText="Register" onSubmit={register} isDisabled={isRegistering} />
   {/if}
 {/if}
 

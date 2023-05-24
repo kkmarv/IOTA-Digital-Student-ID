@@ -2,8 +2,8 @@
   export let password: string = ''
   export let username: string = ''
   export let buttonText: string
-  export let submitAction: (username: string, password: string) => void
-  export let submitDisabled = false
+  export let onSubmit: (username: string, password: string) => void
+  export let isDisabled = false
 </script>
 
 <form>
@@ -17,9 +17,9 @@
   </div>
   <button
     type="submit"
-    disabled={submitDisabled}
+    disabled={isDisabled}
     on:click|preventDefault={() => {
-      submitAction(username, password)
+      onSubmit(username, password)
     }}
     >{buttonText}
   </button>
