@@ -3,8 +3,8 @@ import { startSummerSemester, startWinterSemester } from '../../config.js'
 
 const today = new Date()
 const currentYear = today.getFullYear()
-const startSS = new Date(`${currentYear}-${startSummerSemester}T00:00:00Z`)
-const startWS = new Date(`${currentYear}-${startWinterSemester}T00:00:00Z`)
+const startSS = new Date(`${currentYear}-${startSummerSemester}`)
+const startWS = new Date(`${currentYear}-${startWinterSemester}`)
 
 /**
  * Calculate the date on which the next semester begins.
@@ -16,6 +16,6 @@ export default function nextSemesterStart(): identity.Timestamp {
   } else if (today < startWS) {
     return identity.Timestamp.parse(startWS.toISOString())
   } else {
-    return identity.Timestamp.parse(`${currentYear + 1}-04-01T00:00:00Z`)
+    return identity.Timestamp.parse(`${currentYear + 1}-${startSummerSemester}`)
   }
 }

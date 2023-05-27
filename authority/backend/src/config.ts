@@ -10,35 +10,27 @@ export const webSocketPort = 3000
 
 export const strongholdPath = './identity.hodl'
 
-export const startWinterSemester = env.START_SUMMER_SEMESTER || '04-01'
-export const startSummerSemester = env.WS_START || '10-01'
-
-const authorityDid = env.AUTHORITY_DID
-const authoritySeed = env.AUTHORITY_SEED
-const authorityName = env.AUTHORITY_NAME
-const authorityWebsite = env.AUTHORITY_WEBSITE
-const authorityNetwork = env.AUTHORITY_NETWORK
-const authorityPrimaryNodeUrl = env.AUTHORITY_PRIMARY_NODE_URL
-const authorityProofExpiryDuration = env.AUTHORITY_PROOF_DURATION
+export const startSummerSemester = env.START_SUMMER_SEMESTER || '04-01'
+export const startWinterSemester = env.START_WINTER_SEMESTER || '10-01'
 
 /* Begin environment variable validation */
-assert(authorityDid, 'Please specify a DID.')
-assert(authoritySeed, 'Please specify a password.')
-assert(authorityName, 'Please specify an institution name.')
-assert(authorityWebsite, 'Please specify a website that represents the institution.')
+assert(env.AUTHORITY_DID, 'Please specify a DID.')
+assert(env.AUTHORITY_SEED, 'Please specify a password.')
+assert(env.AUTHORITY_NAME, 'Please specify an institution name.')
+assert(env.AUTHORITY_WEBSITE, 'Please specify a website that represents the institution.')
 
 try {
-  identity.DID.parse(authorityDid)
+  identity.DID.parse(env.AUTHORITY_DID)
 } catch (err) {
   assert(false, 'Given DID is not a valid DID.')
 }
 
-export const stronghold = await Stronghold.build(strongholdPath, authoritySeed)
-assert(stronghold.didExists(identity.DID.parse(authorityDid)), 'Given DID does not exist in Stronghold.')
+export const stronghold = await Stronghold.build(strongholdPath, env.AUTHORITY_SEED)
+assert(stronghold.didExists(identity.DID.parse(env.AUTHORITY_DID)), 'Given DID does not exist in Stronghold.')
 
-if (authorityNetwork) {
+if (env.AUTHORITY_NETWORK) {
   try {
-    identity.Network.tryFromName(authorityNetwork)
+    identity.Network.tryFromName(env.AUTHORITY_NETWORK)
   } catch (err) {
     assert(false, 'Given network is not a valid network.')
   }
@@ -46,18 +38,18 @@ if (authorityNetwork) {
 /* End of environment variable validation */
 
 export const authority = {
-  did: identity.DID.parse(authorityDid),
-  seed: authoritySeed,
-  name: authorityName,
-  website: authorityWebsite,
-  proofExpiryDuration: authorityProofExpiryDuration
-    ? identity.Duration.minutes(parseInt(authorityProofExpiryDuration, 10))
+  did: identity.DID.parse(env.AUTHORITY_DID),
+  seed: env.AUTHORITY_SEED,
+  name: env.AUTHORITY_NAME,
+  website: env.AUTHORITY_WEBSITE,
+  proofExpiryDuration: env.AUTHORITY_PROOF_DURATION
+    ? identity.Duration.minutes(parseInt(env.AUTHORITY_PROOF_DURATION, 10))
     : identity.Duration.minutes(10),
 }
 
 export const clientConfig: identity.IClientConfig = {
-  network: authorityNetwork ? identity.Network.tryFromName(authorityNetwork) : identity.Network.devnet(),
-  primaryNode: authorityPrimaryNodeUrl ? { url: authorityPrimaryNodeUrl } : undefined,
+  network: env.AUTHORITY_NETWORK ? identity.Network.tryFromName(env.AUTHORITY_NETWORK) : identity.Network.devnet(),
+  primaryNode: env.AUTHORITY_PRIMARY_NODE_URL ? { url: env.AUTHORITY_PRIMARY_NODE_URL } : undefined,
 }
 
 export const accountBuilderConfig: identity.AccountBuilderOptions = {
