@@ -1,27 +1,19 @@
-import {
-  AccountBuilder,
-  Credential,
-  DID,
-  Duration,
-  Presentation,
-  ProofOptions,
-  Timestamp,
-} from '@iota/identity-wasm/node/identity_wasm.js'
+import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
 import { accountBuilderConfig } from '../src/config.js'
 
-async function createVP(did: DID, credential: Credential, challenge: string) {
-  const builder = new AccountBuilder(accountBuilderConfig)
+async function createVP(did: identity.DID, credential: identity.Credential, challenge: string) {
+  const builder = new identity.AccountBuilder(accountBuilderConfig)
   const account = await builder.loadIdentity(did)
 
-  const vp = new Presentation({
+  const vp = new identity.Presentation({
     verifiableCredential: credential,
     holder: account.did(),
   })
 
-  const proof = new ProofOptions({
+  const proof = new identity.ProofOptions({
     challenge: challenge,
-    expires: Timestamp.nowUTC().checkedAdd(Duration.minutes(10)),
+    expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
   })
 
   const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
@@ -79,7 +71,7 @@ if (!process.argv[2]) {
 }
 
 createVP(
-  DID.parse('did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU'),
-  Credential.fromJSON(vc),
+  identity.DID.parse('did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU'),
+  identity.Credential.fromJSON(vc),
   process.argv[2]
 )

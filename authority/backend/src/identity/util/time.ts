@@ -1,4 +1,4 @@
-import { Timestamp } from '@iota/identity-wasm/node'
+import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { startSummerSemester, startWinterSemester } from '../../config.js'
 
 const today = new Date()
@@ -10,12 +10,12 @@ const startWS = new Date(`${currentYear}-${startWinterSemester}T00:00:00Z`)
  * Calculate the date on which the next semester begins.
  * @returns The {@link Timestamp} of next semester's first day.
  */
-export default function nextSemesterStart(): Timestamp {
+export default function nextSemesterStart(): identity.Timestamp {
   if (today < startSS) {
-    return Timestamp.parse(startSS.toISOString())
+    return identity.Timestamp.parse(startSS.toISOString())
   } else if (today < startWS) {
-    return Timestamp.parse(startWS.toISOString())
+    return identity.Timestamp.parse(startWS.toISOString())
   } else {
-    return Timestamp.parse(`${currentYear + 1}-04-01T00:00:00Z`)
+    return identity.Timestamp.parse(`${currentYear + 1}-04-01T00:00:00Z`)
   }
 }

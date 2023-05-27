@@ -1,14 +1,4 @@
-import {
-  Account,
-  AccountBuilder,
-  AgreementInfo,
-  CekAlgorithm,
-  DID,
-  Document,
-  EncryptedData,
-  EncryptionAlgorithm,
-  Resolver,
-} from '@iota/identity-wasm/node'
+import identity from '@iota/identity-wasm/node'
 import { accountBuilderConfig, clientConfig } from '../../config.js'
 
 /**
@@ -17,13 +7,13 @@ import { accountBuilderConfig, clientConfig } from '../../config.js'
  * it is able to store its own secret keys through the {@link Account} and {@link Storage} API respectively.
  */
 export abstract class DigitalID {
-  protected static readonly builder = new AccountBuilder(accountBuilderConfig)
-  protected static resolver: Resolver
-  protected static readonly resolverBuilder = Resolver.builder().clientConfig(clientConfig)
+  protected static readonly builder = new identity.AccountBuilder(accountBuilderConfig)
+  protected static resolver: identity.Resolver
+  protected static readonly resolverBuilder = identity.Resolver.builder().clientConfig(clientConfig)
 
-  readonly account: Account
+  readonly account: identity.Account
 
-  protected constructor(account: Account) {
+  protected constructor(account: identity.Account) {
     this.account = account
     // await account.publish() # TOTO remove this from subclasses and put here
     // this.verifySelf() TODO can do when published to tangle
@@ -34,7 +24,7 @@ export abstract class DigitalID {
    * @param did {@link DID} to resolve.
    * @returns The {@link DID}'s {@link document}.
    */
-  static async resolve(did: DID): Promise<Document> {
+  static async resolve(did: identity.DID): Promise<identity.Document> {
     return (await DigitalID.resolver.resolve(did)).intoDocument()
   }
 
@@ -44,11 +34,11 @@ export abstract class DigitalID {
    * @param agreement
    * @returns
    */
-  async decryptMessage(encryptedMessage: EncryptedData, agreement: AgreementInfo) {
+  async decryptMessage(encryptedMessage: identity.EncryptedData, agreement: identity.AgreementInfo) {
     return await this.account.decryptData(
       encryptedMessage,
-      EncryptionAlgorithm.A256GCM(),
-      CekAlgorithm.EcdhEs(agreement),
+      identity.EncryptionAlgorithm.A256GCM(),
+      identity.CekAlgorithm.EcdhEs(agreement),
       ''
     ) // TODO key fragment
   }

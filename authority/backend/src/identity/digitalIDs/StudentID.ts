@@ -1,13 +1,4 @@
-import {
-  Account,
-  DID,
-  Document,
-  IdentitySetup,
-  MethodContent,
-  Presentation,
-  ProofOptions,
-  Timestamp,
-} from '@iota/identity-wasm/node'
+import identity from '@iota/identity-wasm/node'
 import { authority } from '../../config.js'
 import { StudentVC } from '../verifiable/credentials.js'
 import { StudentVP } from '../verifiable/presentations.js'
@@ -19,7 +10,7 @@ import { DigitalID } from './DigitalID.js'
 export class StudentID extends DigitalID {
   private static readonly studentVPFragment = '#key-sign-student'
 
-  private constructor(account: Account) {
+  private constructor(account: identity.Account) {
     super(account)
   }
 
@@ -29,14 +20,14 @@ export class StudentID extends DigitalID {
    *                  as a proof of authentication. Typically issued by an {@link Issuer}.
    * @returns         A newly created {@link StudentVP} signed by this student.
    */
-  async newSignedStudentVP(studentVC: StudentVC, challenge: string): Promise<Presentation> {
+  async newSignedStudentVP(studentVC: StudentVC, challenge: string): Promise<identity.Presentation> {
     return this.account.createSignedPresentation(
       StudentID.studentVPFragment,
       new StudentVP(this.account.did(), studentVC),
-      new ProofOptions({
+      new identity.ProofOptions({
         challenge: challenge,
-        created: Timestamp.nowUTC(),
-        expires: Timestamp.nowUTC().checkedAdd(authority.proofExpiryDuration),
+        created: identity.Timestamp.nowUTC(),
+        expires: identity.Timestamp.nowUTC().checkedAdd(authority.proofExpiryDuration),
       })
     )
   }
@@ -46,7 +37,7 @@ export class StudentID extends DigitalID {
    * @param identitySetup Use a pre-generated Ed25519 private key for the {@link DID}.
    * @returns             A new {@link StudentID}.
    */
-  static async new(identitySetup?: IdentitySetup): Promise<StudentID> {
+  static async new(identitySetup?: identity.IdentitySetup): Promise<StudentID> {
     const account = await DigitalID.builder.createIdentity(identitySetup)
 
     // Set the student's DID as the Document controller
@@ -55,7 +46,7 @@ export class StudentID extends DigitalID {
     // Create signing method for StudentVPs
     await account.createMethod({
       fragment: StudentID.studentVPFragment,
-      content: MethodContent.GenerateEd25519(),
+      content: identity.MethodContent.GenerateEd25519(),
     })
 
     // Sign all changes made to the DID Document.
@@ -63,7 +54,7 @@ export class StudentID extends DigitalID {
       await account.createSignedDocument(
         account.document().defaultSigningMethod().id().fragment()!,
         account.document(),
-        ProofOptions.default()
+        identity.ProofOptions.default()
       )
     )
     return new StudentID(account)
@@ -74,7 +65,7 @@ export class StudentID extends DigitalID {
    * @param did The {@link DID} of the {@link StudentID} to look for.
    * @returns   An existing {@link StudentID}. Will throw an Error, if `did` cannot be found.
    */
-  static async load(did: DID): Promise<StudentID> {
+  static async load(did: identity.DID): Promise<StudentID> {
     return new StudentID(await DigitalID.builder.loadIdentity(did))
   }
 }

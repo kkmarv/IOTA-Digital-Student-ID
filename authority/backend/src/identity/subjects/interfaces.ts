@@ -1,4 +1,4 @@
-import { DID } from '@iota/identity-wasm/node'
+import identity from '@iota/identity-wasm/node'
 import { IPostalAddress, UniversityDegree } from '../types.js'
 import { isDID, isIPostalAddress, isUniversityDegree } from '../types.validation.js'
 
@@ -6,7 +6,7 @@ import { isDID, isIPostalAddress, isUniversityDegree } from '../types.validation
 
 // Data needed for registering a student
 export interface IRegistrationData {
-  readonly id: DID
+  readonly id: identity.DID
   readonly studySubject: IStudySubject
   readonly studentData: IStudentData
   readonly challenge?: string

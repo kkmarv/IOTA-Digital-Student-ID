@@ -1,8 +1,8 @@
-import { DID, Subject } from '@iota/identity-wasm/node'
+import identity from '@iota/identity-wasm/node'
 import { IStudentData, IStudySubject, IRegistrationData, IStudyData, isIRegistrationData } from './interfaces.js'
 
-export class RegistrationData implements Subject {
-  readonly id: DID
+export class RegistrationData implements identity.Subject {
+  readonly id: identity.DID
   readonly studentData: IStudentData
   readonly studySubject: IStudySubject
   readonly challenge?: string

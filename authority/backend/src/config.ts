@@ -1,12 +1,5 @@
 import { Stronghold } from '@iota/identity-stronghold-nodejs'
-import {
-  AccountBuilderOptions,
-  AutoSave,
-  DID,
-  Duration,
-  IClientConfig,
-  Network,
-} from '@iota/identity-wasm/node/identity_wasm.js'
+import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import assert from 'assert'
 import { env } from 'process'
 
@@ -35,17 +28,17 @@ assert(authorityName, 'Please specify an institution name.')
 assert(authorityWebsite, 'Please specify a website that represents the institution.')
 
 try {
-  DID.parse(authorityDid)
+  identity.DID.parse(authorityDid)
 } catch (err) {
   assert(false, 'Given DID is not a valid DID.')
 }
 
 export const stronghold = await Stronghold.build(strongholdPath, authoritySeed)
-assert(stronghold.didExists(DID.parse(authorityDid)), 'Given DID does not exist in Stronghold.')
+assert(stronghold.didExists(identity.DID.parse(authorityDid)), 'Given DID does not exist in Stronghold.')
 
 if (authorityNetwork) {
   try {
-    Network.tryFromName(authorityNetwork)
+    identity.Network.tryFromName(authorityNetwork)
   } catch (err) {
     assert(false, 'Given network is not a valid network.')
   }
@@ -53,22 +46,22 @@ if (authorityNetwork) {
 /* End of environment variable validation */
 
 export const authority = {
-  did: DID.parse(authorityDid),
+  did: identity.DID.parse(authorityDid),
   seed: authoritySeed,
   name: authorityName,
   website: authorityWebsite,
   proofExpiryDuration: authorityProofExpiryDuration
-    ? Duration.minutes(parseInt(authorityProofExpiryDuration, 10))
-    : Duration.minutes(10),
+    ? identity.Duration.minutes(parseInt(authorityProofExpiryDuration, 10))
+    : identity.Duration.minutes(10),
 }
 
-export const clientConfig: IClientConfig = {
-  network: authorityNetwork ? Network.tryFromName(authorityNetwork) : Network.devnet(),
+export const clientConfig: identity.IClientConfig = {
+  network: authorityNetwork ? identity.Network.tryFromName(authorityNetwork) : identity.Network.devnet(),
   primaryNode: authorityPrimaryNodeUrl ? { url: authorityPrimaryNodeUrl } : undefined,
 }
 
-export const accountBuilderConfig: AccountBuilderOptions = {
-  autosave: AutoSave.every(),
+export const accountBuilderConfig: identity.AccountBuilderOptions = {
+  autosave: identity.AutoSave.every(),
   autopublish: false,
   storage: stronghold,
   clientConfig: clientConfig,

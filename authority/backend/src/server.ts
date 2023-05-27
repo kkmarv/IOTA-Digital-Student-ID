@@ -1,4 +1,4 @@
-import identity, { VerifierOptions } from '@iota/identity-wasm/node/identity_wasm.js'
+import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import cors from 'cors'
 import express from 'express'
 import { Server as HTTPServer } from 'http'
@@ -66,7 +66,7 @@ webSocket.on('connection', (socket) => {
     console.log(data.signedData.proof)
     clients.get(did) === challenge ? console.log('Challenge match') : console.log('Challenge mismatch')
 
-    const verifierOptions = new VerifierOptions({
+    const verifierOptions = new identity.VerifierOptions({
       challenge: challenge,
       allowExpired: false,
       // purpose: identity.ProofPurpose.authentication(), // TODO requires method relationship

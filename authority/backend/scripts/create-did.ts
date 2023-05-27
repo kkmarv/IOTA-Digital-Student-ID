@@ -1,4 +1,4 @@
-import { AccountBuilder, KeyPair, KeyType } from '@iota/identity-wasm/node/identity_wasm.js'
+import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { accountBuilderConfig } from '../src/config.js'
 import { encode58 } from '../src/base58.js'
 
@@ -8,12 +8,12 @@ import { encode58 } from '../src/base58.js'
  * @returns The account of the newly created DID.
  */
 async function createIdentity() {
-  const keyPair = new KeyPair(KeyType.Ed25519)
+  const keyPair = new identity.KeyPair(identity.KeyType.Ed25519)
 
   console.log(`Public Key: ${encode58(keyPair.public())}`)
   console.log(`Private Key: ${encode58(keyPair.private())}`)
 
-  const builder = new AccountBuilder(accountBuilderConfig)
+  const builder = new identity.AccountBuilder(accountBuilderConfig)
   const account = await builder.createIdentity({
     privateKey: keyPair?.private(),
   })
