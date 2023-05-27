@@ -5,10 +5,11 @@ export function randomString(length: number): string {
     return ''
   }
 
-  // Converting to hex doubles the string in length
-  // The following logic only deals with resizing the generated string to the given length
   length = length / 2 + 1
   let randomString = crypto.randomBytes(length).toString('hex')
+  // Note: converting a string to hex doubles its length
+
+  // This code is to ensure that the string is of the correct length
   randomString = length % 2 == 0 ? randomString.slice(0, -2) : randomString.slice(0, -1)
 
   return randomString

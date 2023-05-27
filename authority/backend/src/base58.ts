@@ -1,5 +1,4 @@
 const ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
-
 const ALPHABET_MAP = new Map<string, number>()
 
 let i = 0
@@ -9,7 +8,7 @@ while (i < ALPHABET.length) {
   i++
 }
 
-export function encode(buffer: Uint8Array): string {
+export function encode58(buffer: Uint8Array): string {
   let carry, digits, j
   if (buffer.length === 0) {
     return ''
@@ -42,12 +41,15 @@ export function encode(buffer: Uint8Array): string {
     digits.push(0)
     i++
   }
-  return digits.reverse().map(function (digit) {
-    return ALPHABET[digit]
-  }).join('')
+  return digits
+    .reverse()
+    .map(function (digit) {
+      return ALPHABET[digit]
+    })
+    .join('')
 }
 
-export function decode(text: string) {
+export function decode58(text: string) {
   let bytes, c, carry, j
   if (text.length === 0) {
     return new (typeof Uint8Array !== 'undefined' && Uint8Array !== null ? Uint8Array : Buffer)(0)

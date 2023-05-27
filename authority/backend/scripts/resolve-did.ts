@@ -1,6 +1,6 @@
 import { DID, ResolvedDocument, Resolver } from '@iota/identity-wasm/node'
 import { exit } from 'process'
-import config from '../config.js'
+import { clientConfig } from '../src/config.js'
 
 /**
  * Resolve a DID Document from the Tangle.
@@ -9,7 +9,7 @@ import config from '../config.js'
  */
 export async function resolveDID(did: DID): Promise<ResolvedDocument> {
   // Retrieve the published DID Document from the Tangle.
-  const resolver = await Resolver.builder().clientConfig(config.iota.clientConfig).build()
+  const resolver = await Resolver.builder().clientConfig(clientConfig).build()
 
   const doc = await resolver.resolve(did)
   console.log(doc.toJSON())

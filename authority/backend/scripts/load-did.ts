@@ -1,6 +1,6 @@
 import { AccountBuilder, DID } from '@iota/identity-wasm/node'
 import { exit } from 'process'
-import config from '../config.js'
+import { accountBuilderConfig, stronghold } from '../src/config'
 
 /**
  * Load a DID from the local Stronghold storage.
@@ -8,12 +8,11 @@ import config from '../config.js'
  * @returns The account of the loaded DID, if found. Throws Error otherwise.
  */
 async function loadDID(did: DID): Promise<void> {
-  if (!(await config.iota.accountBuilderConfig.storage.didExists(did))) {
-    console.log('DID does not exist in Stronghold.')
-    return
+  if (!(await stronghold.didExists(did))) {
+    return console.log('DID does not exist in Stronghold.')
   }
 
-  const builder = new AccountBuilder(config.iota.accountBuilderConfig)
+  const builder = new AccountBuilder(accountBuilderConfig)
   const account = await builder.loadIdentity(did)
 
   console.dir(account.document().toJSON(), { depth: null })
