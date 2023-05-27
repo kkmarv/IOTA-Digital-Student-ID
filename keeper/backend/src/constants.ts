@@ -3,7 +3,7 @@ export const PORT = 8081
 export const API_ROOT = '/api'
 
 // JWT configuration
-export const TOKEN_SECRET = 'youraccesstokensecret' // TODO read from env file
+export const TOKEN_SECRET = 'youraccesstokensecret' // TODO create random secret
 export const TOKEN_EXPIRES_IN = '30m'
 
 // API Routes

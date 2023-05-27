@@ -1,6 +1,6 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { accountBuilderConfig } from '../src/config.js'
-import { encode58 } from '../src/base58.js'
+import { encode58 } from '../scripts/base58.js'
 
 /**
  * Create a new DID and save it to a Stronghold file.
