@@ -7,4 +7,4 @@ dist/
 .idea/
 
 *.hodl
-.env
+*.env
