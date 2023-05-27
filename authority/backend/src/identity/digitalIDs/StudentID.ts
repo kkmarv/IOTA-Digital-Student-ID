@@ -1,4 +1,3 @@
-import config from '../../config.js'
 import {
   Account,
   DID,
@@ -9,9 +8,10 @@ import {
   ProofOptions,
   Timestamp,
 } from '@iota/identity-wasm/node'
-import { DigitalID } from './DigitalID.js'
+import { authority } from '../../config.js'
 import { StudentVC } from '../verifiable/credentials.js'
 import { StudentVP } from '../verifiable/presentations.js'
+import { DigitalID } from './DigitalID.js'
 
 /**
  * A manager for a student's {@link DID} {@link Document} that manages private keys and access to the Tangle.
@@ -36,7 +36,7 @@ export class StudentID extends DigitalID {
       new ProofOptions({
         challenge: challenge,
         created: Timestamp.nowUTC(),
-        expires: Timestamp.nowUTC().checkedAdd(config.iota.proofDuration),
+        expires: Timestamp.nowUTC().checkedAdd(authority.proofExpiryDuration),
       })
     )
   }

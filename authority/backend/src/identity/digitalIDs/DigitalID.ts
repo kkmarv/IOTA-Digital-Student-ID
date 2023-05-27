@@ -1,4 +1,3 @@
-import config from '../../config.js'
 import {
   Account,
   AccountBuilder,
@@ -10,6 +9,7 @@ import {
   EncryptionAlgorithm,
   Resolver,
 } from '@iota/identity-wasm/node'
+import { accountBuilderConfig, clientConfig } from '../../config.js'
 
 /**
  * A `DigitalID` represents an identity with its own {@link Document}.
@@ -17,9 +17,9 @@ import {
  * it is able to store its own secret keys through the {@link Account} and {@link Storage} API respectively.
  */
 export abstract class DigitalID {
-  protected static readonly builder = new AccountBuilder(config.iota.accountBuilderConfig)
+  protected static readonly builder = new AccountBuilder(accountBuilderConfig)
   protected static resolver: Resolver
-  protected static readonly resolverBuilder = Resolver.builder().clientConfig(config.iota.clientConfig)
+  protected static readonly resolverBuilder = Resolver.builder().clientConfig(clientConfig)
 
   readonly account: Account
 

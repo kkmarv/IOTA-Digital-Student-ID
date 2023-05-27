@@ -7,28 +7,28 @@ import {
   Issuer,
   MethodContent,
   ProofOptions,
-} from "@iota/identity-wasm/node";
-import { DigitalID } from "./DigitalID.js";
-import { ServiceType } from "../types.js";
-import { StudentVC } from "../verifiable/credentials.js";
-import { StudentVP } from "../verifiable/presentations.js";
-import { StudyData } from "../subjects/Matriculation.js";
+} from '@iota/identity-wasm/node'
+import { StudyData } from '../subjects/Matriculation.js'
+import { ServiceType } from '../types.js'
+import { StudentVC } from '../verifiable/credentials.js'
+import { StudentVP } from '../verifiable/presentations.js'
+import { DigitalID } from './DigitalID.js'
 
 /**
  * A manager for a university's {@link DID} {@link Document}
  * that manages private keys and access to the IOTA Tangle.
  */
 export class UniversityID extends DigitalID implements Issuer {
-  private static readonly homepageFragment = "#linked-domain-homepage";
-  private static readonly matriculationFragment = "#key-sign-student";
+  private static readonly homepageFragment = '#linked-domain-homepage'
+  private static readonly matriculationFragment = '#key-sign-student'
 
   // Issuer objects are forced to have an ID of type string instead of DID (@v0.6.0 of @iota/identity-wasm)
   readonly id: string;
-  readonly [properties: string]: unknown;
+  readonly [properties: string]: unknown
 
   private constructor(account: Account) {
-    super(account);
-    this.id = account.document().id().toString();
+    super(account)
+    this.id = account.document().id().toString()
   }
 
   /**
@@ -43,7 +43,7 @@ export class UniversityID extends DigitalID implements Issuer {
       UniversityID.matriculationFragment,
       new StudentVC(this, subject),
       ProofOptions.default()
-    );
+    )
   }
 
   verifyStudentVP(vp: StudentVP) {
@@ -57,29 +57,25 @@ export class UniversityID extends DigitalID implements Issuer {
    * @param identitySetup Use a pre-generated Ed25519 private key for the {@link DID}.
    * @returns A new `UniversityID`.
    */
-  static async new(
-    name: string,
-    homepage: string,
-    identitySetup?: IdentitySetup
-  ): Promise<UniversityID> {
-    this.resolver = await DigitalID.resolverBuilder.build();
-    const account = await DigitalID.builder.createIdentity(identitySetup);
+  static async new(name: string, homepage: string, identitySetup?: IdentitySetup): Promise<UniversityID> {
+    this.resolver = await DigitalID.resolverBuilder.build()
+    const account = await DigitalID.builder.createIdentity(identitySetup)
 
     // Set the university's DID as the Document controller
-    await account.setController({ controllers: account.did() });
+    await account.setController({ controllers: account.did() })
 
     // Add a reference to the university's web presence.
     await account.createService({
       fragment: UniversityID.homepageFragment,
       type: ServiceType.LINKED_DOMAINS,
       endpoint: homepage,
-    });
+    })
 
     // Create signing method for matriculation issuance.
     await account.createMethod({
       fragment: UniversityID.matriculationFragment,
       content: MethodContent.GenerateEd25519(),
-    });
+    })
 
     // Sign all changes made to the DID Document.
     await account.updateDocumentUnchecked(
@@ -88,11 +84,11 @@ export class UniversityID extends DigitalID implements Issuer {
         account.document(),
         ProofOptions.default()
       )
-    );
+    )
 
-    await account.publish();
+    await account.publish()
 
-    return new UniversityID(account);
+    return new UniversityID(account)
   }
 
   /**
@@ -102,6 +98,6 @@ export class UniversityID extends DigitalID implements Issuer {
    * @throws `IdentityNotFound` if `did` cannot be found locally.
    */
   static async load(did: DID): Promise<UniversityID> {
-    return new UniversityID(await DigitalID.builder.loadIdentity(did));
+    return new UniversityID(await DigitalID.builder.loadIdentity(did))
   }
 }

@@ -26,7 +26,7 @@ const authorityName = env.AUTHORITY_NAME
 const authorityWebsite = env.AUTHORITY_WEBSITE
 const authorityNetwork = env.AUTHORITY_NETWORK
 const authorityPrimaryNodeUrl = env.AUTHORITY_PRIMARY_NODE_URL
-const authorityProofExpiration = env.AUTHORITY_PROOF_DURATION
+const authorityProofExpiryDuration = env.AUTHORITY_PROOF_DURATION
 
 /* Begin environment variable validation */
 assert(authorityDid, 'Please specify a DID.')
@@ -57,8 +57,8 @@ export const authority = {
   seed: authoritySeed,
   name: authorityName,
   website: authorityWebsite,
-  proofExpiration: authorityProofExpiration
-    ? Duration.minutes(parseInt(authorityProofExpiration, 10))
+  proofExpiryDuration: authorityProofExpiryDuration
+    ? Duration.minutes(parseInt(authorityProofExpiryDuration, 10))
     : Duration.minutes(10),
 }
 
