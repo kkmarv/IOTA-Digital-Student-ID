@@ -1,4 +1,4 @@
-import { AccountBuilder, KeyPair, KeyType } from '@iota/identity-wasm/node'
+import { AccountBuilder, KeyPair, KeyType } from '@iota/identity-wasm/node/identity_wasm.js'
 import { accountBuilderConfig } from '../src/config.js'
 import { encode58 } from '../src/base58.js'
 

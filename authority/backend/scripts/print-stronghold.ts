@@ -1,4 +1,4 @@
-import { DID } from '@iota/identity-wasm/node'
+import { DID } from '@iota/identity-wasm/node/identity_wasm.js'
 import { stronghold } from '../src/config.js'
 
 // ANSI codes

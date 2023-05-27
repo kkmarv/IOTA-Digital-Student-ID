@@ -6,7 +6,7 @@ import {
   Presentation,
   ProofOptions,
   Timestamp,
-} from '@iota/identity-wasm/node'
+} from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
 import { accountBuilderConfig } from '../src/config.js'
 

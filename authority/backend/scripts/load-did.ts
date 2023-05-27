@@ -1,6 +1,6 @@
-import { AccountBuilder, DID } from '@iota/identity-wasm/node'
+import { AccountBuilder, DID } from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
-import { accountBuilderConfig, stronghold } from '../src/config'
+import { accountBuilderConfig, stronghold } from '../src/config.js'
 
 /**
  * Load a DID from the local Stronghold storage.

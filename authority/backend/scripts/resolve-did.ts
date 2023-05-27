@@ -1,4 +1,4 @@
-import { DID, ResolvedDocument, Resolver } from '@iota/identity-wasm/node'
+import { DID, ResolvedDocument, Resolver } from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
 import { clientConfig } from '../src/config.js'
 
