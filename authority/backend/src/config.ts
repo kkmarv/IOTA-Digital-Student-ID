@@ -1,78 +1,75 @@
 import { Stronghold } from '@iota/identity-stronghold-nodejs'
-import { AutoSave, DID, Duration, Network } from '@iota/identity-wasm/node/identity_wasm.js'
+import {
+  AccountBuilderOptions,
+  AutoSave,
+  DID,
+  Duration,
+  IClientConfig,
+  Network,
+} from '@iota/identity-wasm/node/identity_wasm.js'
 import assert from 'assert'
-import { URL_REGEX } from './constants.js'
+import { env } from 'process'
 
-// Silence all console logs when not in dev mode
-if (process.env.NODE_ENV !== 'development') console.log = function () {}
+const apiVersion = 0
+export const apiPort = 8080
+export const apiBase = `/api/v${apiVersion}/`
+export const webSocketPort = 3000
 
-// Ensure that all required env variables are defined and of valid format.
-assert(process.env.STRONGHOLD_PASS, 'Please specify a password.')
-assert(process.env.INSTITUTION_NAME, 'Please specify an institution name.')
-assert(process.env.INSTITUTION_WEBSITE, 'Please specify a website that represents the institution.')
-assert(process.env.INSTITUTION_WEBSITE.match(URL_REGEX), 'Given website could not be parsed as a valid URL.')
-if (process.env.PRIMARY_NODE_URL !== undefined) {
-  assert(process.env.PRIMARY_NODE_URL.match(URL_REGEX), 'Primary node URL is not a valid URL.')
+export const strongholdPath = './identity.hodl'
+
+export const startWinterSemester = env.START_SUMMER_SEMESTER || '04-01'
+export const startSummerSemester = env.WS_START || '10-01'
+
+const authorityDid = env.AUTHORITY_DID
+const authoritySeed = env.AUTHORITY_SEED
+const authorityName = env.AUTHORITY_NAME
+const authorityWebsite = env.AUTHORITY_WEBSITE
+const authorityNetwork = env.AUTHORITY_NETWORK
+const authorityPrimaryNodeUrl = env.AUTHORITY_PRIMARY_NODE_URL
+const authorityProofExpiration = env.AUTHORITY_PROOF_DURATION
+
+/* Begin environment variable validation */
+assert(authorityDid, 'Please specify a DID.')
+assert(authoritySeed, 'Please specify a password.')
+assert(authorityName, 'Please specify an institution name.')
+assert(authorityWebsite, 'Please specify a website that represents the institution.')
+
+try {
+  DID.parse(authorityDid)
+} catch (err) {
+  assert(false, 'Given DID is not a valid DID.')
 }
 
-// Build the Stronghold storage
-const strongholdPath = process.env.STRONGHOLD_PATH || './identity.hodl'
-const stronghold = await Stronghold.build(strongholdPath, process.env.STRONGHOLD_PASS)
+export const stronghold = await Stronghold.build(strongholdPath, authoritySeed)
+assert(stronghold.didExists(DID.parse(authorityDid)), 'Given DID does not exist in Stronghold.')
 
-// Parse the DID and check if it exists in Stronghold
-const didUrl = process.env.INSTITUTION_DID ? DID.parse(process.env.INSTITUTION_DID) : undefined
-if (didUrl) {
-  assert(stronghold.didExists(didUrl), 'Given DID does not exist in Stronghold.')
+if (authorityNetwork) {
+  try {
+    Network.tryFromName(authorityNetwork)
+  } catch (err) {
+    assert(false, 'Given network is not a valid network.')
+  }
+}
+/* End of environment variable validation */
+
+export const authority = {
+  did: DID.parse(authorityDid),
+  seed: authoritySeed,
+  name: authorityName,
+  website: authorityWebsite,
+  proofExpiration: authorityProofExpiration
+    ? Duration.minutes(parseInt(authorityProofExpiration, 10))
+    : Duration.minutes(10),
 }
 
-// Options for connecting to the Tangle network.
-const tangleClient = {
-  // The Tangle network to use.
-  network: process.env.INSTITUTION_NETWORK ? Network.tryFromName(process.env.INSTITUTION_NETWORK) : Network.devnet(),
-  // The node to use for Tangle operations - defaults to load balancer if undefined.
-  primaryNode: process.env.PRIMARY_NODE_URL ? { url: process.env.PRIMARY_NODE_URL } : undefined,
+export const clientConfig: IClientConfig = {
+  network: authorityNetwork ? Network.tryFromName(authorityNetwork) : Network.devnet(),
+  primaryNode: authorityPrimaryNodeUrl ? { url: authorityPrimaryNodeUrl } : undefined,
 }
 
-const cfg = {
-  // Expose the Web service on this port.
-  webPort: 80,
-  // Expose the API service on this port.
-  apiPort: 8080,
-  // The first day of the summer semester.
-  ssStart: process.env.SS_START || '04-01',
-  // The first day of the winter semester.
-  wsStart: process.env.WS_START || '10-01',
-  // Development mode ("development" is used for debug)
-  devMode: process.env.NODE_ENV && process.env.NODE_ENV === 'development' ? true : false,
-  institution: {
-    // Your DID.
-    did: didUrl,
-    // The official name of the institution which will be issuing credentials
-    name: process.env.INSTITUTION_NAME,
-    // A website that officially represents the institution on the web.
-    website: process.env.INSTITUTION_WEBSITE,
-  },
-  iota: {
-    // Options for connecting to the Tangle network.
-    clientConfig: tangleClient,
-    // How long proofs from your identity will be valid. Duration in minutes.
-    proofDuration: process.env.PROOF_DURATION
-      ? Duration.minutes(parseInt(process.env.PROOF_DURATION, 10))
-      : Duration.minutes(10),
-    // Options for creating and publishing local DIDs.
-    accountBuilderConfig: {
-      autosave: AutoSave.every(),
-      autopublish: false,
-      storage: stronghold,
-      clientConfig: tangleClient,
-    },
-    stronghold: {
-      // The path of the stronghold file
-      path: strongholdPath,
-      // The password to the stronghold file containing the DID private key.
-      pass: process.env.STRONGHOLD_PASS,
-    },
-  },
+export const accountBuilderConfig: AccountBuilderOptions = {
+  autosave: AutoSave.every(),
+  autopublish: false,
+  storage: stronghold,
+  clientConfig: clientConfig,
 }
-
-export default cfg

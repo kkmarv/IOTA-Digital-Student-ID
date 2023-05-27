@@ -2,20 +2,20 @@ import identity, { VerifierOptions } from '@iota/identity-wasm/node/identity_was
 import cors from 'cors'
 import express from 'express'
 import { Server as HTTPServer } from 'http'
-import { Socket, Server as WSServer } from 'socket.io'
-import cfg from './config.js'
-import { API_ENDPOINT } from './constants.js'
+import { Server as WSServer } from 'socket.io'
+import { apiBase, apiPort, webSocketPort } from './config.js'
 import { randomString } from './helper.js'
 import { ClientToServerEvents, ServerToClientEvents } from './socketIOTyping.js'
 
-const authority = express()
-authority.disable('x-powered-by')
-authority.use(cors())
+// Create API Server
+const app = express()
+app.disable('x-powered-by')
+app.use(cors())
 // authority.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {customCss}));
-identity.VerifierOptions
-const httpServer = new HTTPServer(authority)
-const wsServer = new WSServer<ClientToServerEvents, ServerToClientEvents>(httpServer, { cors: { origin: '*' } })
 
+// Create WebSocket Server
+const httpServer = new HTTPServer(app)
+const webSocket = new WSServer<ClientToServerEvents, ServerToClientEvents>(httpServer, { cors: { origin: '*' } })
 const clients = new Map<string, string>()
 
 setInterval(() => {
@@ -32,7 +32,7 @@ setInterval(() => {
   }
 }, 10 * 60 * 1000) // every 10 minutes
 
-wsServer.on('connection', (socket) => {
+webSocket.on('connection', (socket) => {
   console.log('A client connected')
 
   socket.on('registerClient', (data) => {
@@ -43,7 +43,7 @@ wsServer.on('connection', (socket) => {
 
     const { did } = data
     console.log('Registering client:', did)
-    
+
     // Parse the DID
     try {
       identity.DID.parse(did)
@@ -93,9 +93,8 @@ wsServer.on('connection', (socket) => {
   })
 })
 
-const wsPort = 3000
-wsServer.listen(wsPort)
-console.log(`authority WebSocket listening at http://localhost:${wsPort}`)
-authority.listen(cfg.apiPort, () => {
-  console.log(`authority API listening at http://localhost:${cfg.apiPort}${API_ENDPOINT}`)
+webSocket.listen(webSocketPort)
+console.log(`authority WebSocket listening at http://localhost:${webSocketPort}`)
+app.listen(apiPort, () => {
+  console.log(`authority API listening at http://localhost:${apiPort}${apiBase}`)
 })

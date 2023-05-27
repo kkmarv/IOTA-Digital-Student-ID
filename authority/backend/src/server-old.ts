@@ -3,7 +3,7 @@ import assert from 'assert'
 import cors from 'cors'
 import crypto from 'crypto'
 import express, { NextFunction, Request, Response } from 'express'
-import cfg from './config.js'
+import config from './config.js'
 import { digital } from './identity/index.js'
 import { RegistrationData, StudyData } from './identity/subjects/Matriculation.js'
 import { API_ENDPOINT } from './constants.js'
@@ -17,12 +17,12 @@ type challenge = string
 
 // Using the map as a primitive solution to store access tokens
 const challengeMap = new Map<did, challenge>()
-const tangleResolver = await identity.Resolver.builder().clientConfig(cfg.iota.clientConfig).build()
+const tangleResolver = await identity.Resolver.builder().clientConfig(config.iota.clientConfig).build()
 
 // Load the DID of the institution if a DID URL was found in env variables, else create a new identity
-const university = cfg.institution.did
-  ? await digital.UniversityID.load(cfg.institution.did)
-  : await digital.UniversityID.new(cfg.institution.name, cfg.institution.website)
+const university = config.authority.did
+  ? await digital.UniversityID.load(config.authority.did)
+  : await digital.UniversityID.new(config.authority.name, config.authority.website)
 
 console.dir(university.toJSON(), { depth: null })
 
@@ -65,7 +65,7 @@ authority.post('', async (req: Request, res: Response, next: NextFunction) => {
   const studyData = new StudyData(registrationData, {
     currentTerm: 1,
     matriculationNumber: Date.now(),
-    providerName: cfg.institution.name,
+    providerName: config.authority.name,
   })
 
   const signedStudentVC = await university.issueStudentVC(studyData)
@@ -133,6 +133,6 @@ authority.post('', async (req: Request, res: Response, next: NextFunction) => {
   return res.sendStatus(200)
 })
 
-authority.listen(cfg.apiPort, () => {
-  console.log(`Authority listening at http://localhost:${cfg.apiPort}${API_ENDPOINT}`)
+authority.listen(config.apiPort, () => {
+  console.log(`Authority listening at http://localhost:${config.apiPort}${API_ENDPOINT}`)
 })

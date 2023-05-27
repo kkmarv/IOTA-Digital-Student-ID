@@ -1,6 +1,6 @@
-import { AccountBuilder, KeyPair, KeyType } from "@iota/identity-wasm/node";
-import cfg from "../config.js";
-import { encode } from "./base58.js";
+import { AccountBuilder, KeyPair, KeyType } from '@iota/identity-wasm/node'
+import config from '../config.js'
+import { encode } from './base58.js'
 
 /**
  * Create a new DID and save it to a Stronghold file.
@@ -8,20 +8,20 @@ import { encode } from "./base58.js";
  * @returns The account of the newly created DID.
  */
 async function createIdentity() {
-  const keyPair = new KeyPair(KeyType.Ed25519);
+  const keyPair = new KeyPair(KeyType.Ed25519)
 
-  console.log(`Public Key: ${encode(keyPair.public())}`);
-  console.log(`Private Key: ${encode(keyPair.private())}`);
+  console.log(`Public Key: ${encode(keyPair.public())}`)
+  console.log(`Private Key: ${encode(keyPair.private())}`)
 
-  const builder = new AccountBuilder(cfg.iota.accountBuilderConfig);
+  const builder = new AccountBuilder(config.iota.accountBuilderConfig)
   const account = await builder.createIdentity({
     privateKey: keyPair?.private(),
-  });
+  })
 
-  await account.publish();
-  console.dir(account.document().toJSON(), { depth: null });
+  await account.publish()
+  console.dir(account.document().toJSON(), { depth: null })
 
-  return account;
+  return account
 }
 
-createIdentity();
+createIdentity()

@@ -6,27 +6,27 @@ import {
   Presentation,
   ProofOptions,
   Timestamp,
-} from "@iota/identity-wasm/node";
-import { exit } from "process";
-import cfg from "../config.js";
+} from '@iota/identity-wasm/node'
+import { exit } from 'process'
+import config from '../config.js'
 
 async function createVP(did: DID, credential: Credential, challenge: string) {
-  const builder = new AccountBuilder(cfg.iota.accountBuilderConfig);
-  const account = await builder.loadIdentity(did);
+  const builder = new AccountBuilder(config.iota.accountBuilderConfig)
+  const account = await builder.loadIdentity(did)
 
   const vp = new Presentation({
     verifiableCredential: credential,
     holder: account.did(),
-  });
+  })
 
   const proof = new ProofOptions({
     challenge: challenge,
     expires: Timestamp.nowUTC().checkedAdd(Duration.minutes(10)),
-  });
+  })
 
-  const signedVP = await account.createSignedPresentation("sign-0", vp, proof);
+  const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
 
-  console.dir(signedVP.toJSON(), { depth: null });
+  console.dir(signedVP.toJSON(), { depth: null })
 }
 
 const vc = JSON.parse(
@@ -71,15 +71,15 @@ const vc = JSON.parse(
       "signatureValue": "515w4aVstpwFGLtJPL8xf82vfggDXQhb2eHqnqgcbsTJPkRh4j2gfgjYTCeWBRhTFLCQTb6wQa9VypVWncLKGcRQ"
     }
   }`
-);
+)
 
 if (!process.argv[2]) {
-  console.log("Please specify a challenge as first argument");
-  exit();
+  console.log('Please specify a challenge as first argument')
+  exit()
 }
 
 createVP(
-  DID.parse("did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU"),
+  DID.parse('did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU'),
   Credential.fromJSON(vc),
   process.argv[2]
-);
+)
