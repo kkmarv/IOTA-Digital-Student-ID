@@ -5,7 +5,7 @@ import { env } from 'process'
 
 const apiVersion = 0
 export const apiPort = 8080
-export const apiBase = `/api/v${apiVersion}/`
+export const apiBase = `/api/v${apiVersion}`
 export const webSocketPort = 3000
 
 export const strongholdPath = './identity.hodl'

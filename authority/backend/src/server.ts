@@ -6,6 +6,7 @@ import { Server as WSServer } from 'socket.io'
 import { apiBase, apiPort, webSocketPort } from './config.js'
 import { randomString } from './helper.js'
 import { ClientToServerEvents, ServerToClientEvents } from './socketIOTyping.js'
+import { log } from 'console'
 
 // Create API Server
 const app = express()
@@ -16,15 +17,16 @@ app.use(cors())
 // Create WebSocket Server
 const httpServer = new HTTPServer(app)
 const webSocket = new WSServer<ClientToServerEvents, ServerToClientEvents>(httpServer, { cors: { origin: '*' } })
-const clients = new Map<string, string>()
+const clients = new Map<string, { challenge: string; authenticated: boolean }>()
 
+/** Clean up stale sessions */
 setInterval(() => {
   try {
     if (clients && clients.size > 20) {
       const keys = Array.from(clients.keys()).slice(0, 2)
-      keys.forEach((k) => {
-        clients.delete(k)
-        console.log('Removed client', k)
+      keys.forEach((did) => {
+        clients.delete(did)
+        console.log('Removed client', did)
       })
     }
   } catch (error) {
@@ -36,35 +38,52 @@ webSocket.on('connection', (socket) => {
   console.log('A client connected')
 
   socket.on('registerClient', (data) => {
-    if (data === null) {
+    if (!data || !data.did) {
+      console.log('Registration: Client did not send their DID. Disconnecting client')
       socket.disconnect(true)
-      return console.log('Did not send any data. Disconnecting client')
+      return
     }
 
     const { did } = data
-    console.log('Registering client:', did)
+    console.log('Registration:', did)
 
     // Parse the DID
     try {
       identity.DID.parse(did)
     } catch (err) {
+      console.log('Registration: Invalid DID! Disconnecting client')
       socket.disconnect(true)
-      return console.log('Invalid DID! Disconnecting client')
+      return
     }
 
+    // Generate a random challenge and send it to the client
     const challenge = randomString(32)
-    clients.set(did, challenge)
-
-    socket.emit('authRequest', { challenge: challenge })
+    clients.set(did, { challenge: challenge, authenticated: false })
+    socket.emit('authenticateClient', { challenge: challenge })
   })
 
-  socket.on('authRequest', async (data) => {
-    const { challenge, verificationMethod } = data.signedData.proof
+  socket.on('authenticateClient', async (signedChallenge) => {
+    if (!signedChallenge || !signedChallenge.signedData?.proof) {
+      log('Authentication: Client did not send any data. Disconnecting client')
+      socket.disconnect(true)
+      return
+    }
+
+    const { signedData } = signedChallenge
+    const { challenge, verificationMethod } = signedData.proof
     const did = verificationMethod.split('#')[0]
 
-    console.log('Authenticating client:', did)
-    console.log(data.signedData.proof)
-    clients.get(did) === challenge ? console.log('Challenge match') : console.log('Challenge mismatch')
+    console.log('Authentication: Client', did)
+    console.log(signedData.proof)
+
+    if (!clients.has(did)) {
+      console.log('Authentication: Client not registered yet. Disconnecting client')
+      socket.disconnect(true)
+      return
+    } else if (clients.get(did)?.authenticated) {
+      console.log('Authentication: Client already authenticated.')
+      return
+    }
 
     const verifierOptions = new identity.VerifierOptions({
       challenge: challenge,
@@ -78,14 +97,16 @@ webSocket.on('connection', (socket) => {
 
     // Resolve client's DID document and verify the challenge
     const clientDocument = (await resolver.resolve(did)).intoDocument()
-    const isSignatureValid = clientDocument.verifyData(data.signedData, verifierOptions)
+    const isSignatureValid = clientDocument.verifyData(signedData, verifierOptions)
 
     if (!isSignatureValid) {
+      console.log('Authentication: Failed. Disconnecting client')
       socket.disconnect(true)
-      return console.log('Authentication failure. Disconnecting client')
+      return
     }
 
-    console.log('Authentication success')
+    clients.set(did, { challenge: challenge, authenticated: true })
+    console.log('Authentication: Success')
   })
 
   socket.on('disconnect', () => {

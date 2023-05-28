@@ -1,26 +1,11 @@
-/** Holds properties of an authentication request received from a client. */
-interface AuthResponse {
-  readonly signedData: {
-    readonly data: any
-    readonly proof: any
-  }
-}
-
-/** Holds properties of an authentication request sent to a client. */
-interface AuthRequest {
-  readonly challenge: string
-}
-
-/** Holds properties of a register response received from a client. */
-interface HelloResponse {
-  readonly did: string
-}
-
 export interface ServerToClientEvents {
-  authRequest: (challenge: AuthRequest) => void
+  /** Send a challenge to the client */
+  authenticateClient: (data?: { readonly challenge?: string }) => void
 }
 
 export interface ClientToServerEvents {
-  registerClient: (data: HelloResponse | null) => void
-  authRequest: (data: AuthResponse) => void
+  /** Register a client with their DID */
+  registerClient: (data?: { readonly did?: string }) => void
+  /** Authenticate a client with a signed challenge */
+  authenticateClient: (signedChallenge?: { readonly signedData?: { data?: any; proof?: any } }) => void
 }

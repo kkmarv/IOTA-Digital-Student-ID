@@ -14,11 +14,11 @@
       socket.emit('registerClient', await keeper.getDid(password))
     })
 
-    socket.on('authRequest', (data) => {
+    socket.on('authenticateClient', (data) => {
       const { challenge } = data
       keeper.signData(challenge, password).then((signedChallenge) => {
-        if (signedChallenge) {
-          socket.emit('authRequest', signedChallenge)
+        if (signedChallenge) {          
+          socket.emit('authenticateClient', signedChallenge)
         }
       })
     })
