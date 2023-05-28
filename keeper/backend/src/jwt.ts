@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { hostname } from 'os'
-import { FAILURE_REASONS, TOKEN_EXPIRES_IN, TOKEN_SECRET } from './constants.js'
+import { FAILURE_REASONS, TOKEN_EXPIRES_IN, TOKEN_SECRET } from './config.js'
 
 const keeperIdentifier = `keeper@${hostname()}`
 
+/** Issues a JWT for the given username and DID. */
 export function issueJWT(username: string, did: string) {
   return jwt.sign({ username: username }, TOKEN_SECRET, {
     audience: keeperIdentifier,
@@ -14,6 +15,7 @@ export function issueJWT(username: string, did: string) {
   })
 }
 
+/** Middleware that authenticates a JWT and inserts its contents into the request body. */
 export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
   const { accessToken } = req.cookies
 

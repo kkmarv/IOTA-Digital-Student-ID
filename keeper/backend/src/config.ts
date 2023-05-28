@@ -1,25 +1,27 @@
 // API endpoint configuration
-export const PORT = 8081
-export const API_ROOT = '/api'
+const API_VERSION = 0
+export const API_PORT = 8081
+export const API_BASE = `/api/v${API_VERSION}/`
 
 // JWT configuration
 export const TOKEN_SECRET = 'youraccesstokensecret' // TODO create random secret
 export const TOKEN_EXPIRES_IN = '30m'
 
-// API Routes
+/** API endpoints */
 export const ROUTES = {
-  didGet: API_ROOT + '/did/get',
-  didSign: API_ROOT + '/did/sign',
-  didCreate: API_ROOT + '/did/create',
-  authTokenCreate: API_ROOT + '/auth/token/create',
-  authTokenVerify: API_ROOT + '/auth/token/verify',
-  authTokenDelete: API_ROOT + '/auth/token/delete',
-  credentialGet: API_ROOT + '/credentials/get/:credentialName',
-  credentialStore: API_ROOT + '/credentials/store',
-  credentialList: API_ROOT + '/credentials/list',
-  presentationCreate: API_ROOT + '/presentations/create',
+  didGet: API_BASE + '/did/get',
+  didSign: API_BASE + '/did/sign',
+  didCreate: API_BASE + '/did/create',
+  authTokenCreate: API_BASE + '/auth/token/create',
+  authTokenVerify: API_BASE + '/auth/token/verify',
+  authTokenDelete: API_BASE + '/auth/token/delete',
+  credentialGet: API_BASE + '/credential/get/:credentialName',
+  credentialStore: API_BASE + '/credential/store',
+  credentialList: API_BASE + '/credential/list',
+  presentationCreate: API_BASE + '/presentation/create',
 }
 
+/** Failure reasons for API responses */
 export const FAILURE_REASONS = {
   // Authentication
   jwtMissing: 'Missing JWT.',

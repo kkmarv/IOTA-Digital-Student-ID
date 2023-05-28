@@ -4,7 +4,7 @@ import cors from 'cors'
 import express, { Request, Response } from 'express'
 import fs from 'fs'
 import path from 'path'
-import { API_ROOT, FAILURE_REASONS, PORT, ROUTES } from './constants.js'
+import { API_BASE, FAILURE_REASONS, API_PORT, ROUTES } from './config.js'
 import {
   UserCredentials,
   buildStronghold,
@@ -16,25 +16,28 @@ import { authenticateJWT, issueJWT } from './jwt.js'
 
 identity.start()
 
-const corsOptions = {
-  origin: `http://localhost:5173`, // Vite dev server
-  allowedHeaders: ['Content-Type'],
-  credentials: true,
-}
-
-const keeper = express()
-keeper.disable('x-powered-by')
-keeper.use(cors(corsOptions))
-keeper.use(cookieParser())
-keeper.use(express.json()) // look into nicer options
-
+/** Default options for the AccountBuilder. */
 const accBuilderBaseOptions: identity.AccountBuilderOptions = {
   autopublish: false,
   autosave: identity.AutoSave.every(),
   clientConfig: { network: identity.Network.devnet() },
 }
 
-keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
+const corsOptions: cors.CorsOptions = {
+  origin: `http://localhost:5173`, // Vite dev server
+  allowedHeaders: ['Content-Type'],
+  credentials: true,
+}
+
+// WebServer setup
+const app = express()
+app.disable('x-powered-by')
+app.use(cors(corsOptions))
+app.use(cookieParser())
+app.use(express.json()) // TODO look into nicer options
+
+/** Create a JWT cookie. */
+app.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
@@ -63,15 +66,18 @@ keeper.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
   return res.sendStatus(204)
 })
 
-keeper.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
+/** Verify a JWT cookie. */
+app.get(ROUTES.authTokenVerify, authenticateJWT, (req: Request, res: Response) => {
   res.sendStatus(204)
 })
 
-keeper.get(ROUTES.authTokenDelete, authenticateJWT, (req: Request, res: Response) => {
+/** Delete a JWT cookie. */
+app.get(ROUTES.authTokenDelete, authenticateJWT, (req: Request, res: Response) => {
   res.clearCookie('accessToken').sendStatus(204)
 })
 
-keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {
+/** Create a DID from a username and password. */
+app.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   if (!isUserCredentials(req.body)) {
     return res.status(400).json({ reason: FAILURE_REASONS.credentialsMissing })
   }
@@ -113,7 +119,8 @@ keeper.put(ROUTES.didCreate, async (req: Request, res: Response) => {
   return res.sendStatus(204)
 })
 
-keeper.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
+/** Get a DID from a username and password. */
+app.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) => {
   const { username, password } = req.body
 
   if (!password) {
@@ -135,7 +142,8 @@ keeper.post(ROUTES.didGet, authenticateJWT, async (req: Request, res: Response) 
   return res.status(200).json({ did: didList[0] })
 })
 
-keeper.post(ROUTES.didSign, authenticateJWT, async (req: Request, res: Response) => {
+/** Sign a challenge. */
+app.post(ROUTES.didSign, authenticateJWT, async (req: Request, res: Response) => {
   const { username, password, did, data, challenge } = req.body
 
   if (!password) {
@@ -167,7 +175,8 @@ keeper.post(ROUTES.didSign, authenticateJWT, async (req: Request, res: Response)
   return res.status(200).json({ signedData: signedData })
 })
 
-keeper.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
+/** Store a Verifiable Credential. */
+app.put(ROUTES.credentialStore, authenticateJWT, (req: Request, res: Response) => {
   const { username, credentialName, verifiableCredential } = req.body
 
   if (!verifiableCredential) {
@@ -196,7 +205,8 @@ keeper.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Re
   })
 })
 
-keeper.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
+/** Get a Verifiable Credential by name. */
+app.get(ROUTES.credentialGet, authenticateJWT, (req: Request, res: Response) => {
   const { username } = req.body
   const { credentialName } = req.params
 
@@ -224,7 +234,8 @@ keeper.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Resp
   })
 })
 
-keeper.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Response) => {
+/** List all Verifiable Credentials of a user. */
+app.get(ROUTES.credentialList, authenticateJWT, (req: Request, res: Response) => {
   const { username } = req.body
   const userDirectory = getUserDirectory(username)
 
@@ -243,7 +254,8 @@ keeper.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Res
   })
 })
 
-keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
+/** Create a Verifiable Presentation from a list of Verifiable Credentials. */
+app.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
   const { username, password, did, challenge, credentialNames } = req.body
 
   if (!password) {
@@ -301,6 +313,6 @@ keeper.post(ROUTES.presentationCreate, authenticateJWT, async (req: Request, res
 })
 
 // Start the REST server
-keeper.listen(PORT, () => {
-  console.log(`Keeper listening at http://localhost:${PORT}${API_ROOT}`)
+app.listen(API_PORT, () => {
+  console.log(`keeper listening at http://localhost:${API_PORT}${API_BASE}`)
 })
