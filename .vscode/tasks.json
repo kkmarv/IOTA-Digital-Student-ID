@@ -1,0 +1,50 @@
+{
+  // See https://code.visualstudio.com/docs/editor/tasks-appendix
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "start",
+      "dependsOn": ["authority backend", "keeper backend", "keeper web"],
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "authority backend",
+      "type": "shell",
+      "isBackground": true,
+      "command": ".node/Scripts/activate.ps1 && cd authority/backend && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "keeeper",
+        "close": true
+      }
+    },
+    {
+      "label": "keeper backend",
+      "type": "shell",
+      "isBackground": true,
+      "command": ".node/Scripts/activate.ps1 && cd keeper/backend && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "keeeper",
+        "close": true
+      }
+    },
+    {
+      "label": "keeper web",
+      "type": "shell",
+      "isBackground": true,
+      "command": ".node/Scripts/activate.ps1 && cd keeper/web && npm run dev",
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "keeeper",
+        "close": true
+      }
+    }
+  ]
+}

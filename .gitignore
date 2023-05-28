@@ -1,10 +1,11 @@
 .node/
 
-node_modules/
 dist/
+node_modules/
 
-.vscode/
 .idea/
+.vscode/*
+!.vscode/tasks.json
 
 *.hodl
 *.env
