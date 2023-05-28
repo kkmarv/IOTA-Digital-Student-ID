@@ -8,7 +8,7 @@
 @credentialName = walter
 
 
-POST http://{{host}}:{{port}}/api/auth/token/create
+POST http://{{host}}:{{port}}/api/v0/auth/token/create
 Content-Type: application/json
 
 {
@@ -17,11 +17,11 @@ Content-Type: application/json
 }
 ###
 
-GET http://{{host}}:{{port}}/api/auth/token/verify
+GET http://{{host}}:{{port}}/api/v0/auth/token/verify
 Cookie: {{jwtToken}}
 ###
 
-PUT http://{{host}}:{{port}}/api/did/create
+PUT http://{{host}}:{{port}}/api/v0/did/create
 Content-Type: application/json
 
 {
@@ -30,7 +30,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://{{host}}:{{port}}/api/did/get
+POST http://{{host}}:{{port}}/api/v0/did/get
 Cookie: {{jwtToken}}
 Content-Type: application/json
 
@@ -39,7 +39,7 @@ Content-Type: application/json
 }
 ###
 
-PUT http://{{host}}:{{port}}/api/credentials/store
+PUT http://{{host}}:{{port}}/api/v0/credentials/store
 Cookie: {{jwtToken}}
 Content-Type: application/json
 
@@ -89,15 +89,15 @@ Content-Type: application/json
 }
 ###
 
-GET http://{{host}}:{{port}}/api/credentials/list
+GET http://{{host}}:{{port}}/api/v0/credentials/list
 Cookie: {{jwtToken}}
 ###
 
-GET http://{{host}}:{{port}}/api/credentials/get/{{credentialName}}
+GET http://{{host}}:{{port}}/api/v0/credentials/get/{{credentialName}}
 Cookie: {{jwtToken}}
 ###
 
-POST http://{{host}}:{{port}}/api/presentations/create
+POST http://{{host}}:{{port}}/api/v0/presentations/create
 Cookie: {{jwtToken}}
 Content-Type: application/json
 

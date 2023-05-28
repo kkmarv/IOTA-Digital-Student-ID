@@ -1,7 +1,8 @@
 // API endpoint configuration
 const API_VERSION = 0
 export const API_PORT = 8081
-export const API_BASE = `/api/v${API_VERSION}/`
+export const API_BASE = `/api/v${API_VERSION}`
+// export const API_BASE = `api/v${API_VERSION}/`
 
 // JWT configuration
 export const TOKEN_SECRET = 'youraccesstokensecret' // TODO create random secret

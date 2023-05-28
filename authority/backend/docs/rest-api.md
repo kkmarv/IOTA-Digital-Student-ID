@@ -1,14 +1,15 @@
 # REST API <!-- omit in toc -->
 
 ## Contents
+
 - [1. Endpoints](#1-endpoints)
-  - [1.1. POST `/api/challenge`](#11-post-apichallenge)
-  - [1.2. POST `/api/student/register`](#12-post-apistudentregister)
-  - [1.3. POST `/api/student/login`](#13-post-apistudentlogin)
+  - [1.1. POST `/api/v0/challenge`](#11-post-apiv0challenge)
+  - [1.2. POST `/api/v0/student/register`](#12-post-apiv0studentregister)
+  - [1.3. POST `/api/v0/student/login`](#13-post-apiv0studentlogin)
 
 # 1. Endpoints
 
-## 1.1. POST `/api/challenge`
+## 1.1. POST `/api/v0/challenge`
 
 ### 1.2.1. Request Body <!-- omit in toc -->
 
@@ -28,8 +29,9 @@
 
 - Content-Type: text/plain; charset=utf-8
 - Content-Length: 64
-  
+
 > The response contains a single 32 Byte hex-encoded string serving as a challenge.
+
 ```
 883f0922e1add9f51862cff9f8e8c6769bf2b1acb4bf5c8ac9b03698c237733b
 ```
@@ -41,14 +43,13 @@
 | `400`      | The payload contains no DID.       |
 | `422`      | The payload contains no valid DID. |
 
-## 1.2. POST `/api/student/register`
+## 1.2. POST `/api/v0/student/register`
 
 ### 1.2.1. Request Body <!-- omit in toc -->
 
 - Content-Type: application/json
 
-> The request must contain the following (personal) information
-> about a student and their study subject.
+> The request must contain the following (personal) information about a student and their study subject.
 
 ```json
 {
@@ -88,10 +89,7 @@
 ```json
 {
   "@context": "https://www.w3.org/2018/credentials/v1",
-  "type": [
-    "VerifiableCredential",
-    "StudentCredential"
-  ],
+  "type": ["VerifiableCredential", "StudentCredential"],
   "credentialSubject": {
     "id": "did:iota:dev:8dQAzVbbf6FLW9ckwyCBnPmcMGcUV9LYJoXtgQkHcNQy",
     "currentTerm": 1,
@@ -136,7 +134,7 @@
 | `401`      | The requester did not acquire a challenge first. |
 | `422`      | The format of the credential is wrong.           |
 
-## 1.3. POST `/api/student/login`
+## 1.3. POST `/api/v0/student/login`
 
 ### 1.3.1. Request Body <!-- omit in toc -->
 
@@ -146,57 +144,54 @@
 
 ```json
 {
-   "@context":"https://www.w3.org/2018/credentials/v1",
-   "type":"VerifiablePresentation",
-   "verifiableCredential":{
-      "@context":"https://www.w3.org/2018/credentials/v1",
-      "type":[
-         "VerifiableCredential",
-         "StudentCredential"
-      ],
-      "credentialSubject":{
-         "id":"did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU",
-         "currentTerm":1,
-         "matriculationNumber":1673140194620,
-         "providerName":"Anhalt University of Applied Sciences",
-         "studentData":{
-            "address":{
-               "city":"Musterstetten",
-               "country":"Germany",
-               "county":"Bavaria",
-               "houseNumber":123,
-               "postalCode":123456,
-               "street":"Musterweg"
-            },
-            "birthDate":"09.07.2000",
-            "familyName":"Henker",
-            "firstName":"Dustin",
-            "middleNames":"Friedrich Wilfried",
-            "photo":"https://thispersondoesnotexist.com/"
-         },
-         "studySubject":{
-            "degree":"Bachelor of Arts",
-            "name":"Gender Studies"
-         }
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": "VerifiablePresentation",
+  "verifiableCredential": {
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": ["VerifiableCredential", "StudentCredential"],
+    "credentialSubject": {
+      "id": "did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU",
+      "currentTerm": 1,
+      "matriculationNumber": 1673140194620,
+      "providerName": "Anhalt University of Applied Sciences",
+      "studentData": {
+        "address": {
+          "city": "Musterstetten",
+          "country": "Germany",
+          "county": "Bavaria",
+          "houseNumber": 123,
+          "postalCode": 123456,
+          "street": "Musterweg"
+        },
+        "birthDate": "09.07.2000",
+        "familyName": "Henker",
+        "firstName": "Dustin",
+        "middleNames": "Friedrich Wilfried",
+        "photo": "https://thispersondoesnotexist.com/"
       },
-      "issuer":"did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF",
-      "issuanceDate":"2023-01-08T01:09:54Z",
-      "expirationDate":"2023-04-01T00:00:00Z",
-      "nonTransferable":true,
-      "proof":{
-         "type":"JcsEd25519Signature2020",
-         "verificationMethod":"did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF#key-sign-student",
-         "signatureValue":"515w4aVstpwFGLtJPL8xf82vfggDXQhb2eHqnqgcbsTJPkRh4j2gfgjYTCeWBRhTFLCQTb6wQa9VypVWncLKGcRQ"
+      "studySubject": {
+        "degree": "Bachelor of Arts",
+        "name": "Gender Studies"
       }
-   },
-   "holder":"did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU",
-   "proof":{
-      "type":"JcsEd25519Signature2020",
-      "verificationMethod":"did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU#sign-0",
-      "signatureValue":"482JQCbrvwpzebaEGLEWUeV1uR4Lp3GPCYwBy2Cy4d99KRE14Jk9vhuNNtJvLJjaHvodAfcL1bSTpVxeoQjRhoSg",
-      "expires":"2023-01-08T19:27:03Z",
-      "challenge":"exampleChallenge"
-   }
+    },
+    "issuer": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF",
+    "issuanceDate": "2023-01-08T01:09:54Z",
+    "expirationDate": "2023-04-01T00:00:00Z",
+    "nonTransferable": true,
+    "proof": {
+      "type": "JcsEd25519Signature2020",
+      "verificationMethod": "did:iota:dev:GTLHQCCGRUbT32FigCmKBos7x6VJk1WTAQnbYPUvMwmF#key-sign-student",
+      "signatureValue": "515w4aVstpwFGLtJPL8xf82vfggDXQhb2eHqnqgcbsTJPkRh4j2gfgjYTCeWBRhTFLCQTb6wQa9VypVWncLKGcRQ"
+    }
+  },
+  "holder": "did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU",
+  "proof": {
+    "type": "JcsEd25519Signature2020",
+    "verificationMethod": "did:iota:dev:93CAAWQeq6GmR8NCpJTEmNmUqvTUNJADoFNhDehF1XLU#sign-0",
+    "signatureValue": "482JQCbrvwpzebaEGLEWUeV1uR4Lp3GPCYwBy2Cy4d99KRE14Jk9vhuNNtJvLJjaHvodAfcL1bSTpVxeoQjRhoSg",
+    "expires": "2023-01-08T19:27:03Z",
+    "challenge": "exampleChallenge"
+  }
 }
 ```
 

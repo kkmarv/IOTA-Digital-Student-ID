@@ -67,12 +67,12 @@ app.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {
 })
 
 /** Verify a JWT cookie. */
-app.get(ROUTES.authTokenVerify, authenticateJWT, (req: Request, res: Response) => {
+app.get(ROUTES.authTokenVerify, authenticateJWT, async (req: Request, res: Response) => {
   res.sendStatus(204)
 })
 
 /** Delete a JWT cookie. */
-app.get(ROUTES.authTokenDelete, authenticateJWT, (req: Request, res: Response) => {
+app.get(ROUTES.authTokenDelete, authenticateJWT, async (req: Request, res: Response) => {
   res.clearCookie('accessToken').sendStatus(204)
 })
 
@@ -176,7 +176,7 @@ app.post(ROUTES.didSign, authenticateJWT, async (req: Request, res: Response) =>
 })
 
 /** Store a Verifiable Credential. */
-app.put(ROUTES.credentialStore, authenticateJWT, (req: Request, res: Response) => {
+app.put(ROUTES.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
   const { username, credentialName, verifiableCredential } = req.body
 
   if (!verifiableCredential) {
@@ -206,7 +206,7 @@ app.put(ROUTES.credentialStore, authenticateJWT, (req: Request, res: Response) =
 })
 
 /** Get a Verifiable Credential by name. */
-app.get(ROUTES.credentialGet, authenticateJWT, (req: Request, res: Response) => {
+app.get(ROUTES.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
   const { username } = req.body
   const { credentialName } = req.params
 
@@ -235,7 +235,7 @@ app.get(ROUTES.credentialGet, authenticateJWT, (req: Request, res: Response) => 
 })
 
 /** List all Verifiable Credentials of a user. */
-app.get(ROUTES.credentialList, authenticateJWT, (req: Request, res: Response) => {
+app.get(ROUTES.credentialList, authenticateJWT, async (req: Request, res: Response) => {
   const { username } = req.body
   const userDirectory = getUserDirectory(username)
 
