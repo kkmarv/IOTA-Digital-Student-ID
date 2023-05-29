@@ -37,7 +37,7 @@ if (env.AUTHORITY_NETWORK) {
 }
 /* End of environment variable validation */
 
-export const authority = {
+export const authorityConfig = {
   did: identity.DID.parse(env.AUTHORITY_DID),
   seed: env.AUTHORITY_SEED,
   name: env.AUTHORITY_NAME,

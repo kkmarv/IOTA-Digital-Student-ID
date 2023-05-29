@@ -6,6 +6,7 @@
   let socket: Socket
   let server = 'http://localhost:3000'
   let password = ''
+  let hasRegistered = false
 
   function setServer() {
     socket = io(server)
@@ -17,10 +18,19 @@
     socket.on('authenticateClient', (data) => {
       const { challenge } = data
       keeper.signData(challenge, password).then((signedChallenge) => {
-        if (signedChallenge) {          
+        if (signedChallenge) {
           socket.emit('authenticateClient', signedChallenge)
         }
       })
+    })
+
+    socket.on('authenticationConfirmation', (data) => {
+      const { success } = data
+      if (success) hasRegistered = true
+    })
+
+    socket.on('createCredential', async (data) => {
+      console.log('createCredential', data)
     })
 
     socket.on('disconnect', () => {
@@ -38,6 +48,9 @@
   <div>
     <input bind:value={server} type="text" placeholder="Enter a URL" />
     <button on:click={() => setServer()}>Connect</button>
+  </div>
+  <div>
+    <button disabled={!hasRegistered} on:click={() => socket.emit('createCredential')}>Get Credential</button>
   </div>
   <Logout />
 </div>

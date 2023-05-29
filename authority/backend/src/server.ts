@@ -3,6 +3,7 @@ import cors from 'cors'
 import express from 'express'
 import { Server as HTTPServer } from 'http'
 import { Server as WSServer } from 'socket.io'
+import authority from './authority.js'
 import { apiBase, apiPort, webSocketPort } from './config.js'
 import { randomString } from './helper.js'
 import { ClientToServerEvents, ServerToClientEvents } from './socketIOTyping.js'
@@ -36,6 +37,7 @@ setInterval(() => {
 webSocket.on('connection', (socket) => {
   console.log('A client connected')
 
+  /** Register a client with their DID */
   socket.on('registerClient', (data) => {
     if (!data || !data.did) {
       console.log('Registration: Client did not send their DID. Disconnecting client')
@@ -61,27 +63,28 @@ webSocket.on('connection', (socket) => {
     socket.emit('authenticateClient', { challenge: challenge })
   })
 
-  socket.on('authenticateClient', async (signedChallenge) => {
-    if (!signedChallenge || !signedChallenge.signedData?.proof) {
+  /** Authenticate a client with a signed challenge */
+  socket.on('authenticateClient', async (data) => {
+    if (!data || !data.signedData?.proof) {
       console.log('Authentication: Client did not send any data. Disconnecting client')
       socket.disconnect(true)
       return
     }
 
-    const { signedData } = signedChallenge
+    const { signedData } = data
     const { challenge, verificationMethod } = signedData.proof
     const did = verificationMethod.split('#')[0]
 
     console.log('Authentication: Client', did)
     console.log(signedData.proof)
 
+    // Check if the client is registered or already authenticated
     if (!clients.has(did)) {
       console.log('Authentication: Client not registered yet. Disconnecting client')
       socket.disconnect(true)
       return
     } else if (clients.get(did)?.authenticated) {
-      console.log('Authentication: Client already authenticated.')
-      return
+      return console.log('Authentication: Client already authenticated.')
     }
 
     const verifierOptions = new identity.VerifierOptions({
@@ -106,6 +109,53 @@ webSocket.on('connection', (socket) => {
 
     clients.set(did, { challenge: challenge, authenticated: true })
     console.log('Authentication: Success')
+  })
+
+  /** Issue a credential to a client */
+  socket.on('createCredential', async (data) => {
+    if (!data || !data.did) {
+      return console.log('Credential: Client did not send their DID.')
+    }
+
+    const { did } = data
+    console.log('Credential:', did)
+
+    // Check if the client is authenticated
+    if (!clients.get(did)?.authenticated) {
+      console.log('Credential: Client not authenticated. Disconnecting client')
+      socket.disconnect(true)
+      return
+    }
+
+    // Parse the DID
+    try {
+      identity.DID.parse(did)
+    } catch (err) {
+      return console.log('Credential: Invalid DID!')
+    }
+
+    // TODO Validate the personal data of the client
+
+    // Create a new credential
+    const credentialSubject = { did: did } // TODO add clients personal data
+
+    const studentCredential = new identity.Credential({
+      credentialSubject: credentialSubject,
+      issuer: authority.document().id(),
+      type: 'MatriculationCredential',
+    })
+
+    const proofOptions = new identity.ProofOptions({
+      purpose: identity.ProofPurpose.assertionMethod(),
+      created: identity.Timestamp.nowUTC(),
+      expires: undefined, // TODO
+    })
+
+    // Sign the credential
+    const signedCredential = await authority.createSignedCredential('', studentCredential, proofOptions)
+
+    console.dir('Credential: ' + signedCredential.toJSON(), { depth: null })
+    socket.emit('createCredential', { credential: signedCredential.toJSON() })
   })
 
   socket.on('disconnect', () => {
