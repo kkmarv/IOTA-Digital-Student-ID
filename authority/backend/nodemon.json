@@ -1,12 +1,7 @@
 {
-  "ignore": [
-    ".git/**",
-    ".gitignore",
-    "**/node_modules/**",
-    "**/backend/src/scripts/**"
-  ],
-  "execMap": {
-    "ts": "node --loader ts-node/esm -r dotenv/config"
-  },
-  "ext": "ts"
+  "watch": ["src", "tsconfig.json", ".env"],
+  "ext": "ts",
+  "restartable": "r",
+  "exec": "node --loader ts-node/esm -r dotenv/config",
+  "delay": "1000"
 }

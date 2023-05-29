@@ -6,7 +6,6 @@ import { Server as WSServer } from 'socket.io'
 import { apiBase, apiPort, webSocketPort } from './config.js'
 import { randomString } from './helper.js'
 import { ClientToServerEvents, ServerToClientEvents } from './socketIOTyping.js'
-import { log } from 'console'
 
 // Create API Server
 const app = express()
@@ -64,7 +63,7 @@ webSocket.on('connection', (socket) => {
 
   socket.on('authenticateClient', async (signedChallenge) => {
     if (!signedChallenge || !signedChallenge.signedData?.proof) {
-      log('Authentication: Client did not send any data. Disconnecting client')
+      console.log('Authentication: Client did not send any data. Disconnecting client')
       socket.disconnect(true)
       return
     }
