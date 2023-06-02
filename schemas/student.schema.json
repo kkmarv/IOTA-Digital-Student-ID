@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Student ID Card",
+  "description": "A student ID card contains information about a student's personal information and studies. It is issued by a university to its students.",
+  "type": "object",
+  "properties": {
+    "student": {
+      "description": "The student's personal information.",
+      "additionalProperties": false,
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "description": "The full name of the student."
+        },
+        "photoURI": {
+          "type": "string",
+          "format": "uri",
+          "description": "A URI that points to a picture of the student."
+        }
+      },
+      "required": ["fullName", "photoURI"]
+    },
+    "studies": {
+      "description": "The student's studies information.",
+      "additionalProperties": false,
+      "properties": {
+        "studentID": {
+          "type": "integer",
+          "description": "The student's matriculation/student number."
+        },
+        "universityName": {
+          "type": "string",
+          "description": "The official name of the university."
+        },
+        "degreeTitle": {
+          "type": "string",
+          "description": "The title of the degree the student is pursuing.",
+          "enum": ["Bachelor", "Master"]
+        },
+        "fieldOfStudy": {
+          "type": "string",
+          "description": "The name of the program the student is enrolled in."
+        },
+        "enrollmentDate": {
+          "type": "string",
+          "format": "date",
+          "description": "The date the student first enrolled in the program."
+        },
+        "currentSemester": {
+          "type": "integer",
+          "description": "The current semester the student is enrolled in.",
+          "minimum": 1
+        }
+      },
+      "required": ["studentID", "universityName", "fieldOfStudy", "degreeTitle", "enrollmentDate", "currentSemester"]
+    }
+  },
+  "required": ["student", "studies"]
+}

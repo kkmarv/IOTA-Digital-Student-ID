@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Address",
+  "description": "An address",
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "apartment": {
+      "type": "integer",
+      "description": "The apartment number of the address."
+    },
+    "city": {
+      "type": "string",
+      "description": "The city where the address is located."
+    },
+    "state": {
+      "type": "string",
+      "description": "The state where the address is located."
+    },
+    "country": {
+      "type": "string",
+      "description": "The country where the address is located."
+    },
+    "postalCode": {
+      "type": "string",
+      "description": "The postal code of the address."
+    },
+    "street": {
+      "type": "string",
+      "description": "The street where the address is located."
+    },
+    "houseNumber": {
+      "type": "integer",
+      "description": "The house number of the address.",
+      "minimum": 1
+    },
+    "houseNumberSuffix": {
+      "type": "string",
+      "description": "The house number suffix of the house number of the address."
+    }
+  },
+  "required": ["city", "country", "houseNumber", "postalCode", "street"]
+}

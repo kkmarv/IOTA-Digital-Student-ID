@@ -1,0 +1,17 @@
+{
+  "$schema": "../person.schema.json",
+  "firstNames": ["Walter", "Hartwell"],
+  "lastName": "White",
+  "dateOfBirth": "1959-09-07",
+  "placeOfBirth": "Albuquerque, New Mexico",
+  "nationality": "United States of America",
+  "address": {
+    "houseNumber": 308,
+    "street": "Negra Arroyo Lane",
+    "postalCode": "87104",
+    "city": "Albuquerque",
+    "state": "New Mexico",
+    "country": "United States of America"
+  },
+  "biometricPhotoURI": "https://vignette.wikia.nocookie.net/breakingbad/images/e/e7/BB-S5B-Walt-590.jpg/revision/latest?cb=20130928055404"
+}

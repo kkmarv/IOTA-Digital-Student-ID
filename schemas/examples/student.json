@@ -1,0 +1,15 @@
+{
+  "$schema": "../student.schema.json",
+  "student": {
+    "fullName": "Walter Hartwell White",
+    "photoURI": "https://vignette.wikia.nocookie.net/breakingbad/images/e/e7/BB-S5B-Walt-590.jpg/revision/latest?cb=20130928055404"
+  },
+  "studies": {
+    "degreeTitle": "Master",
+    "fieldOfStudy": "Chemistry",
+    "studentID": 123456789,
+    "universityName": "University of New Mexico",
+    "currentSemester": 7,
+    "enrollmentDate": "2009-09-07"
+  }
+}
