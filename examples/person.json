@@ -1,5 +1,5 @@
 {
-  "$schema": "../person.schema.json",
+  "$schema": "../person.json",
   "firstNames": ["Walter", "Hartwell"],
   "lastName": "White",
   "dateOfBirth": "1959-09-07",

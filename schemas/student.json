@@ -1,7 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
   "title": "Student ID Card",
-  "description": "A student ID card contains information about a student's personal information and studies. It is issued by a university to its students.",
+  "description": "A student ID card containing rough personal information about a student and their studies. It is issued by a university to its students.",
+  "additionalProperties": false,
   "type": "object",
   "properties": {
     "student": {

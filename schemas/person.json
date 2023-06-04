@@ -2,6 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema",
   "title": "National ID Card",
   "description": "A national ID card is a government-issued document used for personal identification.",
+  "additionalProperties": false,
   "type": "object",
   "properties": {
     "firstNames": {
@@ -34,7 +35,7 @@
       "description": "A URI that points to a biometric picture of the cardholder."
     },
     "address": {
-      "$ref": "./address.schema.json"
+      "$ref": "address.json"
     }
   },
   "required": ["firstNames", "lastName", "nationality", "dateOfBirth", "placeOfBirth", "biometricPhotoURI", "address"]

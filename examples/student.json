@@ -1,5 +1,5 @@
 {
-  "$schema": "../student.schema.json",
+  "$schema": "../student.json",
   "student": {
     "fullName": "Walter Hartwell White",
     "photoURI": "https://vignette.wikia.nocookie.net/breakingbad/images/e/e7/BB-S5B-Walt-590.jpg/revision/latest?cb=20130928055404"

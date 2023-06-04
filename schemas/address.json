@@ -36,7 +36,7 @@
     },
     "houseNumberSuffix": {
       "type": "string",
-      "description": "The house number suffix of the house number of the address."
+      "description": "Some addresses have a suffix to the house number such as a letter or a fraction."
     }
   },
   "required": ["city", "country", "houseNumber", "postalCode", "street"]

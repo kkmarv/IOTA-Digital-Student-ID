@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "typings": "json2ts -i schemas/ -o typings/ --bannerComment \"/* eslint-disable */\" --style.singleQuote --no-style.semi --cwd ../../../schemas --unreachableDefinitions"
+  },
+  "devDependencies": {
+    "json-schema-to-typescript": "^13.0.1"
+  }
+}
