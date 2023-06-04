@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Image from './Image.svelte'
+  import Image from '../Image.svelte'
   export let src: string
 </script>
 

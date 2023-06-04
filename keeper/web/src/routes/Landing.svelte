@@ -1,9 +1,9 @@
 <script lang="ts">
   import io, { Socket } from 'socket.io-client'
-  import keeper from '../lib/keeper/api'
   import Logout from '../components/Logout.svelte'
   import NationalID from '../components/credentials/NationalID.svelte'
-  import getRandomUser from '../lib/randomuser/api/requests'
+  import keeper from '../lib/keeper/api'
+  import randomUser from '../lib/randomuser/api/'
 
   let socket: Socket
   let server = 'http://localhost:3000'
@@ -56,6 +56,6 @@
   </div>
   <Logout />
 </div>
-{#await getRandomUser() then data}
+{#await randomUser.getNationalID() then data}
   <NationalID {data} />
 {/await}

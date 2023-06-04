@@ -2,8 +2,9 @@ import type { NationalIDCard } from '../../../../../../typings'
 import hasError from '../../requestValidation'
 
 const randomUserApi = 'https://randomuser.me/api/?inc=name,nat,location,dob&noinfo'
+const randomPictureURL = 'https://thispersondoesnotexist.com'
 
-export default async function getRandomUser(): Promise<NationalIDCard | null> {
+export async function getNationalID(): Promise<NationalIDCard | null> {
   const response = await fetch(randomUserApi)
   if (await hasError(response)) return null
 
@@ -16,7 +17,7 @@ export default async function getRandomUser(): Promise<NationalIDCard | null> {
     nationality: user.nat,
     dateOfBirth: new Date(user.dob.date).toLocaleDateString(),
     placeOfBirth: user.location.city,
-    biometricPhotoURI: 'https://thispersondoesnotexist.com',
+    biometricPhotoURI: randomPictureURL,
     address: {
       city: user.location.city,
       state: user.location.state,

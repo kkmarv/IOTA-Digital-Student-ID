@@ -1,4 +1,4 @@
-/** A map of country codes to country information. */
+/** A mapping of country codes to country information. */
 export const countries = {
   AU: {
     legalName: 'Commonwealth of Australia',

@@ -1,12 +1,12 @@
 <script>
-  import { countries } from '../../lib/randomuser/api/map'
-  import BiometricPhoto from '../BiometricPhoto.svelte'
+  import randomUser from '../../lib/randomuser/api/'
+  import BiometricPhoto from './BiometricPhoto.svelte'
   export let data
 </script>
 
 <div class="id-card">
   <div>
-    <p class="title">{countries[data.nationality].legalName}</p>
+    <p class="title">{randomUser.countries[data.nationality].legalName}</p>
   </div>
   <div class="content">
     <div>
@@ -21,13 +21,13 @@
         <p class="value">{data.firstNames.join(' ')}</p>
         <p class="label">First Names</p>
       </div>
-      <div style="display: flex; gap: 10px;">
+      <div class="row">
         <div class="personal-info">
           <p class="value">{data.dateOfBirth}</p>
           <p class="label">Date of Birth</p>
         </div>
         <div class="personal-info">
-          <p class="value">{countries[data.nationality].nationality}</p>
+          <p class="value">{randomUser.countries[data.nationality].nationality}</p>
           <p class="label">Nationality</p>
         </div>
       </div>
@@ -38,11 +38,11 @@
       <div class="row">
         <div class="personal-info">
           <p class="value">{new Date().toLocaleDateString()}</p>
-          <p class="label">Expires on</p>
+          <p class="label">Issued on</p>
         </div>
         <div class="personal-info">
           <p class="value">{new Date().toLocaleDateString()}</p>
-          <p class="label">Issued on</p>
+          <p class="label">Expires on</p>
         </div>
       </div>
     </div>
