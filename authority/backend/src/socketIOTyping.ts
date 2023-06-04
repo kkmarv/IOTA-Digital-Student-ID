@@ -1,8 +1,10 @@
 export interface ServerToClientEvents {
   /** Send a challenge to the client */
-  authenticateClient: (data?: { readonly challenge?: string }) => void
+  authenticateClient: (data: { readonly challenge: string }) => void
   /** Issue a credential to a client */
-  createCredential: (data?: { readonly credential?: any }) => void
+  createCredential: (data: { readonly credential: any }) => void
+  /** Confirm the authentication of a client */
+  authenticationConfirmation: (data: { readonly success?: boolean }) => void
 }
 
 export interface ClientToServerEvents {
