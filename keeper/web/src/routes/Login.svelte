@@ -4,7 +4,7 @@
   import CredentialForm from '../components/CredentialForm.svelte'
   import Loading from '../components/Loading.svelte'
   import { appRoutes } from '../components/Router.svelte'
-  import keeper from '../lib/keeper/'
+  import keeper from '../lib/keeper/api'
 
   type tab = 'login' | 'register'
 

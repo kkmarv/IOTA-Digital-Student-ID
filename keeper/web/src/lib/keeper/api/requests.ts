@@ -1,4 +1,5 @@
-import * as route from './routes.js'
+import hasError from '../../requestValidation'
+import * as route from './routes'
 
 export async function createAccessToken(username: string, password: string): Promise<boolean> {
   const response = await fetch(route.createAccessToken, {
@@ -55,14 +56,4 @@ export async function getDid(password: string): Promise<any> {
   })
   if (await hasError(response)) return null
   return await response.json()
-}
-
-async function hasError(response: Response): Promise<string> {
-  if (!response) return 'Network error.'
-  else if (!response.ok) {
-    const body = await response.json()
-    console.error(`Keeper: ${body.reason}`)
-    return body.reason
-  }
-  return null
 }

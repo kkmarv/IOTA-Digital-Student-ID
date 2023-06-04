@@ -35,6 +35,7 @@ app.disable('x-powered-by')
 app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(express.json()) // TODO look into nicer options
+// TODO look into using helmet
 
 /** Create a JWT cookie. */
 app.post(ROUTES.authTokenCreate, async (req: Request, res: Response) => {

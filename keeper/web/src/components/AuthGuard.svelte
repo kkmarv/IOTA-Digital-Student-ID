@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { navigate } from 'svelte-routing'
-  import keeper from '../lib/keeper'
+  import keeper from '../lib/keeper/api'
   import { appRoutes } from '../components/Router.svelte'
 
   // This component causes the app to make two verify requests when the user is not logged in and visits the login page
