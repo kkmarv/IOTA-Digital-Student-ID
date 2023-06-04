@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { hostname } from 'os'
-import { FAILURE_REASONS, TOKEN_EXPIRES_IN, TOKEN_SECRET } from './config.js'
+import { failureReasons, tokenExpiresIn, tokenSecret } from './config.js'
 
 const keeperIdentifier = `keeper@${hostname()}`
 
 /** Issues a JWT for the given username and DID. */
 export function issueJWT(username: string, did: string) {
-  return jwt.sign({ username: username }, TOKEN_SECRET, {
+  return jwt.sign({ username: username }, tokenSecret, {
     audience: keeperIdentifier,
-    expiresIn: TOKEN_EXPIRES_IN,
+    expiresIn: tokenExpiresIn,
     issuer: keeperIdentifier,
     subject: did,
   })
@@ -20,15 +20,15 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
   const { accessToken } = req.cookies
 
   if (!accessToken) {
-    return res.status(400).json({ reason: FAILURE_REASONS.jwtMissing })
+    return res.status(400).json({ reason: failureReasons.jwtMissing })
   }
 
-  jwt.verify(accessToken, TOKEN_SECRET, (err: jwt.VerifyErrors | null, jwtPayload: any) => {
+  jwt.verify(accessToken, tokenSecret, (err: jwt.VerifyErrors | null, jwtPayload: any) => {
     if (err) {
       if (err instanceof jwt.TokenExpiredError) {
-        return res.status(403).json({ reason: FAILURE_REASONS.jwtExpired })
+        return res.status(403).json({ reason: failureReasons.jwtExpired })
       } else {
-        return res.status(401).json({ reason: FAILURE_REASONS.jwtInvalid })
+        return res.status(401).json({ reason: failureReasons.jwtInvalid })
       }
     }
 
