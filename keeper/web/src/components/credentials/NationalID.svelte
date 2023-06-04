@@ -1,47 +1,48 @@
 <script>
   import randomUser from '../../lib/randomuser/api/'
   import BiometricPhoto from './BiometricPhoto.svelte'
-  export let data
+  export let credential
+  const { credentialSubject, issuanceDate, expirationDate } = credential
 </script>
 
 <div class="id-card">
   <div>
-    <p class="title">{randomUser.countries[data.nationality].legalName}</p>
+    <p class="title">{randomUser.countries[credentialSubject.nationality].legalName}</p>
   </div>
   <div class="content">
     <div>
-      <BiometricPhoto src={data.biometricPhotoURI} />
+      <BiometricPhoto src={credentialSubject.biometricPhotoURI} />
     </div>
     <div class="personal-info-container">
       <div class="personal-info">
-        <p class="value">{data.lastName}</p>
+        <p class="value">{credentialSubject.lastName}</p>
         <p class="label">Last Name</p>
       </div>
       <div class="personal-info">
-        <p class="value">{data.firstNames.join(' ')}</p>
+        <p class="value">{credentialSubject.firstNames.join(' ')}</p>
         <p class="label">First Names</p>
       </div>
       <div class="row">
         <div class="personal-info">
-          <p class="value">{data.dateOfBirth}</p>
+          <p class="value">{credentialSubject.dateOfBirth}</p>
           <p class="label">Date of Birth</p>
         </div>
         <div class="personal-info">
-          <p class="value">{randomUser.countries[data.nationality].nationality}</p>
+          <p class="value">{randomUser.countries[credentialSubject.nationality].nationality}</p>
           <p class="label">Nationality</p>
         </div>
       </div>
       <div class="personal-info">
-        <p class="value">{data.placeOfBirth}</p>
+        <p class="value">{credentialSubject.placeOfBirth}</p>
         <p class="label">Place of Birth</p>
       </div>
       <div class="row">
         <div class="personal-info">
-          <p class="value">{new Date().toLocaleDateString()}</p>
+          <p class="value">{new Date(issuanceDate).toLocaleDateString()}</p>
           <p class="label">Issued on</p>
         </div>
         <div class="personal-info">
-          <p class="value">{new Date().toLocaleDateString()}</p>
+          <p class="value">{new Date(expirationDate).toLocaleDateString()}</p>
           <p class="label">Expires on</p>
         </div>
       </div>

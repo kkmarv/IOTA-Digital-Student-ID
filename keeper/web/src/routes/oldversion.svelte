@@ -43,6 +43,7 @@
 
   async function onCreateDID() {
     account = await builder.createIdentity()
+    
     await account.publish()
     did = account.did()
   }

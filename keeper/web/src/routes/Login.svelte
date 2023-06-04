@@ -4,7 +4,9 @@
   import CredentialForm from '../components/CredentialForm.svelte'
   import Loading from '../components/Loading.svelte'
   import { appRoutes } from '../components/Router.svelte'
+  import { createNationalIDCredential } from '../lib/governmentAuthority'
   import keeper from '../lib/keeper/api'
+  import randomUser from '../lib/randomuser/api'
 
   type tab = 'login' | 'register'
 
@@ -19,7 +21,7 @@
   // Skip login if already logged in
   let hasLoaded = false
   onMount(async () => {
-    if (await keeper.verifyAccessToken()) navigate(appRoutes.landing, { replace: true })
+    if (await keeper.authenticateUser()) navigate(appRoutes.landing, { replace: true })
     hasLoaded = true
   })
 
@@ -29,13 +31,27 @@
   }
 
   async function login(username: string, password: string) {
-    const success = await keeper.createAccessToken(username, password)
-    if (success) navigate(appRoutes.landing, { replace: true })
+    let success = await keeper.loginUser(username, password)
+    if (!success) return
+
+    const hasNationalID = !!(await keeper.getCredential('nationalID'))
+
+    if (!hasNationalID) {
+      // Request a national ID for the new user from the government authority
+      const did = await keeper.getDid(password)
+      const nationalID = await randomUser.getNationalID()
+      const nationalIDCredential = await createNationalIDCredential(did.did, nationalID)
+
+      // Save the user's newly created NationalIDCredential to keeper
+      success = await keeper.saveCredential(password, 'nationalID', nationalIDCredential)
+    }
+
+    if (success) navigate(appRoutes.landing, { replace: true, state: { from: appRoutes.login } })
   }
 
   async function register(username: string, password: string) {
     isRegistering = true
-    const success = await keeper.register(username, password)
+    const success = await keeper.registerUser(username, password)
     isRegistering = false
     if (success) login(username, password)
   }

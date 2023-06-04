@@ -11,7 +11,7 @@
   // It is also missing the feature to redirect to the previous page after login (but solvable with svelte-routing) and
   // one cannot navigate to the register pager when logged out because the AuthGuard component will redirect to login
   onMount(async () => {
-    if (!(await keeper.verifyAccessToken())) {
+    if (!(await keeper.authenticateUser())) {
       navigate(appRoutes.login)
     }
   })

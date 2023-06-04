@@ -3,7 +3,6 @@
   import Logout from '../components/Logout.svelte'
   import NationalID from '../components/credentials/NationalID.svelte'
   import keeper from '../lib/keeper/api'
-  import randomUser from '../lib/randomuser/api/'
 
   let socket: Socket
   let server = 'http://localhost:3000'
@@ -56,6 +55,6 @@
   </div>
   <Logout />
 </div>
-{#await randomUser.getNationalID() then data}
-  <NationalID {data} />
+{#await keeper.getCredential('nationalID') then credential}
+  <NationalID {credential} />
 {/await}

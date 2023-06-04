@@ -68,7 +68,7 @@ export const countries = {
   MX: {
     legalName: 'United Mexican States',
     commonName: 'Mexico',
-    nationality: 'French',
+    nationality: 'Mexican',
   },
   NL: {
     legalName: 'Kingdom of the Netherlands',

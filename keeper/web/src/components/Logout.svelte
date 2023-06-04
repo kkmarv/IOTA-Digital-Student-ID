@@ -4,9 +4,8 @@
   import { appRoutes } from './Router.svelte'
 
   async function logout() {
-    const success = await keeper.logout()
-    if (success) navigate(appRoutes.login, { replace: true })
-    else console.log('Logout failed')
+    await keeper.logout()
+    navigate(appRoutes.login, { replace: true })
   }
 </script>
 
