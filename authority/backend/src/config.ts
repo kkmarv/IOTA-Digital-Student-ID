@@ -3,15 +3,21 @@ import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import assert from 'assert'
 import { env } from 'process'
 
-const apiVersion = 0
-export const apiPort = 8080
-export const apiBase = `/api/v${apiVersion}`
-export const webSocketPort = 3000
+const API_VERSION = 0
+export const API_PORT = 8080
+export const API_BASE = `/api/v${API_VERSION}`
+export const WEBSOCKET_PORT = 3000
 
-export const strongholdPath = './identity.hodl'
+export const START_SUMMER_SEMESTER = env.START_SUMMER_SEMESTER || '04-01'
+export const START_WINTER_SEMESTER = env.START_WINTER_SEMESTER || '10-01'
 
-export const startSummerSemester = env.START_SUMMER_SEMESTER || '04-01'
-export const startWinterSemester = env.START_WINTER_SEMESTER || '10-01'
+export const ROUTES = {
+  challenge: API_BASE + '/challenge',
+  needForCredential: API_BASE + '/credential/student/prerequisite',
+  issueCredential: API_BASE + '/credential/student/issue',
+}
+
+export const FAILURE_REASONS = {}
 
 /* Begin environment variable validation */
 assert(env.AUTHORITY_DID, 'Please specify a DID.')
@@ -25,8 +31,9 @@ try {
   assert(false, 'Given DID is not a valid DID.')
 }
 
-export const stronghold = await Stronghold.build(strongholdPath, env.AUTHORITY_SEED)
-assert(stronghold.didExists(identity.DID.parse(env.AUTHORITY_DID)), 'Given DID does not exist in Stronghold.')
+const strongholdPath = './identity.hodl'
+export const STRONGHOLD = await Stronghold.build(strongholdPath, env.AUTHORITY_SEED)
+assert(STRONGHOLD.didExists(identity.DID.parse(env.AUTHORITY_DID)), 'Given DID does not exist in Stronghold.')
 
 if (env.AUTHORITY_NETWORK) {
   try {
@@ -37,7 +44,7 @@ if (env.AUTHORITY_NETWORK) {
 }
 /* End of environment variable validation */
 
-export const authorityConfig = {
+export const AUTHORITY_CONFIG = {
   did: identity.DID.parse(env.AUTHORITY_DID),
   seed: env.AUTHORITY_SEED,
   name: env.AUTHORITY_NAME,
@@ -47,14 +54,14 @@ export const authorityConfig = {
     : identity.Duration.minutes(10),
 }
 
-export const clientConfig: identity.IClientConfig = {
+export const CLIENT_CONFIG: identity.IClientConfig = {
   network: env.AUTHORITY_NETWORK ? identity.Network.tryFromName(env.AUTHORITY_NETWORK) : identity.Network.devnet(),
   primaryNode: env.AUTHORITY_PRIMARY_NODE_URL ? { url: env.AUTHORITY_PRIMARY_NODE_URL } : undefined,
 }
 
-export const accountBuilderConfig: identity.AccountBuilderOptions = {
+export const ACCOUNT_BUILDER_CONFIG: identity.AccountBuilderOptions = {
   autosave: identity.AutoSave.every(),
   autopublish: false,
-  storage: stronghold,
-  clientConfig: clientConfig,
+  storage: STRONGHOLD,
+  clientConfig: CLIENT_CONFIG,
 }

@@ -1,18 +1,18 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
-import { accountBuilderConfig, authorityConfig } from './config.js'
+import { ACCOUNT_BUILDER_CONFIG, AUTHORITY_CONFIG } from './config.js'
 
 // Load the DID Document from Stronghold
-const accBuilder = new identity.AccountBuilder(accountBuilderConfig)
-const authority = await accBuilder.loadIdentity(authorityConfig.did)
+const accBuilder = new identity.AccountBuilder(ACCOUNT_BUILDER_CONFIG)
+const authority = await accBuilder.loadIdentity(AUTHORITY_CONFIG.did)
 
 // Set the university's DID as the Document controller
-await authority.setController({ controllers: authorityConfig.did })
+await authority.setController({ controllers: AUTHORITY_CONFIG.did })
 
 // Add a reference to the university's web presence
 await authority.createService({
   fragment: '#website',
   type: 'LinkedDomains',
-  endpoint: authorityConfig.website,
+  endpoint: AUTHORITY_CONFIG.website,
 })
 
 // Create signing method for matriculation issuance

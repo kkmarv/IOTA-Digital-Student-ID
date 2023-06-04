@@ -1,5 +1,5 @@
 import identity from '@iota/identity-wasm/node'
-import { authorityConfig } from '../../config.js'
+import { AUTHORITY_CONFIG } from '../../config.js'
 import { StudentVC } from '../verifiable/credentials.js'
 import { StudentVP } from '../verifiable/presentations.js'
 import { DigitalID } from './DigitalID.js'
@@ -27,7 +27,7 @@ export class StudentID extends DigitalID {
       new identity.ProofOptions({
         challenge: challenge,
         created: identity.Timestamp.nowUTC(),
-        expires: identity.Timestamp.nowUTC().checkedAdd(authorityConfig.proofExpiryDuration),
+        expires: identity.Timestamp.nowUTC().checkedAdd(AUTHORITY_CONFIG.proofExpiryDuration),
       })
     )
   }

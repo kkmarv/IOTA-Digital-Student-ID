@@ -1,5 +1,5 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
-import { accountBuilderConfig } from '../src/config.js'
+import { ACCOUNT_BUILDER_CONFIG } from '../src/config.js'
 import { encode58 } from '../scripts/base58.js'
 
 /**
@@ -13,7 +13,7 @@ async function createIdentity() {
   console.log(`Public Key: ${encode58(keyPair.public())}`)
   console.log(`Private Key: ${encode58(keyPair.private())}`)
 
-  const builder = new identity.AccountBuilder(accountBuilderConfig)
+  const builder = new identity.AccountBuilder(ACCOUNT_BUILDER_CONFIG)
   const account = await builder.createIdentity({
     privateKey: keyPair?.private(),
   })

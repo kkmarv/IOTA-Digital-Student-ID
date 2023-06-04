@@ -1,6 +1,6 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
-import { accountBuilderConfig, stronghold } from '../src/config.js'
+import { ACCOUNT_BUILDER_CONFIG, STRONGHOLD } from '../src/config.js'
 
 /**
  * Manipulate a DID by inserting an example service into its document.
@@ -9,11 +9,11 @@ import { accountBuilderConfig, stronghold } from '../src/config.js'
  * @param did The DID serving as an example.
  */
 async function manipulateIdentity(did: identity.DID): Promise<void> {
-  if (!(await stronghold.didExists(did))) {
+  if (!(await STRONGHOLD.didExists(did))) {
     return console.log('DID does not exist in Stronghold.')
   }
 
-  const builder = new identity.AccountBuilder(accountBuilderConfig)
+  const builder = new identity.AccountBuilder(ACCOUNT_BUILDER_CONFIG)
   const account = await builder.loadIdentity(did)
 
   // Add a new service to the identity.
