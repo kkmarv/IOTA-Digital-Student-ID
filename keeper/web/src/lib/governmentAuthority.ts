@@ -12,7 +12,7 @@ const builder = new identity.AccountBuilder({
   clientConfig: { network: identity.Network.devnet() },
 })
 
-// Create an account for the government authority (Issuer for National ID)
+// Create an account for the government authority (Issuer for National IDs)
 const govAuthority = await builder.createIdentity({
   privateKey: new Uint8Array([
     222, 36, 206, 249, 184, 179, 75, 58, 132, 3, 154, 54, 35, 40, 113, 132, 210, 73, 11, 70, 24, 113, 47, 43, 127, 73,

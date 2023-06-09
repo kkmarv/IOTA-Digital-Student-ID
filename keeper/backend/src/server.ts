@@ -143,7 +143,7 @@ app.post(routes.didGet, authenticateJWT, async (req: Request, res: Response) => 
   return res.status(200).json({ did: didList[0] })
 })
 
-/** Sign a challenge. */
+/** Sign arbitrary data. */
 app.post(routes.didSign, authenticateJWT, async (req: Request, res: Response) => {
   const { username, password, did, data, challenge } = req.body
 

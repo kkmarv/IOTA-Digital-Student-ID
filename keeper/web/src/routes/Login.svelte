@@ -38,9 +38,9 @@
 
     if (!hasNationalID) {
       // Request a national ID for the new user from the government authority
-      const did = await keeper.getDid(password)
+      const {did} = await keeper.getDid(password)
       const nationalID = await randomUser.getNationalID()
-      const nationalIDCredential = await createNationalIDCredential(did.did, nationalID)
+      const nationalIDCredential = await createNationalIDCredential(did, nationalID)
 
       // Save the user's newly created NationalIDCredential to keeper
       success = await keeper.saveCredential(password, 'nationalID', nationalIDCredential)
