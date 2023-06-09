@@ -1,9 +1,9 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
-import { ACCOUNT_BUILDER_CONFIG } from '../src/config.js'
+import { accountBuilderConfig } from '../src/config.js'
 
 async function createVP(did: identity.DID, credential: identity.Credential, challenge: string) {
-  const builder = new identity.AccountBuilder(ACCOUNT_BUILDER_CONFIG)
+  const builder = new identity.AccountBuilder(accountBuilderConfig)
   const account = await builder.loadIdentity(did)
 
   const vp = new identity.Presentation({

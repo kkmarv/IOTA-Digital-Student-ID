@@ -2,10 +2,10 @@ import identity from '@iota/identity-wasm/node/identity_wasm.js'
 // import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
-import fs from 'fs'
-import path from 'path'
-import { API_BASE, FAILURE_REASONS, API_PORT, ROUTES } from './config.js'
+import { apiPort, authorityConfig, credentialTypes, routes } from './config.js'
 import { randomString } from './helper.js'
+import authority from './authority.js'
+import nextSemesterStart from './identity/util/time.js'
 
 // import { authenticateJWT, issueJWT } from './jwt.js'
 
@@ -14,14 +14,41 @@ app.disable('x-powered-by')
 app.use(cors())
 app.use(express.json())
 
-app.get(ROUTES.challenge, (req: Request, res: Response) => {
+/** Get a random challenge */
+app.get(routes.challenge, (req: Request, res: Response) => {
   res.status(200).send({ challenge: randomString(64) })
 })
 
-app.get(ROUTES.needForCredential, (req: Request, res: Response) => {})
+/** Request information about the StudentIDCredential requirements */
+app.get(routes.studentIDCredentialRequirements, (req: Request, res: Response) => {
+  res.status(200).send({ requirements: [credentialTypes.nationalID] })
+})
 
-app.post(ROUTES.issueCredential, (req: Request, res: Response) => {})
+/** Issue a StudentIDCredential */
+app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) => {
+  const { cardSubject, credentialkek } = req.body
 
-app.listen(API_PORT, () => {
-  console.log(`authority API listening on port ${API_PORT}`)
+  const credential = new identity.Credential({
+    type: credentialTypes.studentID,
+    issuer: authority.document().id(),
+    credentialSubject: cardSubject,
+    expirationDate: nextSemesterStart(),
+    nonTransferable: true,
+  })
+
+  const proofOptions = new identity.ProofOptions({
+    purpose: identity.ProofPurpose.assertionMethod(),
+  })
+
+  const signedCredential = await authority.createSignedCredential(
+    authorityConfig.methodFragments.signStudentIDCredential,
+    credential,
+    proofOptions
+  )
+
+  return res.status(200).send({ credential: signedCredential.toJSON() })
+})
+
+app.listen(apiPort, () => {
+  console.log(`authority API listening on port ${apiPort}`)
 })

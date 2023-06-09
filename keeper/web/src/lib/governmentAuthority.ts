@@ -32,7 +32,6 @@ export async function createNationalIDCredential(did: string, data: NationalIDCa
     type: 'NationalIDCredential',
     issuer: govAuthority.document().id(),
     credentialSubject: cardSubject,
-    // 10 years + leap days
     expirationDate: identity.Timestamp.parse(expirationDate.toISOString()),
     nonTransferable: true,
   })

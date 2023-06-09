@@ -1,24 +1,28 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
-import { ACCOUNT_BUILDER_CONFIG, AUTHORITY_CONFIG } from './config.js'
+import { accountBuilderConfig, authorityConfig } from './config.js'
 
-// Load the DID Document from Stronghold
-const accBuilder = new identity.AccountBuilder(ACCOUNT_BUILDER_CONFIG)
-const authority = await accBuilder.loadIdentity(AUTHORITY_CONFIG.did)
+// Load the DID document from Stronghold
+const accBuilder = new identity.AccountBuilder(accountBuilderConfig)
+const authority = await accBuilder.loadIdentity(authorityConfig.did)
 
-// Set the university's DID as the Document controller
-await authority.setController({ controllers: AUTHORITY_CONFIG.did })
+await authority.setController({ controllers: authorityConfig.did })
 
-// Add a reference to the university's web presence
 await authority.createService({
-  fragment: '#website',
-  type: 'LinkedDomains',
-  endpoint: AUTHORITY_CONFIG.website,
+  fragment: authorityConfig.serviceFragments.website,
+  type: 'LinkedDomain',
+  endpoint: authorityConfig.website,
 })
 
-// Create signing method for matriculation issuance
 await authority.createMethod({
-  fragment: '#matriculation',
+  fragment: authorityConfig.methodFragments.signStudentIDCredential,
   content: identity.MethodContent.GenerateEd25519(),
+  scope: identity.MethodScope.VerificationMethod(),
+})
+
+await authority.createMethod({
+  fragment: authorityConfig.methodFragments.signChallenge,
+  content: identity.MethodContent.GenerateEd25519(),
+  scope: identity.MethodScope.VerificationMethod(),
 })
 
 // Sign all changes that were made to the DID Document
@@ -27,7 +31,7 @@ await authority.updateDocumentUnchecked(
     authority.document().defaultSigningMethod().id().fragment()!,
     authority.document(),
     new identity.ProofOptions({
-      purpose: identity.ProofPurpose.assertionMethod(),
+      purpose: identity.ProofPurpose.authentication(),
       created: identity.Timestamp.nowUTC(),
     })
   )
