@@ -25,13 +25,15 @@ export async function createNationalIDCredential(did: string, data: NationalIDCa
   const cardSubject: identity.Subject = { id: did, ...data }
   const signingKey = govAuthority.document().defaultSigningMethod().id().fragment()
 
-  console.log(did)
+  const expirationDate = new Date()
+  expirationDate.setFullYear(expirationDate.getFullYear() + 10)
 
   const credential = new identity.Credential({
     type: 'NationalIDCredential',
     issuer: govAuthority.document().id(),
     credentialSubject: cardSubject,
-    expirationDate: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.weeks(52 * 10)), // 10 years
+    // 10 years + leap days
+    expirationDate: identity.Timestamp.parse(expirationDate.toISOString()),
     nonTransferable: true,
   })
 
