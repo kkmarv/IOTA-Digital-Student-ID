@@ -1,13 +1,12 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
-import { accountBuilderConfig, stronghold } from '../src/config.js'
+import { accountBuilderConfig, stronghold } from '../../src/config.js'
 
 /**
- * Load a DID from the local Stronghold storage.
- * @param did The DID to load.
- * @returns The account of the loaded DID, if found. Throws Error otherwise.
+ * Load a DID from the local Stronghold storage and print its document.
+ * @param did The DID to print
  */
-async function loadDID(did: identity.DID): Promise<void> {
+async function printDocument(did: identity.DID): Promise<void> {
   if (!(await stronghold.didExists(did))) {
     return console.log('DID does not exist in Stronghold.')
   }
@@ -23,4 +22,4 @@ if (!process.argv[2]) {
   exit()
 }
 
-loadDID(identity.DID.parse(process.argv[2]))
+printDocument(identity.DID.parse(process.argv[2]))
