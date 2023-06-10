@@ -4,7 +4,7 @@ import express from 'express'
 import { Server as HTTPServer } from 'http'
 import { Server as WSServer } from 'socket.io'
 import authority from './authority.js'
-import { apiBase, apiPort, websocketPort } from './config.js'
+import { apiPort, websocketPort } from './config.js'
 import { randomString } from './helper.js'
 import { ClientToServerEvents, ServerToClientEvents } from './socketIOTyping.js'
 
@@ -173,7 +173,7 @@ webSocket.on('connection', (socket) => {
 })
 
 webSocket.listen(websocketPort)
-console.log(`authority WebSocket listening at http://localhost:${websocketPort}`)
+console.log(`authority WebSocket listening on port ${websocketPort}`)
 app.listen(apiPort, () => {
-  console.log(`authority API listening at http://localhost:${apiPort}${apiBase}`)
+  console.log(`authority API listening on port ${apiPort}`)
 })
