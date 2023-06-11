@@ -20,8 +20,6 @@
 
   <Route path={appRoutes.login}><Login activeTab="login" /></Route>
   <Route path={appRoutes.register}><Login activeTab="register" /></Route>
-  <AuthGuard>
-    <Route path={appRoutes.landing}><Landing /></Route>
-  </AuthGuard>
+  <Route path={appRoutes.landing}><AuthGuard><Landing /></AuthGuard></Route>
   <Route path="*"><NotFound /></Route>
 </Router>
