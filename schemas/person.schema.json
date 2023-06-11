@@ -35,7 +35,7 @@
       "description": "A URI that points to a biometric picture of the cardholder."
     },
     "address": {
-      "$ref": "address.json"
+      "$ref": "address.schema.json"
     }
   },
   "required": ["firstNames", "lastName", "nationality", "dateOfBirth", "placeOfBirth", "biometricPhotoURI", "address"]

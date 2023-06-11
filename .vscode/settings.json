@@ -1,0 +1,24 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["*.person.json"],
+      "url": "./schemas/person.schema.json"
+    },
+    {
+      "fileMatch": ["*.authorityEndpoint.json"],
+      "url": "./schemas/authorityEndpoint.schema.json"
+    },
+    {
+      "fileMatch": ["*.student.json"],
+      "url": "./schemas/student.schema.json"
+    },
+    {
+      "fileMatch": ["*.address.json"],
+      "url": "./schemas/address.schema.json"
+    },
+    {
+      "fileMatch": ["*.authorityCredentialAPI.json"],
+      "url": "./schemas/authorityCredentialAPI.schema.json"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "url": {
+      "description": "",
+      "type": "string",
+      "format": "uri"
+    },
+    "httpMethod": {
+      "description": "",
+      "type": "string",
+      "enum": ["GET", "POST"]
+    }
+  },
+  "required": ["url", "httpMethod"]
+}
