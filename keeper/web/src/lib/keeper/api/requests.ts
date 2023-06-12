@@ -137,3 +137,29 @@ export async function saveCredential(password: string, credentialName: string, c
   })
   return !(await hasError(response))
 }
+
+/** Create a Verifiable Presentation from multiple Verifiable Credentials saved within keeper.
+ * @param password The password of the user.
+ * @param credentialNames The names of the Verifiable Credentials to include in the Verifiable Presentation.
+ * @param challenge A challenge to include in the Verifiable Presentation.
+ * @returns The Verifiable Presentation on success.
+ *
+ * `Null` if one of the following is true:
+ * - the password is incorrect
+ * - a credential with one of the given names does not exist for this user
+ * - an error ocurred
+ */
+export async function createPresentation(
+  password: string,
+  credentialNames: string[],
+  challenge?: string
+): Promise<any> {
+  const response = await fetch(route.createVerifiablePresentation, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: password, credentialNames: credentialNames, challenge: challenge }),
+  })
+  if (await hasError(response)) return null
+  return await response.json()
+}

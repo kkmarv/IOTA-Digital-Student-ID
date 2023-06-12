@@ -3,8 +3,7 @@ import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import assert from 'assert'
 import { env } from 'process'
 
-const apiVersion = 0
-const apiBase = `/api/v${apiVersion}`
+const apiBase = `/api`
 const urlRegex = /^(http|https):\/\/.*/
 const strongholdPath = './identity.hodl'
 

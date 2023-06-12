@@ -10,3 +10,5 @@ export const deleteAccessToken = keeperAPI + '/auth/token/delete'
 
 export const getVerifiableCredential = keeperAPI + '/credential/get'
 export const storeVerifiableCredential = keeperAPI + '/credential/store'
+
+export const createVerifiablePresentation = keeperAPI + '/presentation/create'

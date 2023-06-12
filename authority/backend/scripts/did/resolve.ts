@@ -13,7 +13,7 @@ export async function resolveDID(did: identity.DID): Promise<void> {
 
   try {
     const doc = await resolver.resolve(did)
-    console.log(doc.toJSON())
+    console.dir(doc.toJSON(), { depth: null })
   } catch (err) {
     console.log('DID not found ಠ_ಠ')
   }

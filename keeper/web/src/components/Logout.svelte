@@ -10,3 +10,14 @@
 </script>
 
 <button on:click={logout}>Logout</button>
+
+<style>
+  button {
+    /** position the button on the top right of the screen and keep it always visible*/
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    margin: 2em;
+  }
+</style>

@@ -255,7 +255,7 @@ app.get(routes.credentialList, authenticateJWT, async (req: Request, res: Respon
 
 /** Create a Verifiable Presentation from a list of Verifiable Credentials. */
 app.post(routes.presentationCreate, authenticateJWT, async (req: Request, res: Response) => {
-  const { username, password, did, challenge, credentialNames } = req.body
+  const { password, challenge, credentialNames, username, did } = req.body
 
   if (!password) {
     return res.status(400).send({ reason: failureReasons.passwordMissing })
@@ -291,7 +291,7 @@ app.post(routes.presentationCreate, authenticateJWT, async (req: Request, res: R
     storage: stronghold,
   })
 
-  const account = await builder.loadIdentity(did)
+  const account = await builder.loadIdentity(identity.DID.parse(did))
 
   // Create the Verifiable Presentation
   const vp = new identity.Presentation({
@@ -307,6 +307,8 @@ app.post(routes.presentationCreate, authenticateJWT, async (req: Request, res: R
 
   // Sign the presentation
   const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
+
+  console.dir(signedVP.toJSON(), { depth: null })
 
   return res.status(200).send(signedVP.toJSON())
 })
