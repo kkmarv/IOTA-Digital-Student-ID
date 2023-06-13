@@ -4,6 +4,7 @@
   import Login from '../routes/Login.svelte'
   import NotFound from '../routes/NotFound.svelte'
   import AuthGuard from './AuthGuard.svelte'
+  import LoginRedirect from './LoginRedirect.svelte'
   import Logo from './Logo.svelte'
 
   export const appRoutes = {
@@ -21,5 +22,6 @@
   <Route path={appRoutes.login}><Login activeTab="login" /></Route>
   <Route path={appRoutes.register}><Login activeTab="register" /></Route>
   <Route path={appRoutes.landing}><AuthGuard><Landing /></AuthGuard></Route>
+  <Route path="/"><LoginRedirect /></Route>
   <Route path="*"><NotFound /></Route>
 </Router>
