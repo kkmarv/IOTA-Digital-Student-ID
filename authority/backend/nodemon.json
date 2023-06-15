@@ -2,6 +2,6 @@
   "watch": ["src", "tsconfig.json", ".env"],
   "ext": "ts",
   "restartable": "r",
-  "exec": "node --loader ts-node/esm -r dotenv/config",
+  "exec": "node --experimental-specifier-resolution=node --loader ts-node/esm -r dotenv/config",
   "delay": "1000"
 }

@@ -1,6 +1,6 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
-import { clientConfig } from '../../src/config.js'
+import { clientConfig } from '../../config'
 
 /**
  * Resolve a DID document from the Tangle and print its document.

@@ -1,6 +1,6 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { exit } from 'process'
-import { stronghold } from '../../src/config.js'
+import { stronghold } from '../../config'
 
 async function deleteDID(did: identity.DID) {
   const purged = await stronghold.didPurge(did)

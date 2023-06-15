@@ -2,17 +2,20 @@
   "name": "digital-student-id",
   "version": "1.0.0",
   "type": "module",
+  "config": {
+    "runCommand": "npm run build && node --experimental-specifier-resolution=node -r dotenv/config"
+  },
   "scripts": {
     "build": "tsc -b",
     "dev": "nodemon ./src/server.ts",
-    "start": "npm run build && node -r dotenv/config ./dist/server.js",
-    "did:list": "npm run build && node -r dotenv/config ./dist/scripts/did/list.js",
-    "did:print": "npm run build && node -r dotenv/config ./dist/scripts/did/print.js",
-    "did:create": "npm run build && node -r dotenv/config ./dist/scripts/did/create.js",
-    "did:delete": "npm run build && node -r dotenv/config ./dist/scripts/did/delete.js",
-    "did:resolve": "npm run build && node -r dotenv/config ./dist/scripts/did/resolve.js",
-    "did:manipulate": "npm run build && node -r dotenv/config ./dist/scripts/manipulate-did.js",
-    "vp:create": "npm run build && node -r dotenv/config ./dist/scripts/create-vp.js"
+    "start": " ./dist/server.js",
+    "did:list": "%npm_package_config_runCommand% ./dist/scripts/did/list.js",
+    "did:print": "%npm_package_config_runCommand% ./dist/scripts/did/print.js",
+    "did:create": "%npm_package_config_runCommand% ./dist/scripts/did/create.js",
+    "did:delete": "%npm_package_config_runCommand% ./dist/scripts/did/delete.js",
+    "did:resolve": "%npm_package_config_runCommand% ./dist/scripts/did/resolve.js",
+    "did:manipulate": "%npm_package_config_runCommand% ./dist/scripts/manipulate-did.js",
+    "vp:create": "%npm_package_config_runCommand% ./dist/scripts/create-vp.js"
   },
   "dependencies": {
     "@iota/identity-stronghold-nodejs": "^0.6.0",

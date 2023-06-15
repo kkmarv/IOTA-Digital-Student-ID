@@ -1,5 +1,5 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
-import { stronghold } from '../../src/config.js'
+import { stronghold } from '../../config'
 
 // ANSI escapes for colored terminal output
 const ANSI = {
