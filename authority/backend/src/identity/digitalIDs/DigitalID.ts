@@ -1,5 +1,5 @@
 import identity from '@iota/identity-wasm/node'
-import { accountBuilderConfig, clientConfig } from '../../config.js'
+import { accountBuilderConfig, clientConfig } from '../../../config'
 
 /**
  * A `DigitalID` represents an identity with its own {@link Document}.

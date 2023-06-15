@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDirs": ["./src", "./scripts"],
+    "rootDirs": ["./src", "./scripts", "./config"],
     "outDir": "./dist",
     "target": "ES2017",
     "module": "ES2022",

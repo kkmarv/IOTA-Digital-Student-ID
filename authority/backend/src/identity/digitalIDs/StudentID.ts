@@ -1,5 +1,5 @@
 import identity from '@iota/identity-wasm/node'
-import { authorityConfig } from '../../config.js'
+import { authorityConfig } from '../../../config'
 import { StudentVC } from '../verifiable/credentials.js'
 import { StudentVP } from '../verifiable/presentations.js'
 import { DigitalID } from './DigitalID.js'

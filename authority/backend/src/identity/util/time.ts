@@ -1,5 +1,5 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
-import { startSummerSemester, startWinterSemester } from '../../config.js'
+import { startSummerSemester, startWinterSemester } from '../../../config'
 
 const today = new Date()
 const currentYear = today.getFullYear()
