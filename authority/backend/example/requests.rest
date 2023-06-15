@@ -56,9 +56,9 @@ Content-Type: application/json
     "proof": {
         "type": "JcsEd25519Signature2020",
         "verificationMethod": "did:iota:dev:DvSQ2o5hUHHPyekwAVtAeRkrBhW2hyhWF2swckwuvhno#sign-0",
-        "signatureValue": "2P3VU3zTiMh1NTDwepBSuhP1htoPjTyNGRwG7NtQtxhTuZ2kmD1dBURG5CjnH7o5R9ULQ4MrSaGBUuTxyy6xBQfQ",
-        "expires": "2023-06-12T17:37:44Z",
-        "challenge": "challenge"
+        "signatureValue": "3tn4ZiNc3p8EPfrf2EmfQrEYejAcQRsMUVRX2jFYCUnoefQSvmj6dVrw5czNnsHbPpF7kttmo9SKV7NLGTcQ4sF8",
+        "expires": "2023-06-13T20:46:00Z",
+        "challenge": "4994ca8b6dcc81e4c8bd53d0d3b8f707bbba4cc29e6531acab511fc8d02eb122b"
     }
 }
 ###

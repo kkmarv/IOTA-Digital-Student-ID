@@ -4,7 +4,7 @@ import express from 'express'
 import { Server as HTTPServer } from 'http'
 import { Server as WSServer } from 'socket.io'
 import authority from './authority.js'
-import { apiPort, websocketPort } from './config.js'
+import { apiPort, websocketPort } from '../config'
 import { randomString } from './helper.js'
 import { ClientToServerEvents, ServerToClientEvents } from './socketIOTyping.js'
 

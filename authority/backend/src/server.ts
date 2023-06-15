@@ -2,11 +2,20 @@ import identity from '@iota/identity-wasm/node/identity_wasm.js'
 // import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
+import { NationalIDCard, StudentIDCard } from '../../../typings'
 import authority from './authority.js'
-import { apiPort, authorityConfig, clientConfig, credentialTypes, routes } from './config.js'
+import {
+  apiPort,
+  authorityConfig,
+  clientConfig,
+  credentialTypes,
+  failureReasons,
+  routes,
+  challengeTimeout,
+  challengeSize,
+} from '../config'
 import { randomString } from './helper.js'
 import nextSemesterStart from './identity/util/time.js'
-import { NationalIDCard, StudentIDCard } from '../../../typings'
 
 // import { authenticateJWT, issueJWT } from './jwt.js'
 
@@ -17,7 +26,6 @@ app.use(express.json())
 
 // A Map to save DID <-> challenge pairs
 const challenges = new Map<string, { challenge: string; timestamp: number }>()
-const challengeTimeout = 1000 * 60 * 10 // 10 minutes
 
 const resolver = await new identity.ResolverBuilder().clientConfig(clientConfig).build()
 
@@ -36,17 +44,17 @@ app.post(routes.challenge, (req: Request, res: Response) => {
   const { did } = req.body
 
   if (!did) {
-    return res.status(400).send({ reason: 'Missing DID' })
+    return res.status(400).send({ reason: failureReasons.didMissing })
   }
 
   try {
     identity.DID.parse(did)
   } catch (error) {
-    return res.status(400).send({ reason: 'Not an IOTA DID' })
+    return res.status(400).send({ reason: failureReasons.didParsingFailed })
   }
 
   // Generate a random string and save it to the challenges Map
-  const challenge = randomString(64)
+  const challenge = randomString(challengeSize)
   challenges.set(did, { challenge, timestamp: Date.now() })
 
   res.status(200).send({ challenge: challenge })
@@ -65,24 +73,31 @@ app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) =>
     presentation = identity.Presentation.fromJSON(req.body)
   } catch (error) {
     if (error instanceof Error) return res.status(400).send({ reason: error.message })
-    else return res.status(400).send({ reason: 'Not a Verifiable Presentation' })
+    else return res.status(400).send({ reason: failureReasons.presentationParsingFailed })
   }
 
   // First, we need to validate the request body
 
-  const didHolder = presentation.holder()
-  if (!didHolder) {
-    return res.status(400).send({ reason: 'No holder provided' })
+  const holderDid = presentation.holder()
+  if (!holderDid) {
+    return res.status(400).send({ reason: failureReasons.presentationHolderMissing })
+  }
+
+  const challenge = challenges.get(holderDid)?.challenge
+  if (!challenge) {
+    return res.status(428).send({ reason: failureReasons.presentationChallengeMissing })
   }
 
   const credentials = presentation.verifiableCredential()
   if (credentials.length === 0) {
-    return res.status(400).send({ reason: 'No Verifiable Credential provided' })
+    return res.status(400).send({ reason: failureReasons.presentationCredentialMissing })
   }
 
   const studentIDCredential = credentials[0]
   if (!studentIDCredential.type().includes(credentialTypes.nationalID)) {
-    return res.status(415).send({ reason: `No ${credentialTypes.nationalID} found` })
+    return res
+      .status(415)
+      .send({ reason: failureReasons.presentationCredentialTypeMismatch(credentialTypes.nationalID) })
   }
 
   // Second, we need to validate the presentation
@@ -90,8 +105,8 @@ app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) =>
   const presentationValidationOptions = new identity.PresentationValidationOptions({
     subjectHolderRelationship: identity.SubjectHolderRelationship.AlwaysSubject, // must be subject of all credentials
     presentationVerifierOptions: new identity.VerifierOptions({
-      purpose: identity.ProofPurpose.assertionMethod(), // must be signed by the holder (student)
-      challenge: 'challenge', // must include a challenge and match the one we generated
+      // purpose: identity.ProofPurpose.authentication(), // TODO see https://www.w3.org/TR/did-core/#authentication
+      challenge: challenge, // must include a challenge and match the one we generated
       allowExpired: false, // credentials must not be expired
     }),
   })
@@ -101,7 +116,7 @@ app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) =>
   } catch (error) {
     res.status(403)
     if (error instanceof Error) return res.send({ reason: error.message })
-    else return res.send({ reason: 'Unknown validation error' })
+    else return res.send({ reason: failureReasons.presentationValidationFailedUnknown })
   }
 
   // Then we can issue the credential
@@ -158,7 +173,7 @@ app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) =>
     proofOptions
   )
 
-  return res.status(200).send({ credential: signedCredential.toJSON() })
+  return res.status(200).send(signedCredential.toJSON())
 })
 
 app.listen(apiPort, () => {

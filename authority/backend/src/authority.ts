@@ -1,10 +1,10 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
-import { accountBuilderConfig, authorityConfig } from './config.js'
+import { accountBuilderConfig, authorityConfig } from '../config'
 
 let didUpdate = false
 
 // Load the DID document from Stronghold
-console.log('Loading DID document from Stronghold...')
+console.log('Loading DID document from Stronghold.../../config')
 const accBuilder = new identity.AccountBuilder(accountBuilderConfig)
 const authority = await accBuilder.loadIdentity(authorityConfig.did)
 
