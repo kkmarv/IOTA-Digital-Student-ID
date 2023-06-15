@@ -17,7 +17,7 @@ export async function loginUser(username: string, password: string): Promise<boo
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: username, password: password }),
+    body: JSON.stringify({ username, password }),
   })
   return !(await hasError(response))
 }
@@ -38,8 +38,9 @@ export async function authenticateUser(): Promise<boolean> {
 }
 
 /** Sign arbitrary data with the user's private key.
- * @param data The data to sign.
  * @param password The password of the user.
+ * @param data The data to sign.
+ * @param challenge The challenge to include in the signature.
  * @returns The signature of the data on success.
  *
  * `Null` if one of the following is true:
@@ -47,12 +48,12 @@ export async function authenticateUser(): Promise<boolean> {
  * - the data is deformed
  * - an error ocurred
  */
-export async function signData(data: any, password: string): Promise<any> {
+export async function signData(password: string, data?: any, challenge?: string): Promise<any> {
   const response = await fetch(route.signData, {
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: password, challenge: data }),
+    body: JSON.stringify({ password, data, challenge }),
   })
   if (await hasError(response)) return null
   return await response.json()
@@ -69,7 +70,7 @@ export async function registerUser(username: string, password: string): Promise<
   const response = await fetch(route.registerNewUser, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: username, password: password }),
+    body: JSON.stringify({ username, password }),
   })
   return !(await hasError(response))
 }
@@ -133,7 +134,7 @@ export async function saveCredential(password: string, credentialName: string, c
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: password, credentialName: credentialName, verifiableCredential: credential }),
+    body: JSON.stringify({ password, credentialName, verifiableCredential: credential }),
   })
   return !(await hasError(response))
 }
@@ -158,7 +159,7 @@ export async function createPresentation(
     method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: password, credentialNames: credentialNames, challenge: challenge }),
+    body: JSON.stringify({ password, credentialNames, challenge }),
   })
   if (await hasError(response)) return null
   return await response.json()

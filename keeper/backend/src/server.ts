@@ -302,13 +302,12 @@ app.post(routes.presentationCreate, authenticateJWT, async (req: Request, res: R
   // Create a proof
   const proof = new identity.ProofOptions({
     challenge: challenge,
+    // purpose: identity.ProofPurpose.authentication(), // TODO see https://www.w3.org/TR/did-core/#authentication
     expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
   })
 
   // Sign the presentation
   const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
-
-  console.dir(signedVP.toJSON(), { depth: null })
 
   return res.status(200).send(signedVP.toJSON())
 })
