@@ -1,11 +1,17 @@
+import cors from 'cors'
+
 // API endpoint configuration
 export const apiPort = 8081
 export const apiBase = `/api`
-// export const API_BASE = `api/v${API_VERSION}/`
+export const corsOptions: cors.CorsOptions = {
+  origin: `http://localhost:5173`, // Vite dev server
+  allowedHeaders: ['Content-Type'],
+  credentials: true,
+}
 
 // JWT configuration
 export const tokenSecret = 'youraccesstokensecret' // TODO create random secret
-export const tokenExpiresIn = '30m'
+export const tokenExpiresIn = '2h'
 
 /** API endpoints */
 export const routes = {
@@ -41,12 +47,14 @@ export const failureReasons = {
 
   // Verifiable Credentials
   verifiableCredentialMissing: 'Missing Verifiable Credential.',
-  verifiableCredentialDuplicate: 'Credential with same name already exists.',
+  verifiableCredentialDuplicate: 'A Credential with the same name already exists.',
   verifiableCredentialInvalid: 'Not a Verifiable Credential.',
+  verifiableCredentialDecryptionFailed: 'Could not decrypt the Verifiable Credential.',
+  verifiableCredentialEncryptionFailed: 'Could not encrypt the Verifiable Credential.',
 
   // Verifiable Credential names
   verifiableCredentialNameMissing: 'Missing credential name.',
-  verifiableCredentialNameWrong: `Credential with this name does not exist.`,
+  verifiableCredentialNotFound: `A Credential with this name does not exist.`,
 
   // Users
   userDuplicate: 'Username already taken.',

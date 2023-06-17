@@ -96,22 +96,32 @@ export async function logout(): Promise<boolean> {
  * - the password is incorrect
  * - an error ocurred
  */
-export async function getDid(password: string): Promise<any> {
+export async function getDid(): Promise<any> {
   const response = await fetch(route.getDid, {
-    method: 'POST',
+    method: 'GET',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: password }),
   })
   if (await hasError(response)) return null
   return await response.json()
 }
 
-export async function getCredential(credentialName: string) {
+/** Get a Verifiable Credential from keeper.
+ * @param credentialName The name of the Verifiable Credential to get.
+ * @param password The password of the user.
+ * @returns The Verifiable Credential on success.
+ *
+ * `Null` if one of the following is true:
+ * - the password is incorrect
+ * - the user does not exist
+ * - a credential with the given name does not exist for this user
+ * - an error ocurred
+ * @remarks The Verifiable Credential gets decrypted before it is returned. */
+export async function getCredential(password: string, credentialName: string) {
   const response = await fetch(route.getVerifiableCredential + '/' + credentialName, {
-    method: 'GET',
+    method: 'POST',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password }),
   })
   if (await hasError(response)) return null
   return await response.json()
@@ -128,6 +138,7 @@ export async function getCredential(credentialName: string) {
  * - the user does not exist
  * - a credential with the given name already exists for this user
  * - an error ocurred
+ * @remarks The Verifiable Credential gets encrypted before it is saved.
  */
 export async function saveCredential(password: string, credentialName: string, credential: any): Promise<boolean> {
   const response = await fetch(route.storeVerifiableCredential, {

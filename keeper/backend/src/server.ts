@@ -4,37 +4,25 @@ import cors from 'cors'
 import express, { Request, Response } from 'express'
 import fs from 'fs'
 import path from 'path'
-import { apiBase, failureReasons, apiPort, routes } from './config.js'
+import { apiBase, apiPort, corsOptions, failureReasons, routes } from './config/api.config.js'
+import { accountBuilderConfig, keeperConfig } from './config/identity.config.js'
+import { decryptCredential, encryptCredential } from './encryption.js'
 import {
   UserCredentials,
   buildStronghold,
-  getUserDirectory,
   isUserCredentials,
   isVerifiableCredential,
+  retrieveAccount,
+  userDirectory,
 } from './helper.js'
 import { authenticateJWT, issueJWT } from './jwt.js'
-
-identity.start()
-
-/** Default options for the AccountBuilder. */
-const accBuilderBaseOptions: identity.AccountBuilderOptions = {
-  autopublish: false,
-  autosave: identity.AutoSave.every(),
-  clientConfig: { network: identity.Network.devnet() },
-}
-
-const corsOptions: cors.CorsOptions = {
-  origin: `http://localhost:5173`, // Vite dev server
-  allowedHeaders: ['Content-Type'],
-  credentials: true,
-}
 
 // WebServer setup
 const app = express()
 app.disable('x-powered-by')
 app.use(cors(corsOptions))
 app.use(cookieParser())
-app.use(express.json()) // TODO look into nicer options
+app.use(express.json())
 // TODO look into using helmet
 
 /** Create a JWT cookie. */
@@ -44,7 +32,7 @@ app.post(routes.authTokenCreate, async (req: Request, res: Response) => {
   }
 
   const { username, password } = req.body
-  const stronghold = await buildStronghold(username, password, true)
+  const stronghold = await buildStronghold(username, password)
 
   if (stronghold === null) {
     return res.status(401).send({ reason: failureReasons.credentialsWrong })
@@ -98,13 +86,19 @@ app.put(routes.didCreate, async (req: Request, res: Response) => {
   }
 
   const builder = new identity.AccountBuilder({
-    autopublish: accBuilderBaseOptions.autopublish,
-    autosave: accBuilderBaseOptions.autosave,
-    clientConfig: accBuilderBaseOptions.clientConfig,
+    autopublish: accountBuilderConfig.autopublish,
+    autosave: accountBuilderConfig.autosave,
+    clientConfig: accountBuilderConfig.clientConfig,
     storage: stronghold,
   })
 
   const account = await builder.createIdentity()
+
+  await account.createMethod({
+    fragment: keeperConfig.exchangeKeyFragment,
+    scope: identity.MethodScope.KeyAgreement(),
+    content: identity.MethodContent.GenerateX25519(),
+  })
 
   // Publish the DID document to the Tangle
   // Fails if client cannot connect establish a connection
@@ -120,27 +114,10 @@ app.put(routes.didCreate, async (req: Request, res: Response) => {
   return res.sendStatus(204)
 })
 
-/** Get a DID by username and password. */
-app.post(routes.didGet, authenticateJWT, async (req: Request, res: Response) => {
-  const { username, password } = req.body
-
-  if (!password) {
-    return res.status(400).send({ reason: failureReasons.passwordMissing })
-  }
-
-  const stronghold = await buildStronghold(username, password)
-
-  if (!stronghold) {
-    return res.status(403).send({ reason: failureReasons.passwordWrong })
-  }
-
-  // Abort if Stronghold does not contain exactly one DID
-  const didList = await stronghold.didList()
-  if (didList.length != 1) {
-    return res.status(500).send({ reason: failureReasons.didDuplicate })
-  }
-
-  return res.status(200).send({ did: didList[0] })
+/** Get your DID. */
+app.get(routes.didGet, authenticateJWT, async (req: Request, res: Response) => {
+  const { did } = req.body
+  return res.status(200).send({ did })
 })
 
 /** Sign arbitrary data. */
@@ -156,21 +133,14 @@ app.post(routes.didSign, authenticateJWT, async (req: Request, res: Response) =>
     return res.status(401).send({ reason: failureReasons.passwordWrong })
   }
 
-  const builder = new identity.AccountBuilder({
-    autopublish: accBuilderBaseOptions.autopublish,
-    autosave: accBuilderBaseOptions.autosave,
-    clientConfig: accBuilderBaseOptions.clientConfig,
-    storage: stronghold,
-  })
-
   const proof = new identity.ProofOptions({
     challenge: challenge,
     purpose: identity.ProofPurpose.authentication(),
     expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
   })
 
-  const account = await builder.loadIdentity(identity.DID.parse(did))
-  const signedData = await account.createSignedData('sign-0', { data }, proof)
+  const account = await retrieveAccount(identity.DID.parse(did), stronghold)
+  const signedData = await account.createSignedData(keeperConfig.arbitrarySigningKeyFragment, { data }, proof)
   console.log(signedData)
 
   return res.status(200).send({ signedData: signedData })
@@ -178,7 +148,7 @@ app.post(routes.didSign, authenticateJWT, async (req: Request, res: Response) =>
 
 /** Store a Verifiable Credential. */
 app.put(routes.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
-  const { username, credentialName, verifiableCredential } = req.body
+  const { username, password, did, credentialName, verifiableCredential } = req.body
 
   if (!verifiableCredential) {
     return res.status(400).send({ reason: failureReasons.verifiableCredentialMissing })
@@ -187,17 +157,30 @@ app.put(routes.credentialStore, authenticateJWT, async (req: Request, res: Respo
   }
 
   // Construct a file path for the credential
-  const credentialFile = `${getUserDirectory(username)}/${credentialName}.json`
+  const credentialFile = `${userDirectory(username)}/${credentialName}.json`
 
   // Abort if credential file already exists
   if (fs.existsSync(credentialFile)) {
     return res.status(409).send({ reason: failureReasons.verifiableCredentialDuplicate })
   }
 
-  const credential = JSON.stringify(verifiableCredential)
+  const stronghold = await buildStronghold(username, password)
+  if (!stronghold) {
+    return res.status(401).send({ reason: failureReasons.passwordWrong })
+  }
 
-  // Save the credential to a json file
-  fs.writeFile(credentialFile, credential, (err) => {
+  const encryptedCredential = await encryptCredential(
+    identity.DID.parse(did),
+    JSON.stringify(verifiableCredential),
+    stronghold
+  )
+
+  if (encryptedCredential === null) {
+    return res.status(500).send({ reason: failureReasons.verifiableCredentialEncryptionFailed })
+  }
+
+  // Save the encryption data of the credential to a json file
+  fs.writeFile(credentialFile, JSON.stringify(encryptedCredential.toJSON()), (err) => {
     if (err) {
       console.error(err)
       return res.status(500).send({ reason: failureReasons.diskWriteFailure })
@@ -207,38 +190,43 @@ app.put(routes.credentialStore, authenticateJWT, async (req: Request, res: Respo
 })
 
 /** Get a Verifiable Credential by name. */
-app.get(routes.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
-  const { username } = req.body
+app.post(routes.credentialGet, authenticateJWT, async (req: Request, res: Response) => {
+  const { username, password, did } = req.body
   const { credentialName } = req.params
+
+  const stronghold = await buildStronghold(username, password)
+  if (!stronghold) {
+    return res.status(401).send({ reason: failureReasons.passwordWrong })
+  }
 
   if (!credentialName) {
     return res.status(400).send(failureReasons.verifiableCredentialNameMissing)
   }
 
-  const credentialFile = `${getUserDirectory(username)}/${credentialName}.json`
-
-  // Abort if credential does NOT exist
+  // Construct a file path for the credential and abort if it does not exist
+  const credentialFile = `${userDirectory(username)}/${credentialName}.json`
   if (!fs.existsSync(credentialFile)) {
-    return res.status(404).send({ reason: failureReasons.verifiableCredentialNameWrong })
+    return res.status(404).send({ reason: failureReasons.verifiableCredentialNotFound })
   }
 
   // Read content of the credential file
-  fs.readFile(credentialFile, { encoding: 'utf8' }, (err, data) => {
-    if (err) {
-      return res.status(500).send({ reason: failureReasons.diskReadFailure })
-    }
+  const fileContent = fs.readFileSync(credentialFile, { encoding: 'utf8' })
 
-    const credential = JSON.parse(data)
-    return res.status(200).send(credential)
-  })
+  const encryptedCredential = identity.EncryptedData.fromJSON(JSON.parse(fileContent))
+  const credential = await decryptCredential(encryptedCredential, identity.DID.parse(did), stronghold)
+  if (credential === null) {
+    return res.status(500).send({ reason: failureReasons.verifiableCredentialDecryptionFailed })
+  }
+
+  return res.status(200).send(credential)
 })
 
 /** List all Verifiable Credentials of a user. */
 app.get(routes.credentialList, authenticateJWT, async (req: Request, res: Response) => {
   const { username } = req.body
-  const userDirectory = getUserDirectory(username)
+  const directory = userDirectory(username)
 
-  fs.readdir(userDirectory, (err, files) => {
+  fs.readdir(directory, (err, files) => {
     if (err) {
       return res.status(500).send({ reason: failureReasons.diskReadFailure })
     }
@@ -272,26 +260,20 @@ app.post(routes.presentationCreate, authenticateJWT, async (req: Request, res: R
 
   const credentials: identity.Credential[] = []
   for (const credName of credentialNames) {
-    const credentialFile = `${getUserDirectory(username)}/${credName}.json`
-
-    // Abort if credential does NOT exist
+    // Construct a file path for the credential and abort if it does not exist
+    const credentialFile = `${userDirectory(username)}/${credName}.json`
     if (!fs.existsSync(credentialFile)) {
-      return res.status(404).send({ reason: failureReasons.verifiableCredentialNameWrong })
+      return res.status(404).send({ reason: failureReasons.verifiableCredentialNotFound })
     }
 
-    // Read content of the credential file and convert it to a Credential object
-    const credentialData = fs.readFileSync(credentialFile, { encoding: 'utf8' })
-    credentials.push(identity.Credential.fromJSON(JSON.parse(credentialData)))
+    // Read content of the credential file, decrypt it and add it to the list of credentials
+    const fileContent = fs.readFileSync(credentialFile, { encoding: 'utf8' })
+    const encryptedCredential = identity.EncryptedData.fromJSON(JSON.parse(fileContent))
+    const credential = await decryptCredential(encryptedCredential, identity.DID.parse(did), stronghold)
+    credentials.push(credential)
   }
 
-  const builder = new identity.AccountBuilder({
-    autopublish: accBuilderBaseOptions.autopublish,
-    autosave: accBuilderBaseOptions.autosave,
-    clientConfig: accBuilderBaseOptions.clientConfig,
-    storage: stronghold,
-  })
-
-  const account = await builder.loadIdentity(identity.DID.parse(did))
+  const account = await retrieveAccount(identity.DID.parse(did), stronghold)
 
   // Create the Verifiable Presentation
   const vp = new identity.Presentation({
@@ -303,11 +285,11 @@ app.post(routes.presentationCreate, authenticateJWT, async (req: Request, res: R
   const proof = new identity.ProofOptions({
     challenge: challenge,
     // purpose: identity.ProofPurpose.authentication(), // TODO see https://www.w3.org/TR/did-core/#authentication
-    expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(10)),
+    expires: identity.Timestamp.nowUTC().checkedAdd(identity.Duration.minutes(keeperConfig.proofExpiryDuration)),
   })
 
   // Sign the presentation
-  const signedVP = await account.createSignedPresentation('sign-0', vp, proof)
+  const signedVP = await account.createSignedPresentation(keeperConfig.arbitrarySigningKeyFragment, vp, proof)
 
   return res.status(200).send(signedVP.toJSON())
 })

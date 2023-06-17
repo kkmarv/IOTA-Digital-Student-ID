@@ -34,11 +34,11 @@
     let success = await keeper.loginUser(username, password)
     if (!success) return
 
-    const hasNationalID = !!(await keeper.getCredential('nationalID'))
+    const hasNationalID = !!(await keeper.getCredential(password, 'nationalID'))
 
     if (!hasNationalID) {
       // Request a national ID for the new user from the government authority
-      const {did} = await keeper.getDid(password)
+      const { did } = await keeper.getDid()
       const nationalID = await randomUser.getNationalID()
       const nationalIDCredential = await createNationalIDCredential(did, nationalID)
 

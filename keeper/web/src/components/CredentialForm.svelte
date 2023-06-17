@@ -9,11 +9,11 @@
 <form>
   <div>
     <label for="username">Username</label>
-    <input id="username" type="text" bind:value={username} />
+    <input id="username" type="text" autocomplete="username" bind:value={username} />
   </div>
   <div>
     <label for="password">Password</label>
-    <input id="password" type="password" bind:value={password} />
+    <input id="password" type="password" autocomplete="current-password" bind:value={password} />
   </div>
   <button
     type="submit"

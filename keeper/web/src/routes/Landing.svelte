@@ -14,10 +14,10 @@
     new URLSearchParams(queryString).forEach((value, key) => {
       queryParams[key] = value
     })
-    console.log(queryParams)
 
     if (queryParams.authority) {
-      const { did } = await keeper.getDid('rawr')
+      console.log(queryParams)
+      const { did } = await keeper.getDid()
 
       const { challenge } = await authority.getChallenge(`${queryParams.authority}/challenge`, did)
       console.log(challenge)
@@ -35,7 +35,7 @@
 </script>
 
 <h1>Landing</h1>
-{#await keeper.getCredential('nationalID') then credential}
+{#await keeper.getCredential('rawr', 'nationalID') then credential}
   <NationalID {credential} />
 {/await}
 

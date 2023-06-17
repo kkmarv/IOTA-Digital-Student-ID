@@ -1,14 +1,11 @@
-# Server Config
-@port = 8081
-@host = localhost
 # Student Identity
 @username = heisenberg58
 @password = ?!chemistry%Heck&Yeah420
-@jwtToken = accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2ODQ2NTQ1OTAsImV4cCI6MTY4NDY1NjM5MCwiYXVkIjoia2VlcGVyQERlbGwtMlZCOVI3MyIsImlzcyI6ImtlZXBlckBEZWxsLTJWQjlSNzMiLCJzdWIiOiJoZWlzZW5iZXJnNTgifQ.Rh18VHeMOT6bMZM7NBKkP3JFFMvG8-68qLWDe_g4I3I
+@jwtToken = accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4NzAwNTE1MSwiZXhwIjoxNjg3MDEyMzUxLCJhdWQiOiJrZWVwZXJAREVTS1RPUC03UjlCOUZDIiwiaXNzIjoia2VlcGVyQERFU0tUT1AtN1I5QjlGQyIsInN1YiI6ImRpZDppb3RhOmRldjpFY1RDeFR4Tm5MZ0N6RUpNVDRZNHA2WHo1Wllwc1BZdVA1MTRoUHROODZCbiJ9.IGwU_BDKv-icP0j2ZCwOUx1RKIyOJnJo_UaoIixqqVI
 @credentialName = walter
 
 
-POST http://{{host}}:{{port}}/api/v0/auth/token/create
+POST http://localhost:8081/api/auth/token/create
 Content-Type: application/json
 
 {
@@ -17,11 +14,11 @@ Content-Type: application/json
 }
 ###
 
-GET http://{{host}}:{{port}}/api/v0/auth/token/verify
+GET http://localhost:8081/api/auth/token/verify
 Cookie: {{jwtToken}}
 ###
 
-PUT http://{{host}}:{{port}}/api/v0/did/create
+PUT http://localhost:8081/api/did/create
 Content-Type: application/json
 
 {
@@ -30,28 +27,24 @@ Content-Type: application/json
 }
 ###
 
-POST http://{{host}}:{{port}}/api/v0/did/get
+GET http://localhost:8081/api/did/get
 Cookie: {{jwtToken}}
-Content-Type: application/json
-
-{
-  "password": "{{password}}"
-}
 ###
 
-PUT http://{{host}}:{{port}}/api/v0/credentials/store
+PUT http://localhost:8081/api/credential/store
 Cookie: {{jwtToken}}
 Content-Type: application/json
 
 {
+  "password": "{{password}}",
   "credentialName": "{{credentialName}}",
   "verifiableCredential": {
-  "@context": "https://www.w3.org/2018/credentials/v1",
-  "type": [
-    "VerifiableCredential",
-    "StudentCredential"
-  ],
-  "credentialSubject": {
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": [
+      "VerifiableCredential",
+      "StudentCredential"
+    ],
+    "credentialSubject": {
       "id": "did:iota:dev:DS5Do6Sry4vPYPtpZbMcgXUk865hybcSKcmcF8dRhJbK",
       "currentTerm": 1,
       "matriculationNumber": 1674059055349,
@@ -65,7 +58,7 @@ Content-Type: application/json
           "postalCode": 87104,
           "street": "Negra Arroyo Lane"
         },
-        "birthDate": "07.09.1958",
+        "birthDate": "07.09.1958",                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
         "familyName": "White",
         "firstName": "Walter",
         "middleNames": "Hartwell",
@@ -89,15 +82,20 @@ Content-Type: application/json
 }
 ###
 
-GET http://{{host}}:{{port}}/api/v0/credentials/list
+GET http://localhost:8081/api/credential/list
 Cookie: {{jwtToken}}
 ###
 
-GET http://{{host}}:{{port}}/api/v0/credentials/get/{{credentialName}}
+POST http://localhost:8081/api/credential/get/{{credentialName}}
 Cookie: {{jwtToken}}
+Content-Type: application/json
+
+{
+  "password": "{{password}}"
+}
 ###
 
-POST http://{{host}}:{{port}}/api/v0/presentations/create
+POST http://localhost:8081/api/presentation/create
 Cookie: {{jwtToken}}
 Content-Type: application/json
 

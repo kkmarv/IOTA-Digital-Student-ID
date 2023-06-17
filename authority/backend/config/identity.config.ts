@@ -3,6 +3,8 @@ import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import assert from 'assert'
 import env from './env.config'
 
+identity.start()
+
 export const strongholdPath = './identity.hodl'
 
 // Stronghold must exist and contain the DID
