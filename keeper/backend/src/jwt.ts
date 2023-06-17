@@ -1,3 +1,4 @@
+import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { hostname } from 'os'
@@ -6,12 +7,12 @@ import { failureReasons, tokenExpiresIn, tokenSecret } from './config/api.config
 const keeperIdentifier = `keeper@${hostname()}`
 
 /** Issues a JWT for the given username and DID. */
-export function issueJWT(username: string, did: string) {
+export function issueJWT(username: string, did: identity.DID) {
   return jwt.sign({ username: username }, tokenSecret, {
     audience: keeperIdentifier,
     expiresIn: tokenExpiresIn,
     issuer: keeperIdentifier,
-    subject: did,
+    subject: did.toString(),
   })
 }
 
@@ -32,7 +33,7 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
       }
     }
 
-    // Insert JWT contents into request for further processing
+    // Insert JWT contents into the request for further processing
     req.body.did = jwtPayload.sub
     req.body.username = jwtPayload.username
 

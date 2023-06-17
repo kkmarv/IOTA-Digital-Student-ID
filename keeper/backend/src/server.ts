@@ -38,14 +38,14 @@ app.post(routes.authTokenCreate, async (req: Request, res: Response) => {
     return res.status(401).send({ reason: failureReasons.credentialsWrong })
   }
 
-  // Abort if Stronghold does not contain exactly one DID
+  // Abort if Stronghold does not contain exactly one DID - normally this should never happen
   const didList = await stronghold.didList()
   if (didList.length != 1) {
     return res.status(500).send({ reason: failureReasons.didDuplicate })
   }
 
   // Create JWT and set a cookie
-  const accessToken = issueJWT(username, didList[0].toString())
+  const accessToken = issueJWT(username, didList[0])
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     secure: true,
