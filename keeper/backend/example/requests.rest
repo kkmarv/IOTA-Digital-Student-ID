@@ -1,7 +1,7 @@
 # Student Identity
 @username = heisenberg58
 @password = ?!chemistry%Heck&Yeah420
-@jwtToken = accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4NzAwNTE1MSwiZXhwIjoxNjg3MDEyMzUxLCJhdWQiOiJrZWVwZXJAREVTS1RPUC03UjlCOUZDIiwiaXNzIjoia2VlcGVyQERFU0tUT1AtN1I5QjlGQyIsInN1YiI6ImRpZDppb3RhOmRldjpFY1RDeFR4Tm5MZ0N6RUpNVDRZNHA2WHo1Wllwc1BZdVA1MTRoUHROODZCbiJ9.IGwU_BDKv-icP0j2ZCwOUx1RKIyOJnJo_UaoIixqqVI
+@jwtToken = accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4NzEwMDExMywiZXhwIjoxNjg3MTA3MzEzLCJhdWQiOiJrZWVwZXJAREVTS1RPUC03UjlCOUZDIiwiaXNzIjoia2VlcGVyQERFU0tUT1AtN1I5QjlGQyIsInN1YiI6ImRpZDppb3RhOmRldjpFY1RDeFR4Tm5MZ0N6RUpNVDRZNHA2WHo1Wllwc1BZdVA1MTRoUHROODZCbiJ9.lmNMd9Rr-ravsrgZqALyQCl0fG5vmnmJxfbSpRs7FQ8
 @credentialName = walter
 
 
@@ -31,13 +31,12 @@ GET http://localhost:8081/api/did/get
 Cookie: {{jwtToken}}
 ###
 
-PUT http://localhost:8081/api/credential/store
+PUT http://localhost:8081/api/credential/store/{{credentialName}}
 Cookie: {{jwtToken}}
 Content-Type: application/json
 
 {
   "password": "{{password}}",
-  "credentialName": "{{credentialName}}",
   "verifiableCredential": {
     "@context": "https://www.w3.org/2018/credentials/v1",
     "type": [

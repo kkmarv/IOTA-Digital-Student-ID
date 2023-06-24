@@ -15,7 +15,8 @@ import {
   retrieveAccount,
   userDirectory,
 } from './helper.js'
-import { authenticateJWT, issueJWT } from './jwt.js'
+import { authenticateJWT, issueJWT } from './middleware/jwt.js'
+import { logger } from './middleware/logger.js'
 
 // WebServer setup
 const app = express()
@@ -23,6 +24,7 @@ app.disable('x-powered-by')
 app.use(cors(corsOptions))
 app.use(cookieParser())
 app.use(express.json())
+app.use(logger)
 // TODO look into using helmet
 
 /** Create a JWT cookie. */
@@ -148,7 +150,8 @@ app.post(routes.didSign, authenticateJWT, async (req: Request, res: Response) =>
 
 /** Store a Verifiable Credential. */
 app.put(routes.credentialStore, authenticateJWT, async (req: Request, res: Response) => {
-  const { username, password, did, credentialName, verifiableCredential } = req.body
+  const { username, password, did, verifiableCredential } = req.body
+  const { credentialName } = req.params
 
   if (!verifiableCredential) {
     return res.status(400).send({ reason: failureReasons.verifiableCredentialMissing })

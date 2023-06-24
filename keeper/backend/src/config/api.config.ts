@@ -22,7 +22,7 @@ export const routes = {
   authTokenVerify: apiBase + '/auth/token/verify',
   authTokenDelete: apiBase + '/auth/token/delete',
   credentialGet: apiBase + '/credential/get/:credentialName',
-  credentialStore: apiBase + '/credential/store',
+  credentialStore: apiBase + '/credential/store/:credentialName',
   credentialList: apiBase + '/credential/list',
   presentationCreate: apiBase + '/presentation/create',
 }

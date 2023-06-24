@@ -2,7 +2,7 @@ import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { hostname } from 'os'
-import { failureReasons, tokenExpiresIn, tokenSecret } from './config/api.config.js'
+import { failureReasons, tokenExpiresIn, tokenSecret } from '../config/api.config.js'
 
 const keeperIdentifier = `keeper@${hostname()}`
 
