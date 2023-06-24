@@ -9,8 +9,8 @@
 
 <style>
   .cropped-image {
-    width: calc(2.1875em * 3.75);
-    height: calc(2.8125em * 3.75);
+    width: calc(2.1875em * 4.2);
+    height: calc(2.8125em * 4.2);
     border-radius: 12px;
   }
 </style>

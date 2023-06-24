@@ -1,5 +1,5 @@
 <script>
-  import randomUser from '../../lib/randomuser/api/'
+  import randomUser from '../../lib/randomuser/api'
   import BiometricPhoto from './BiometricPhoto.svelte'
   export let credential
   const { credentialSubject, issuanceDate, expirationDate } = credential
@@ -65,7 +65,7 @@
     .title {
       margin: 0;
       line-height: 2;
-      font-size: 1em;
+      font-size: 1.2em;
       font-weight: bold;
     }
     .content {
@@ -73,7 +73,7 @@
       gap: 10px;
     }
     .personal-info-container {
-      font-size: 1em;
+      font-size: 1.1em;
       :last-child {
         margin-bottom: 0;
       }
@@ -83,10 +83,12 @@
           margin: 0;
           font-size: 0.95em;
           line-height: 1.4;
+          font-weight: 500;
         }
         .label {
           margin: 0;
-          font-size: 0.55em;
+          color: darkgray;
+          font-size: 0.6em;
           line-height: 1;
         }
       }
@@ -94,7 +96,7 @@
         display: flex;
         gap: 10px;
         * {
-          margin-bottom: 0;
+          margin-bottom: 1;
         }
       }
     }

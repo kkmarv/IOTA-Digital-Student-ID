@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import Logout from '../components/Logout.svelte'
-  import NationalID from '../components/credentials/NationalID.svelte'
+  import NationalID from '../components/credentialCards/NationalID.svelte'
   import keeper from '../lib/keeper/api'
   import * as authority from '../lib/authority/api/requests'
 
