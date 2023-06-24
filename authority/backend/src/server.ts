@@ -139,29 +139,26 @@ app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) =>
   }
 
   const credential = new identity.Credential({
+    // id: undefined, // FIXME necessary?
     type: credentialTypes.studentID,
     issuer: authority.document().id(),
-    credentialSubject: {
-      // id: undefined, // FIXME necessary?
-      credentialSubject: studentStudyData,
-      issuer: authority.document().id(),
-      // credentialStatus: {
-      //     id: issuer.id + '#', // TODO + revocationBitmapFragment,
-      //     type: RevocationBitmap.type()
-      // },
-      issuanceDate: identity.Timestamp.nowUTC(),
-      expirationDate: nextSemesterStart(),
-      // credentialSchema: { // FIXME serde_json Error
-      //   id: 'https://gitlab.hs-anhalt.de/stmosarw/projekt-anwendungsentwicklung/-/blob/backend/schemas/credentials/student.jsonld',
-      //   types: 'StudentCredential'
-      // },
-      // termsOfUse: undefined, // TODO define tos
-      refreshService: authorityConfig.website,
-      nonTransferable: true,
-    },
+    credentialSubject: { id: holderDid, ...studentStudyData },
+    // credentialStatus: {
+    //     id: issuer.id + '#', // TODO + revocationBitmapFragment,
+    //     type: RevocationBitmap.type()
+    // },
+    issuanceDate: identity.Timestamp.nowUTC(),
     expirationDate: nextSemesterStart(),
+    // credentialSchema: { // FIXME serde_json Error
+    //   id: 'https://gitlab.hs-anhalt.de/stmosarw/projekt-anwendungsentwicklung/-/blob/backend/schemas/credentials/student.jsonld',
+    //   types: 'StudentCredential'
+    // },
+    // termsOfUse: undefined, // TODO define tos
+    // refreshService: { id: authorityConfig.website, types: 'StudentIDCredential' },
     nonTransferable: true,
   })
+
+  console.log(credential)
 
   const proofOptions = new identity.ProofOptions({
     purpose: identity.ProofPurpose.assertionMethod(),

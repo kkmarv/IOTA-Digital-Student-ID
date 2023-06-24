@@ -4,7 +4,7 @@ import { accountBuilderConfig, authorityConfig } from '../config'
 let didUpdate = false
 
 // Load the DID document from Stronghold
-console.log('Loading DID document from Stronghold.../../config')
+console.log('Loading DID document from Stronghold...')
 const accBuilder = new identity.AccountBuilder(accountBuilderConfig)
 const authority = await accBuilder.loadIdentity(authorityConfig.did)
 

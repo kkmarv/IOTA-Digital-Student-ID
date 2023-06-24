@@ -12,7 +12,7 @@ async function createIdentity(): Promise<void> {
   const builder = new identity.AccountBuilder(accountBuilderConfig)
   const account = await builder.createIdentity({ privateKey: keyPair.private() })
 
-  console.log('Publishing DID document to the Tangle.')
+  console.log('Publishing DID document to the Tangle...')
   await account.publish()
   console.dir(account.document().toJSON(), { depth: null })
 }
