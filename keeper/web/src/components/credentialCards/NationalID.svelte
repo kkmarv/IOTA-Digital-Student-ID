@@ -6,8 +6,13 @@
 </script>
 
 <div class="id-card">
-  <div>
+  <div style="display: flex; align-items: center;;">
     <p class="title">{randomUser.countries[credentialSubject.nationality].legalName}</p>
+    <img
+      style="width: 30px; height:20px; margin-left: auto; margin-right: 0.5em"
+      src={randomUser.countries[credentialSubject.nationality].flag}
+      alt="country flag"
+    />
   </div>
   <div class="content">
     <div>
@@ -54,9 +59,11 @@
   .id-card {
     margin: 20px;
     text-align: left;
-    border: 1px solid #ccc;
+    border: 1px solid #1a1a1a;
     border-radius: 12px;
     min-width: 23em;
+    background: #27283c;
+
     // height: calc(0.35em*37.5);
     // width: calc(0.625em*37.5);
     padding: 10px;

@@ -34,7 +34,7 @@
     let success = await keeper.loginUser(username, password)
     if (!success) return
 
-    const hasNationalID = !!(await keeper.getCredential(password, 'nationalID'))
+    const hasNationalID = !!(await keeper.getVerifiableCredential(password, 'NationalIDCredential'))
 
     if (!hasNationalID) {
       // Request a national ID for the new user from the government authority
@@ -43,7 +43,7 @@
       const nationalIDCredential = await createNationalIDCredential(did, nationalID)
 
       // Save the user's newly created NationalIDCredential to keeper
-      success = await keeper.saveCredential(password, 'nationalID', nationalIDCredential)
+      success = await keeper.saveVerifiableCredential(password, 'NationalIDCredential', nationalIDCredential)
     }
 
     if (success) navigate(appRoutes.landing, { replace: true, state: { from: appRoutes.login } })

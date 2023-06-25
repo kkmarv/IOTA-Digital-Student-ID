@@ -3,19 +3,19 @@ import identity from '@iota/identity-wasm/node/identity_wasm.js'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
 import { NationalIDCard, StudentIDCard } from '../../../typings'
-import authority from './authority.js'
 import {
   apiPort,
   authorityConfig,
-  clientConfig,
+  challengeSize,
+  challengeTimeout,
   credentialTypes,
   failureReasons,
   routes,
-  challengeTimeout,
-  challengeSize,
 } from '../config'
+import authority from './authority.js'
 import { randomString } from './helper.js'
 import nextSemesterStart from './identity/util/time.js'
+import { validateVP } from './middleware'
 
 // import { authenticateJWT, issueJWT } from './jwt.js'
 
@@ -25,9 +25,7 @@ app.use(cors())
 app.use(express.json())
 
 // A Map to save DID <-> challenge pairs
-const challenges = new Map<string, { challenge: string; timestamp: number }>()
-
-const resolver = await new identity.ResolverBuilder().clientConfig(clientConfig).build()
+export const challenges = new Map<string, { challenge: string; timestamp: number }>()
 
 // Periodically clean up expired challenges
 setInterval(() => {
@@ -60,68 +58,11 @@ app.post(routes.challenge, (req: Request, res: Response) => {
   res.status(200).send({ challenge: challenge })
 })
 
-/** Request information about the StudentIDCredential requirements */
-app.get(routes.studentIDCredentialRequirements, (req: Request, res: Response) => {
-  res.status(200).send({ requirements: [credentialTypes.nationalID] })
-})
-
 /** Issue a StudentIDCredential */
-app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) => {
-  let presentation: identity.Presentation
-  // Parse the request body
-  try {
-    presentation = identity.Presentation.fromJSON(req.body)
-  } catch (error) {
-    if (error instanceof Error) return res.status(400).send({ reason: error.message })
-    else return res.status(400).send({ reason: failureReasons.presentationParsingFailed })
-  }
+app.post(routes.issueStudentIDCredential, validateVP, async (req: Request, res: Response) => {
+  const { credential, holder } = req.body
 
-  // First, we need to validate the request body
-
-  const holderDid = presentation.holder()
-  if (!holderDid) {
-    return res.status(400).send({ reason: failureReasons.presentationHolderMissing })
-  }
-
-  const challenge = challenges.get(holderDid)?.challenge
-  if (!challenge) {
-    return res.status(428).send({ reason: failureReasons.presentationChallengeMissing })
-  }
-
-  const credentials = presentation.verifiableCredential()
-  if (credentials.length === 0) {
-    return res.status(400).send({ reason: failureReasons.presentationCredentialMissing })
-  }
-
-  const studentIDCredential = credentials[0]
-  if (!studentIDCredential.type().includes(credentialTypes.nationalID)) {
-    return res
-      .status(415)
-      .send({ reason: failureReasons.presentationCredentialTypeMismatch(credentialTypes.nationalID) })
-  }
-
-  // Second, we need to validate the presentation
-
-  const presentationValidationOptions = new identity.PresentationValidationOptions({
-    subjectHolderRelationship: identity.SubjectHolderRelationship.AlwaysSubject, // must be subject of all credentials
-    presentationVerifierOptions: new identity.VerifierOptions({
-      // purpose: identity.ProofPurpose.authentication(), // TODO see https://www.w3.org/TR/did-core/#authentication
-      challenge: challenge, // must include a challenge and match the one we generated
-      allowExpired: false, // credentials must not be expired
-    }),
-  })
-
-  try {
-    await resolver.verifyPresentation(presentation, presentationValidationOptions, identity.FailFast.AllErrors)
-  } catch (error) {
-    res.status(403)
-    if (error instanceof Error) return res.send({ reason: error.message })
-    else return res.send({ reason: failureReasons.presentationValidationFailedUnknown })
-  }
-
-  // Then we can issue the credential
-
-  const studentPersonalData = studentIDCredential.credentialSubject()[0] as unknown as NationalIDCard
+  const studentPersonalData = credential.credentialSubject()[0] as unknown as NationalIDCard
 
   const studentStudyData: StudentIDCard = {
     student: {
@@ -138,11 +79,11 @@ app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) =>
     },
   }
 
-  const credential = new identity.Credential({
+  const studentIDCredential = new identity.Credential({
     // id: undefined, // FIXME necessary?
     type: credentialTypes.studentID,
     issuer: authority.document().id(),
-    credentialSubject: { id: holderDid, ...studentStudyData },
+    credentialSubject: { id: holder, ...studentStudyData },
     // credentialStatus: {
     //     id: issuer.id + '#', // TODO + revocationBitmapFragment,
     //     type: RevocationBitmap.type()
@@ -166,11 +107,16 @@ app.post(routes.issueStudentIDCredential, async (req: Request, res: Response) =>
 
   const signedCredential = await authority.createSignedCredential(
     authorityConfig.methodFragments.signStudentIDCredential,
-    credential,
+    studentIDCredential,
     proofOptions
   )
 
   return res.status(200).send(signedCredential.toJSON())
+})
+
+/** Verify a Verifiable Presentation of a StudentIDCredential */
+app.post(routes.verifyStudentIDCredential, validateVP, async (req: Request, res: Response) => {
+  return res.sendStatus(204)
 })
 
 app.listen(apiPort, () => {

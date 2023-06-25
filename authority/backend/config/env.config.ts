@@ -46,7 +46,7 @@ if (env.AUTHORITY_PROOF_DURATION) {
 }
 
 /** Environment variables. Parsed and validated. */
-const validatedEnvVars = {
+const validatedEnvironmentVariables = {
   authorityDid: env.AUTHORITY_DID!,
   authoritySeed: env.AUTHORITY_SEED!,
   authorityName: env.AUTHORITY_NAME!,
@@ -55,4 +55,4 @@ const validatedEnvVars = {
   authorityProofDuration: parseInt(env.AUTHORITY_PROOF_DURATION!, 10),
 }
 
-export default validatedEnvVars
+export default validatedEnvironmentVariables

@@ -5,8 +5,8 @@ export const websocketPort = 3000
 /** API routes */
 export const routes = {
   challenge: apiBase + '/challenge',
-  studentIDCredentialRequirements: apiBase + '/credential/student/requirements',
   issueStudentIDCredential: apiBase + '/credential/student/issue',
+  verifyStudentIDCredential: apiBase + '/credential/student/verify',
 } as const
 
 /** Reasons for a failed request */
@@ -14,7 +14,7 @@ export const failureReasons = {
   didMissing: 'Missing DID',
   didParsingFailed: 'Not an IOTA DID',
 
-  presentationParsingFailed: 'Not a Verifiable Presentation',
+  presentationParsingFailed: 'Parsing of the Verifiable Presentation failed',
   presentationHolderMissing: 'No holder provided',
   presentationChallengeMissing: 'Please get a challenge first',
   presentationCredentialMissing: 'No Verifiable Credential provided',

@@ -1,7 +1,7 @@
 import { apiNames } from '../../apiNames'
 import hasError from '../../requestValidation'
 
-export async function getChallenge(authorityEndpoint: string, did: string): Promise<{ challenge: string }> {
+export async function getChallenge(authorityEndpoint: URL, did: string): Promise<{ challenge: string }> {
   const response = await fetch(authorityEndpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -11,13 +11,7 @@ export async function getChallenge(authorityEndpoint: string, did: string): Prom
   return await response.json()
 }
 
-export async function getEndpoints(authorityEndpoint: string) {
-  const response = await fetch(authorityEndpoint)
-  if (await hasError(response, apiNames.authority)) return null
-  return await response.json()
-}
-
-export async function getCredential(authorityEndpoint: string, presentation: any) {
+export async function sendVerifiablePresentation(authorityEndpoint: URL, presentation: any) {
   const response = await fetch(authorityEndpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

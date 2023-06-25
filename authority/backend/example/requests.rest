@@ -1,7 +1,3 @@
-
-GET http://localhost:8080/api/credential/student/requirements
-###
-
 POST http://localhost:8080/api/challenge
 Content-Type: application/json
 
@@ -59,6 +55,59 @@ Content-Type: application/json
         "signatureValue": "3tn4ZiNc3p8EPfrf2EmfQrEYejAcQRsMUVRX2jFYCUnoefQSvmj6dVrw5czNnsHbPpF7kttmo9SKV7NLGTcQ4sF8",
         "expires": "2023-06-13T20:46:00Z",
         "challenge": "4994ca8b6dcc81e4c8bd53d0d3b8f707bbba4cc29e6531acab511fc8d02eb122b"
+    }
+}
+###
+
+POST http://localhost:8080/api/credential/student/verify
+Content-Type: application/json
+
+{
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": "VerifiablePresentation",
+    "verifiableCredential": {
+        "@context": "https://www.w3.org/2018/credentials/v1",
+        "type": [
+            "VerifiableCredential",
+            "NationalIDCredential"
+        ],
+        "credentialSubject": {
+            "id": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx",
+            "address": {
+                "city": "Parla",
+                "country": "Spain",
+                "houseNumber": 9370,
+                "postalCode": 95811,
+                "state": "Aragón",
+                "street": "Avenida de Andalucía"
+            },
+            "biometricPhotoURI": "https://thispersondoesnotexist.com",
+            "dateOfBirth": "29/05/1969",
+            "firstNames": [
+                "Xavier"
+            ],
+            "lastName": "Vidal",
+            "nationality": "ES",
+            "placeOfBirth": "Parla"
+        },
+        "issuer": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G",
+        "issuanceDate": "2023-06-24T15:46:01Z",
+        "expirationDate": "2033-06-24T15:46:01Z",
+        "nonTransferable": true,
+        "proof": {
+            "type": "JcsEd25519Signature2020",
+            "verificationMethod": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G#sign-0",
+            "signatureValue": "5aEsVgBP4GXvGSB89BqQxueft3JYzhqkvuC8mXgDD6qzriDJ9jUhjEEZTkeiis7D5vE6EYgMNXos7JrG1bNK2EwF",
+            "proofPurpose": "assertionMethod"
+        }
+    },
+    "holder": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx",
+    "proof": {
+        "type": "JcsEd25519Signature2020",
+        "verificationMethod": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx#sign-0",
+        "signatureValue": "2VnuNd5npCJiN8tj3uP2KoHaXgq31smcDoKftoaKc8jSXvaYA59CxbkhTRQK5H4fWq9W2UmXVk51g41ziPbC2fxX",
+        "expires": "2023-06-25T20:15:31Z",
+        "challenge": "a3740d2ff60ab92b0159720c4d873c765552bb377f9c5b8874b3ad79b0e587ff9"
     }
 }
 ###

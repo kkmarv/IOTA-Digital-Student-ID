@@ -4,39 +4,78 @@
   import NationalID from '../components/credentialCards/NationalID.svelte'
   import keeper from '../lib/keeper/api'
   import * as authority from '../lib/authority/api/requests'
+  import StudentID from '../components/credentialCards/StudentID.svelte'
 
-  // ?authority=http://localhost:8080/api&credential=VerifiableStudentID
+  let password = 'rawr'
+  let authorityEndpoint: URL
+  let wants: string
 
-  const queryString = location.search
-  const queryParams: { [key: string]: string } = {}
+  // http://localhost:5173/landing?authority=http://localhost:8080/api/credential/student/issue&wants=NationalIDCredential&for=StudentIDCredential
 
   onMount(async () => {
-    new URLSearchParams(queryString).forEach((value, key) => {
-      queryParams[key] = value
-    })
-
-    if (queryParams.authority) {
-      console.log(queryParams)
-      const { did } = await keeper.getDid()
-
-      const { challenge } = await authority.getChallenge(`${queryParams.authority}/challenge`, did)
-      console.log(challenge)
-
-      const presentation = await keeper.createPresentation('rawr', ['nationalID'], challenge)
-      console.log(presentation)
-
-      const credential = await authority.getCredential(
-        `${queryParams.authority}/credential/student/issue`,
-        JSON.stringify(presentation)
-      )
-      console.log(credential)
-    }
+    const urlSearchParams = new URLSearchParams(location.search)
+    authorityEndpoint = new URL(urlSearchParams.get('authority'))
+    wants = urlSearchParams.get('wants')
+    console.log(!!authorityEndpoint, wants)
   })
+
+  async function sendVerifiablePresentation(endpoint: URL, credentials: string[]) {
+    const { did } = await keeper.getDid()
+
+    const challengeEndpoint = new URL(endpoint.origin + '/api/challenge')
+    const { challenge } = await authority.getChallenge(challengeEndpoint, did)
+
+    const presentation = await keeper.createVerifiablePresentation(password, credentials, challenge)
+    const response = await authority.sendVerifiablePresentation(endpoint, JSON.stringify(presentation))
+
+    if (Array.isArray(response.type) && response.type.includes('VerifiableCredential')) {
+      const success = await keeper.saveVerifiableCredential(password, response.type[1], response) // TODO only works for one credential atm
+      console.log(await keeper.createVerifiablePresentation(password, credentials, challenge))
+    } else if (response.accessToken && typeof response.accessToken === 'string') {
+      await fetch(`http://localhost:4200/login?token=${response.accessToken}`) // send token to authority frontend
+    }
+    authorityEndpoint = null // enforce re-render TODO find better way
+  }
 </script>
 
-<h1>Landing</h1>
-{#await keeper.getCredential('rawr', 'nationalID') then credential}
-  <NationalID {credential} />
-{/await}
+{#if authorityEndpoint && wants}
+  <h1>Verification Request</h1>
+  <b>{authorityEndpoint.host}</b> would like to verify your identity.<br />
+  They request to see the following credentials of yours:<br /><br />
+
+  <li>{wants}</li>
+
+  <div>
+    <p>Allow <b>{authorityEndpoint.host}</b> to see your credentials by typing your password:</p>
+    <form style="display: flex; align-items: center; justify-content: center;">
+      <input id="password" type="password" autocomplete="current-password" bind:value={password} />
+      <button
+        type="submit"
+        on:click|preventDefault={() => {
+          sendVerifiablePresentation(authorityEndpoint, [wants])
+        }}
+        >Allow
+      </button>
+    </form>
+  </div>
+
+  <div>
+    Or, alternatively,
+    <button on:click={() => (authorityEndpoint = null)}>Deny</button>
+    <!-- ^^ enforces re-render TODO find better way ^^ -->
+    the request.
+  </div>
+{:else}
+  {#await keeper.getVerifiableCredential(password, 'NationalIDCredential') then credential}
+    {#if credential}
+      <NationalID {credential} />
+    {/if}
+  {/await}
+  {#await keeper.getVerifiableCredential(password, 'StudentIDCredential') then credential}
+    {#if credential}
+      <StudentID {credential} />
+    {/if}
+  {/await}
+{/if}
 
 <Logout />

@@ -1,95 +1,138 @@
-# Keeper <!-- omit in toc -->
+# Keeper Technical Design Document<!-- omit in toc -->
 
-*Keeper* is a RESTful wallet for DIDs and Verifiable Credentials designed to run on local hardware, enabling third party software to securely interact with local DIDs, create Verifiable Presentations, just by providing a username and a password. It uses [IOTA Stronghold](https://wiki.iota.org/stronghold.rs/welcome/) under the hood, which handles all private keys.
+*Keeper* is a RESTful wallet for DIDs and Verifiable Credentials designed to run on consumer hardware, enabling third party software to securely interact with local DIDs or create Verifiable Presentations, just by providing a username and a password. It uses [IOTA Stronghold](https://wiki.iota.org/stronghold.rs/welcome/) under the hood, which handles a user's private keys with the highest security standards.
 
 ## Content <!-- omit in toc -->
 
-- [1. User Registration](#1-user-registration)
-- [2. User Login](#2-user-login)
-- [3. Verifiable Presentation Request](#3-verifiable-presentation-request)
+- [1. Identity Creation](#1-identity-creation)
+- [2. Identity Login](#2-identity-login)
+- [3. Verifiable Credential Deposit](#3-verifiable-credential-deposit)
+- [4. Verifiable Presentation Creation](#4-verifiable-presentation-creation)
 
-# 1. User Registration
+<!-- TODO insert general architecture diagram here -->
+
+# 1. Identity Creation
 
 ```mermaid
 %%---
-%%title: User Registration
+%%title: Identity Creation
 %%---
 sequenceDiagram
-    actor U as User
-    participant K as Keeper
-    participant S as Stronghold
+    participant U as Keeper<br>Web UI
+    box Keeper Backend
+        participant K as REST service
+        participant S as Stronghold
+    end
     participant T as Tangle Client
 
-    U->>+K: register(username, password)
-    K->>+S: build(username, password)
-    break if file already exists
-        S-->K: error()
-        K-->U: 409 Conflict
+    rect rgba(34, 28, 75, .3)
+        Note over U,S: Create DID Document locally
+        U->>+K: register(username, password)
+        K->>+S: build(username, password)
+        break if identity store already exists
+            S-->>K: error()
+            K-->>U: 409 Conflict
+        end
+        S->>S: createDIDDocument()
+        S-->>-K: 
     end
-    S->>S: createDID()
-    S-->-K: 
-    K->>+T: publish()
-    Note left of T: Publishing a DID requires <br> few seconds of waiting <br> for PoW to finish.
-    T-->-K: 
-    break if no connection
-        K-->-U: 503 Service Unavailable
-        Note left of K: Stronghold will keep the DID <br> and the user will have <br> to try again later.
+    
+    rect rgba(75, 37, 95, .3)
+        Note over U,T: Publish DID Document
+        K->>+T: publish()
+        Note left of T: Publishing a DID requires <br> few seconds of waiting <br> for PoW to finish.
+        break if no connection
+            T-->>K: error()
+            K-->>-U: 503 Service Unavailable
+            Note left of K: Stronghold will keep the DID <br> document and the user will have <br> to try again later.
+        end
+        T-->>-K: 
+        K-->>U: 200 OK
     end
-    K-->U: 200 OK
 ```
 
-# 2. User Login
+# 2. Identity Login
 
 ```mermaid
 %%---
-%%title: User Login
+%%title: Identity Login
 %%---
 sequenceDiagram
-   actor U as User
-    participant K as Keeper
-    participant S as Stronghold
+    participant U as Keeper<br>Web UI
+    box Keeper Backend
+        participant K as REST service
+        participant S as Stronghold
+    end
 
     U->>+K: login(username, password)
     K->>+S: build(username, password)
-    break if file does not exist
-        S-->K: error()
-        K-->U: 401 Unauthorized
+    break if identity store does not exist
+        S-->>K: error()
+        K-->>U: 401 Unauthorized
     end
     break on wrong password
-        S-->K: error()
-        K-->U: 401 Unauthorized
+        S-->>K: error()
+        K-->>U: 401 Unauthorized
     end
-    S-->-K: 
+    S-->>-K: 
     K->>K: Create and sign JWT containing the username
-    K-->-U: JWT
+    K-->>-U: JWT
 ```
 
-# 3. Verifiable Presentation Request
+# 3. Verifiable Credential Deposit
 
 ```mermaid
 %%---
-%%title: Verifiable Presentation Request
+%%title: Verifiable Credential Deposit
 %%---
 sequenceDiagram
-    actor U as User
-    participant K as Keeper
-    participant S as Stronghold
+    participant U as Keeper<br>Web UI
+    box Keeper Backend
+        participant K as REST service
+        participant S as Stronghold
+    end
 
-    Note over U,S: The user must be logged in and have at least one <br> Verifiable Credential stored to request a Verifiable Presentation.
+    U->>+K: deposit(password, VC, credentialName)
+    break if user is not logged in
+        K-->>U: 401 Unauthorized
+    end
+    K->>+S: encrypt(password, VC)
+    S-->>-K: encryptedVC
 
-    U->>+K: requestVP(password, <br>challenge, <br>credentialNames)
-    K->>+S: loadVC(password, credentialNames)
+    K->>K: saveToFileSystem(encryptedVC, credentialName)
+    K-->>U: 200 OK
+
+```
+
+# 4. Verifiable Presentation Creation
+
+```mermaid
+%%---
+%%title: Verifiable Presentation Creation
+%%---
+sequenceDiagram
+    participant U as Keeper<br>Web UI
+    box Keeper Backend
+        participant K as REST service
+        participant S as Stronghold
+    end
+
+    U->>+K: requestVP(<br>password, credentialNames,challenge)
+    break if user is not logged in
+        K-->>U: 401 Unauthorized
+    end
+    K ->>K: loadFromFileSystem(credentialNames)
+    break if any credential name cannot be resolved
+        K-->>U: 404 Not Found
+    end
+    K->>+S: decryptVCs(password, encryptedVCs)
     break if the password is wrong
-        S-->K: error()
-        K-->U: 401 Unauthorized
+        S-->>K: error()
+        K-->>U: 401 Unauthorized
     end
-    break if any of the credentialNames cannot be found
-        S-->K: error()
-        K-->U: 404 Not Found
-    end
-    S-->-K: List of VCs
-    K->>K: createVP(challenge, VCs)
+    S-->>-K: decryptedVCs
+    K->>K: createVP(challenge, decryptedVCs)
     K->>+S: signVP(password)
-    S-->-K: signed VP
-    K-->-U: signed VP
+    S-->>-K: signedVP
+    K-->>-U: signedVP
 ```

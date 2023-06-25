@@ -88,12 +88,10 @@ export async function logout(): Promise<boolean> {
   return !(await hasError(response))
 }
 
-/** Get the DID of the user.
- * @param password The password of the user.
+/** Return the user's DID.
  * @returns The DID of the user on success.
  *
  * `Null` if one of the following is true:
- * - the password is incorrect
  * - an error ocurred
  */
 export async function getDid(): Promise<any> {
@@ -113,10 +111,10 @@ export async function getDid(): Promise<any> {
  * `Null` if one of the following is true:
  * - the password is incorrect
  * - the user does not exist
- * - a credential with the given name does not exist for this user
+ * - no credential with the given name exists for this user
  * - an error ocurred
  * @remarks The Verifiable Credential gets decrypted before it is returned. */
-export async function getCredential(password: string, credentialName: string) {
+export async function getVerifiableCredential(password: string, credentialName: string) {
   const response = await fetch(route.getVerifiableCredential + '/' + credentialName, {
     method: 'POST',
     credentials: 'include',
@@ -140,20 +138,24 @@ export async function getCredential(password: string, credentialName: string) {
  * - an error ocurred
  * @remarks The Verifiable Credential gets encrypted before it is saved.
  */
-export async function saveCredential(password: string, credentialName: string, credential: any): Promise<boolean> {
-  const response = await fetch(route.storeVerifiableCredential, {
+export async function saveVerifiableCredential(
+  password: string,
+  credentialName: string,
+  credential: any
+): Promise<boolean> {
+  const response = await fetch(route.storeVerifiableCredential + '/' + credentialName, {
     method: 'PUT',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password, credentialName, verifiableCredential: credential }),
+    body: JSON.stringify({ password, verifiableCredential: credential }),
   })
   return !(await hasError(response))
 }
 
-/** Create a Verifiable Presentation from multiple Verifiable Credentials saved within keeper.
+/** Create a Verifiable Presentation from one or more Verifiable Credentials saved within keeper.
  * @param password The password of the user.
  * @param credentialNames The names of the Verifiable Credentials to include in the Verifiable Presentation.
- * @param challenge A challenge to include in the Verifiable Presentation.
+ * @param challenge An optional challenge to include in the Verifiable Presentation.
  * @returns The Verifiable Presentation on success.
  *
  * `Null` if one of the following is true:
@@ -161,7 +163,7 @@ export async function saveCredential(password: string, credentialName: string, c
  * - a credential with one of the given names does not exist for this user
  * - an error ocurred
  */
-export async function createPresentation(
+export async function createVerifiablePresentation(
   password: string,
   credentialNames: string[],
   challenge?: string
