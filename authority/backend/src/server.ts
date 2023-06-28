@@ -67,7 +67,7 @@ app.post(
   routes.issueStudentIDCredential,
   validateVP(credentialTypes.nationalID),
   async (req: Request, res: Response) => {
-    const { credential, holder } = req.body
+    const { credential, holderDid } = req.body
 
     const studentPersonalData = credential.credentialSubject()[0] as unknown as NationalIDCard
 
@@ -87,22 +87,11 @@ app.post(
     }
 
     const studentIDCredential = new identity.Credential({
-      // id: undefined, // FIXME necessary?
       type: credentialTypes.studentID,
       issuer: authority.document().id(),
-      credentialSubject: { id: holder, ...studentStudyData },
-      // credentialStatus: {
-      //     id: issuer.id + '#', // TODO + revocationBitmapFragment,
-      //     type: RevocationBitmap.type()
-      // },
+      credentialSubject: { id: holderDid, ...studentStudyData },
       issuanceDate: identity.Timestamp.nowUTC(),
       expirationDate: nextSemesterStart(),
-      // credentialSchema: { // FIXME serde_json Error
-      //   id: 'https://gitlab.hs-anhalt.de/stmosarw/projekt-anwendungsentwicklung/-/blob/backend/schemas/credentials/student.jsonld',
-      //   types: 'StudentCredential'
-      // },
-      // termsOfUse: undefined, // TODO define tos
-      // refreshService: { id: authorityConfig.website, types: 'StudentIDCredential' },
       nonTransferable: true,
     })
 
@@ -112,11 +101,9 @@ app.post(
       purpose: identity.ProofPurpose.assertionMethod(),
     })
 
-    const signedCredential = await authority.createSignedCredential(
-      authorityConfig.methodFragments.signStudentIDCredential,
-      studentIDCredential,
-      proofOptions
-    )
+    const signingKey = authorityConfig.methodFragments.signStudentIDCredential
+    const signedCredential = await authority.createSignedCredential(signingKey, studentIDCredential, proofOptions)
+    console.log(signedCredential.toJSON())
 
     return res.status(200).send(signedCredential.toJSON())
   }

@@ -25,18 +25,15 @@
     const challengeEndpoint = new URL(endpoint.origin + '/api/challenge')
     const { challenge } = await authority.getChallenge(challengeEndpoint, did)
 
+    // Send VerifiablePresentation to authority
     const presentation = await keeper.createVerifiablePresentation(password, credentials, challenge)
     const response = await authority.sendVerifiablePresentation(endpoint, JSON.stringify(presentation))
-    console.log('response ', response)
+    console.log('presentation', presentation)
 
-    if (Array.isArray(response.type) && response.type.includes('VerifiableCredential')) {
-      const success = await keeper.saveVerifiableCredential(password, response.type[1], response) // TODO only works for one credential atm
-      const vp = await keeper.createVerifiablePresentation(password, ['StudentIDCredential'], challenge)
-      const tokenResponse = await authority.getAccessToken(
-        new URL(endpoint.origin + '/api/auth/token/create'),
-        JSON.stringify(vp)
-      )
-      window.open(`http://localhost:4200/login?token=${tokenResponse.accessToken}`) // send token to authority frontend
+    if (Array.isArray(response.type) && response.type.includes('StudentIDCredential')) {
+      await keeper.saveVerifiableCredential(password, response.type[1], response) // TODO only works for one credential atm
+    } else if (response.accessToken) {
+      window.open(`http://localhost:4200/login?token=${response.accessToken}`) // send token to authority frontend
     }
     authorityEndpoint = null // enforce re-render TODO find better way
   }
