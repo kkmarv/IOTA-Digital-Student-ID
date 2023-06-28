@@ -8,59 +8,7 @@ Content-Type: application/json
 
 POST http://localhost:8080/api/credential/student/issue
 Content-Type: application/json
-
-{
-    "@context": "https://www.w3.org/2018/credentials/v1",
-    "type": "VerifiablePresentation",
-    "verifiableCredential": {
-        "@context": "https://www.w3.org/2018/credentials/v1",
-        "type": [
-            "VerifiableCredential",
-            "NationalIDCredential"
-        ],
-        "credentialSubject": {
-            "id": "did:iota:dev:DvSQ2o5hUHHPyekwAVtAeRkrBhW2hyhWF2swckwuvhno",
-            "address": {
-                "city": "Tjørvåg",
-                "country": "Norway",
-                "houseNumber": 1067,
-                "postalCode": "3941",
-                "state": "Trøndelag",
-                "street": "Korsvollbakken"
-            },
-            "biometricPhotoURI": "https://thispersondoesnotexist.com",
-            "dateOfBirth": "15/09/1955",
-            "firstNames": [
-                "Sophia"
-            ],
-            "lastName": "Skålevik",
-            "nationality": "NO",
-            "placeOfBirth": "Tjørvåg"
-        },
-        "issuer": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G",
-        "issuanceDate": "2023-06-11T11:55:45Z",
-        "expirationDate": "2033-06-11T11:55:45Z",
-        "nonTransferable": true,
-        "proof": {
-            "type": "JcsEd25519Signature2020",
-            "verificationMethod": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G#sign-0",
-            "signatureValue": "4PKrgiwvBYGD4NQNgincwTgq4QVjyDkvyPjmhs5J2nWuMXvXjkpSZ3N1FLTmvUbDbPYAyZw6zcNsxCYtTVfUaF7b",
-            "proofPurpose": "assertionMethod"
-        }
-    },
-    "holder": "did:iota:dev:DvSQ2o5hUHHPyekwAVtAeRkrBhW2hyhWF2swckwuvhno",
-    "proof": {
-        "type": "JcsEd25519Signature2020",
-        "verificationMethod": "did:iota:dev:DvSQ2o5hUHHPyekwAVtAeRkrBhW2hyhWF2swckwuvhno#sign-0",
-        "signatureValue": "3tn4ZiNc3p8EPfrf2EmfQrEYejAcQRsMUVRX2jFYCUnoefQSvmj6dVrw5czNnsHbPpF7kttmo9SKV7NLGTcQ4sF8",
-        "expires": "2023-06-13T20:46:00Z",
-        "challenge": "4994ca8b6dcc81e4c8bd53d0d3b8f707bbba4cc29e6531acab511fc8d02eb122b"
-    }
-}
-###
-
-POST http://localhost:8080/api/credential/student/verify
-Content-Type: application/json
+# Expects a VerifiablePresentation with a NationalIDCredential as body
 
 {
     "@context": "https://www.w3.org/2018/credentials/v1",
@@ -105,9 +53,121 @@ Content-Type: application/json
     "proof": {
         "type": "JcsEd25519Signature2020",
         "verificationMethod": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx#sign-0",
-        "signatureValue": "2VnuNd5npCJiN8tj3uP2KoHaXgq31smcDoKftoaKc8jSXvaYA59CxbkhTRQK5H4fWq9W2UmXVk51g41ziPbC2fxX",
-        "expires": "2023-06-25T20:15:31Z",
-        "challenge": "a3740d2ff60ab92b0159720c4d873c765552bb377f9c5b8874b3ad79b0e587ff9"
+        "signatureValue": "3VuZKcywgVoGwg8noBfXsjgR6tQcTkrMVPaNLruwBtu7ZHEvaQ5iugkxqLHBFmQqhziy8NdnSTs79XaTyn3psUzP",
+        "expires": "2023-06-28T18:28:00Z",
+        "challenge": "6609e24368d9f60982740a58045e41abd15d41f28a00223e7e3cc8a88bd6f1f0b"
     }
 }
+###
+
+POST http://localhost:8080/api/credential/student/verify
+Content-Type: application/json
+# Expects a VerifiablePresentation with a StudentIDCredential as body
+
+{
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": "VerifiablePresentation",
+    "verifiableCredential": {
+        "@context": "https://www.w3.org/2018/credentials/v1",
+        "type": [
+            "VerifiableCredential",
+            "NationalIDCredential"
+        ],
+        "credentialSubject": {
+            "id": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx",
+            "address": {
+                "city": "Parla",
+                "country": "Spain",
+                "houseNumber": 9370,
+                "postalCode": 95811,
+                "state": "Aragón",
+                "street": "Avenida de Andalucía"
+            },
+            "biometricPhotoURI": "https://thispersondoesnotexist.com",
+            "dateOfBirth": "29/05/1969",
+            "firstNames": [
+                "Xavier"
+            ],
+            "lastName": "Vidal",
+            "nationality": "ES",
+            "placeOfBirth": "Parla"
+        },
+        "issuer": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G",
+        "issuanceDate": "2023-06-24T15:46:01Z",
+        "expirationDate": "2033-06-24T15:46:01Z",
+        "nonTransferable": true,
+        "proof": {
+            "type": "JcsEd25519Signature2020",
+            "verificationMethod": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G#sign-0",
+            "signatureValue": "5aEsVgBP4GXvGSB89BqQxueft3JYzhqkvuC8mXgDD6qzriDJ9jUhjEEZTkeiis7D5vE6EYgMNXos7JrG1bNK2EwF",
+            "proofPurpose": "assertionMethod"
+        }
+    },
+    "holder": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx",
+    "proof": {
+        "type": "JcsEd25519Signature2020",
+        "verificationMethod": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx#sign-0",
+        "signatureValue": "3VuZKcywgVoGwg8noBfXsjgR6tQcTkrMVPaNLruwBtu7ZHEvaQ5iugkxqLHBFmQqhziy8NdnSTs79XaTyn3psUzP",
+        "expires": "2023-06-28T18:28:00Z",
+        "challenge": "6609e24368d9f60982740a58045e41abd15d41f28a00223e7e3cc8a88bd6f1f0b"
+    }
+}
+###
+
+POST http://localhost:8080/api/auth/token/create
+Content-Type: application/json
+# Expects a VerifiablePresentation with a StudentIDCredential as body
+
+{
+    "@context": "https://www.w3.org/2018/credentials/v1",
+    "type": "VerifiablePresentation",
+    "verifiableCredential": {
+        "@context": "https://www.w3.org/2018/credentials/v1",
+        "type": [
+            "VerifiableCredential",
+            "NationalIDCredential"
+        ],
+        "credentialSubject": {
+            "id": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx",
+            "address": {
+                "city": "Parla",
+                "country": "Spain",
+                "houseNumber": 9370,
+                "postalCode": 95811,
+                "state": "Aragón",
+                "street": "Avenida de Andalucía"
+            },
+            "biometricPhotoURI": "https://thispersondoesnotexist.com",
+            "dateOfBirth": "29/05/1969",
+            "firstNames": [
+                "Xavier"
+            ],
+            "lastName": "Vidal",
+            "nationality": "ES",
+            "placeOfBirth": "Parla"
+        },
+        "issuer": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G",
+        "issuanceDate": "2023-06-24T15:46:01Z",
+        "expirationDate": "2033-06-24T15:46:01Z",
+        "nonTransferable": true,
+        "proof": {
+            "type": "JcsEd25519Signature2020",
+            "verificationMethod": "did:iota:dev:2UDYnryBpZyR1qbTKhz2FNTdfqXUdC4g7Z1mpHDKsz5G#sign-0",
+            "signatureValue": "5aEsVgBP4GXvGSB89BqQxueft3JYzhqkvuC8mXgDD6qzriDJ9jUhjEEZTkeiis7D5vE6EYgMNXos7JrG1bNK2EwF",
+            "proofPurpose": "assertionMethod"
+        }
+    },
+    "holder": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx",
+    "proof": {
+        "type": "JcsEd25519Signature2020",
+        "verificationMethod": "did:iota:dev:Ed5BynGZyjdHiECy4F5Ni9UviT1akTUKBXXaT2seiZEx#sign-0",
+        "signatureValue": "2qXswnMdgWTvMrkhcKcssAzNBbZQiiLDVYc8Z7U6Yorg8JtEhnkVsTiHutghnwUiVqrwEuR16N68xE579AZqTtLx",
+        "expires": "2023-06-28T18:21:30Z",
+        "challenge": "83d72f0b38cd9cac45cfbc54f9a56bd2196d494881356c588881bc65c3610b482"
+    }
+}
+###
+
+GET http://localhost:8080/api/auth/token/verify
+Cookie: accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImhlaXNlbmJlcmc1OCIsImlhdCI6MTY4NzEwMDExMywiZXhwIjoxNjg3MTA3MzEzLCJhdWQiOiJrZWVwZXJAREVTS1RPUC03UjlCOUZDIiwiaXNzIjoia2VlcGVyQERFU0tUT1AtN1I5QjlGQyIsInN1YiI6ImRpZDppb3RhOmRldjpFY1RDeFR4Tm5MZ0N6RUpNVDRZNHA2WHo1Wllwc1BZdVA1MTRoUHROODZCbiJ9.lmNMd9Rr-ravsrgZqALyQCl0fG5vmnmJxfbSpRs7FQ8
 ###

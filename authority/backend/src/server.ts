@@ -1,7 +1,9 @@
 import identity from '@iota/identity-wasm/node/identity_wasm.js'
 // import cookieParser from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express, { Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 import { NationalIDCard, StudentIDCard } from '../../../typings'
 import {
   apiPort,
@@ -11,17 +13,19 @@ import {
   credentialTypes,
   failureReasons,
   routes,
+  tokenExpiresIn,
+  tokenSecret,
 } from '../config'
 import authority from './authority.js'
 import { randomString } from './helper.js'
 import nextSemesterStart from './identity/util/time.js'
-import { validateVP } from './middleware'
-
-// import { authenticateJWT, issueJWT } from './jwt.js'
+import { validateVP } from './middleware/bodyParsing'
+import { authenticateJWT } from './middleware/jwt'
 
 const app = express()
 app.disable('x-powered-by')
 app.use(cors())
+app.use(cookieParser())
 app.use(express.json())
 
 // A Map to save DID <-> challenge pairs
@@ -59,63 +63,94 @@ app.post(routes.challenge, (req: Request, res: Response) => {
 })
 
 /** Issue a StudentIDCredential */
-app.post(routes.issueStudentIDCredential, validateVP, async (req: Request, res: Response) => {
-  const { credential, holder } = req.body
+app.post(
+  routes.issueStudentIDCredential,
+  validateVP(credentialTypes.nationalID),
+  async (req: Request, res: Response) => {
+    const { credential, holder } = req.body
 
-  const studentPersonalData = credential.credentialSubject()[0] as unknown as NationalIDCard
+    const studentPersonalData = credential.credentialSubject()[0] as unknown as NationalIDCard
 
-  const studentStudyData: StudentIDCard = {
-    student: {
-      fullName: `${studentPersonalData.firstNames.join(' ')} ${studentPersonalData.lastName}`,
-      photoURI: studentPersonalData.biometricPhotoURI,
-    },
-    studies: {
-      fieldOfStudy: 'Computer Science',
-      degreeTitle: 'Bachelor',
-      universityName: authorityConfig.name,
-      currentSemester: 1,
-      studentID: Date.now(),
-      enrollmentDate: new Date().toISOString(),
-    },
+    const studentStudyData: StudentIDCard = {
+      student: {
+        fullName: `${studentPersonalData.firstNames.join(' ')} ${studentPersonalData.lastName}`,
+        photoURI: studentPersonalData.biometricPhotoURI,
+      },
+      studies: {
+        fieldOfStudy: 'Computer Science',
+        degreeTitle: 'Bachelor',
+        universityName: authorityConfig.name,
+        currentSemester: 1,
+        studentID: Date.now(),
+        enrollmentDate: new Date().toISOString(),
+      },
+    }
+
+    const studentIDCredential = new identity.Credential({
+      // id: undefined, // FIXME necessary?
+      type: credentialTypes.studentID,
+      issuer: authority.document().id(),
+      credentialSubject: { id: holder, ...studentStudyData },
+      // credentialStatus: {
+      //     id: issuer.id + '#', // TODO + revocationBitmapFragment,
+      //     type: RevocationBitmap.type()
+      // },
+      issuanceDate: identity.Timestamp.nowUTC(),
+      expirationDate: nextSemesterStart(),
+      // credentialSchema: { // FIXME serde_json Error
+      //   id: 'https://gitlab.hs-anhalt.de/stmosarw/projekt-anwendungsentwicklung/-/blob/backend/schemas/credentials/student.jsonld',
+      //   types: 'StudentCredential'
+      // },
+      // termsOfUse: undefined, // TODO define tos
+      // refreshService: { id: authorityConfig.website, types: 'StudentIDCredential' },
+      nonTransferable: true,
+    })
+
+    console.log(credential)
+
+    const proofOptions = new identity.ProofOptions({
+      purpose: identity.ProofPurpose.assertionMethod(),
+    })
+
+    const signedCredential = await authority.createSignedCredential(
+      authorityConfig.methodFragments.signStudentIDCredential,
+      studentIDCredential,
+      proofOptions
+    )
+
+    return res.status(200).send(signedCredential.toJSON())
   }
+)
 
-  const studentIDCredential = new identity.Credential({
-    // id: undefined, // FIXME necessary?
-    type: credentialTypes.studentID,
-    issuer: authority.document().id(),
-    credentialSubject: { id: holder, ...studentStudyData },
-    // credentialStatus: {
-    //     id: issuer.id + '#', // TODO + revocationBitmapFragment,
-    //     type: RevocationBitmap.type()
-    // },
-    issuanceDate: identity.Timestamp.nowUTC(),
-    expirationDate: nextSemesterStart(),
-    // credentialSchema: { // FIXME serde_json Error
-    //   id: 'https://gitlab.hs-anhalt.de/stmosarw/projekt-anwendungsentwicklung/-/blob/backend/schemas/credentials/student.jsonld',
-    //   types: 'StudentCredential'
-    // },
-    // termsOfUse: undefined, // TODO define tos
-    // refreshService: { id: authorityConfig.website, types: 'StudentIDCredential' },
-    nonTransferable: true,
-  })
-
-  console.log(credential)
-
-  const proofOptions = new identity.ProofOptions({
-    purpose: identity.ProofPurpose.assertionMethod(),
-  })
-
-  const signedCredential = await authority.createSignedCredential(
-    authorityConfig.methodFragments.signStudentIDCredential,
-    studentIDCredential,
-    proofOptions
-  )
-
-  return res.status(200).send(signedCredential.toJSON())
+/** Verify a Verifiable Presentation containing a StudentIDCredential */
+app.post(routes.verifyStudentIDCredential, validateVP(credentialTypes.studentID), (req: Request, res: Response) => {
+  return res.sendStatus(204)
 })
 
-/** Verify a Verifiable Presentation of a StudentIDCredential */
-app.post(routes.verifyStudentIDCredential, validateVP, async (req: Request, res: Response) => {
+/** Verify a JWT cookie. */
+app.get(routes.authTokenVerify, authenticateJWT, (req: Request, res: Response) => {
+  res.sendStatus(204)
+})
+
+/** Create a JWT cookie. Precondition is a valid Verifiable Presentation. */
+app.post(routes.authTokenCreate, validateVP(credentialTypes.studentID), (req: Request, res: Response) => {
+  const { holderDid } = req.body
+
+  // Create JWT
+  const accessToken = jwt.sign({}, tokenSecret, {
+    audience: holderDid.toString(),
+    expiresIn: tokenExpiresIn,
+    issuer: authorityConfig.name,
+    subject: holderDid.toString(),
+  })
+
+  // Set JWT as cookie
+  res.cookie('accessToken', accessToken, {
+    httpOnly: false,
+    secure: true,
+    sameSite: true,
+  })
+
   return res.sendStatus(204)
 })
 
