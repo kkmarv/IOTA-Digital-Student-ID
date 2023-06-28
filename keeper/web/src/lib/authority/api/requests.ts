@@ -20,3 +20,13 @@ export async function sendVerifiablePresentation(authorityEndpoint: URL, present
   if (await hasError(response, apiNames.authority)) return null
   return await response.json()
 }
+
+export async function getAccessToken(authorityEndpoint: URL, presentation: any) {
+  const response = await fetch(authorityEndpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: presentation,
+  })
+  if (await hasError(response, apiNames.authority)) return null
+  return await response.json()
+}

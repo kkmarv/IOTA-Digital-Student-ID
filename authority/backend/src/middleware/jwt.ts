@@ -4,7 +4,7 @@ import { failureReasons, tokenSecret } from '../../config'
 
 /** Middleware that authenticates a JWT and inserts its contents into the request body. */
 export function authenticateJWT(req: Request, res: Response, next: NextFunction) {
-  const { accessToken } = req.cookies
+  const { accessToken } = req.body.accessToken
 
   if (!accessToken) {
     return res.status(400).json({ reason: failureReasons.jwtMissing })

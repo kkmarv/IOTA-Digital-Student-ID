@@ -27,12 +27,16 @@
 
     const presentation = await keeper.createVerifiablePresentation(password, credentials, challenge)
     const response = await authority.sendVerifiablePresentation(endpoint, JSON.stringify(presentation))
+    console.log('response ', response)
 
     if (Array.isArray(response.type) && response.type.includes('VerifiableCredential')) {
       const success = await keeper.saveVerifiableCredential(password, response.type[1], response) // TODO only works for one credential atm
-      console.log(await keeper.createVerifiablePresentation(password, credentials, challenge))
-    } else if (response.accessToken && typeof response.accessToken === 'string') {
-      await fetch(`http://localhost:4200/login?token=${response.accessToken}`) // send token to authority frontend
+      const vp = await keeper.createVerifiablePresentation(password, ['StudentIDCredential'], challenge)
+      const tokenResponse = await authority.getAccessToken(
+        new URL(endpoint.origin + '/api/auth/token/create'),
+        JSON.stringify(vp)
+      )
+      window.open(`http://localhost:4200/login?token=${tokenResponse.accessToken}`) // send token to authority frontend
     }
     authorityEndpoint = null // enforce re-render TODO find better way
   }

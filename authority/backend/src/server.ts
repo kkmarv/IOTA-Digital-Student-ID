@@ -145,13 +145,15 @@ app.post(routes.authTokenCreate, validateVP(credentialTypes.studentID), (req: Re
   })
 
   // Set JWT as cookie
-  res.cookie('accessToken', accessToken, {
-    httpOnly: false,
-    secure: true,
-    sameSite: true,
-  })
+  // res.cookie('accessToken', accessToken, {
+  //   httpOnly: false,
+  //   secure: true,
+  //   sameSite: true,
+  // })
 
-  return res.sendStatus(204)
+  // return res.sendStatus(204)
+
+  return res.status(200).send({ accessToken })
 })
 
 app.listen(apiPort, () => {
