@@ -8,11 +8,13 @@
 <div class="id-card">
   <div style="display: flex; align-items: center;;">
     <p class="title">{randomUser.countries[credentialSubject.nationality].legalName}</p>
-    <img
-      style="width: 30px; height:20px; margin-left: auto; margin-right: 0.5em"
-      src={randomUser.countries[credentialSubject.nationality].flag}
-      alt="country flag"
-    />
+    {#if randomUser.countries[credentialSubject.nationality].flag}
+      <img
+        style="width: 30px; height:20px; margin-left: auto; margin-right: 0.5em"
+        src={randomUser.countries[credentialSubject.nationality].flag}
+        alt="country flag"
+      />
+    {/if}
   </div>
   <div class="content">
     <div>

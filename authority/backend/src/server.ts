@@ -115,7 +115,24 @@ app.post(routes.verifyStudentIDCredential, validateVP(credentialTypes.studentID)
 })
 
 /** Verify a JWT cookie. */
-app.get(routes.authTokenVerify, authenticateJWT, (req: Request, res: Response) => {
+// This is a temporary solution to verify the JWT cookie
+// Remove this once the presentation is over
+app.post(routes.authTokenVerify, (req: Request, res: Response) => {
+  const { accessToken } = req.body.accessToken
+
+  if (!accessToken) {
+    return res.status(400).json({ reason: failureReasons.jwtMissing })
+  }
+
+  jwt.verify(accessToken, tokenSecret, (err: jwt.VerifyErrors | null, jwtPayload: any) => {
+    if (err) {
+      if (err instanceof jwt.TokenExpiredError) {
+        return res.status(403).json({ reason: failureReasons.jwtExpired })
+      } else {
+        return res.status(401).json({ reason: failureReasons.jwtInvalid })
+      }
+    }
+  })
   res.sendStatus(204)
 })
 

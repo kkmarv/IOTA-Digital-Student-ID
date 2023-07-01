@@ -6,7 +6,7 @@
   import * as authority from '../lib/authority/api/requests'
   import StudentID from '../components/credentialCards/StudentID.svelte'
 
-  let password = 'rawr'
+  let password = 'rawr' // TODO remove default password
   let authorityEndpoint: URL
   let wants: string
 
@@ -27,13 +27,21 @@
 
     // Send VerifiablePresentation to authority
     const presentation = await keeper.createVerifiablePresentation(password, credentials, challenge)
-    const response = await authority.sendVerifiablePresentation(endpoint, JSON.stringify(presentation))
+    let response = await authority.sendVerifiablePresentation(endpoint, JSON.stringify(presentation))
     console.log('presentation', presentation)
 
     if (Array.isArray(response.type) && response.type.includes('StudentIDCredential')) {
       await keeper.saveVerifiableCredential(password, response.type[1], response) // TODO only works for one credential atm
-    } else if (response.accessToken) {
-      window.open(`http://localhost:4200/login?token=${response.accessToken}`) // send token to authority frontend
+      // Do login with StudentIDCredential
+      const presentation = await keeper.createVerifiablePresentation(password, ['StudentIDCredential'], challenge)
+      response = await authority.sendVerifiablePresentation(
+        new URL(endpoint.origin + '/api/auth/token/create'),
+        JSON.stringify(presentation)
+      )
+    }
+
+    if (response.accessToken) {
+      window.open(`http://localhost:4200/login?token=${response.accessToken}`, '_self') // send token to authority frontend
     }
     authorityEndpoint = null // enforce re-render TODO find better way
   }
