@@ -22,7 +22,8 @@ export function validateVP(credentialType: string) {
 
     // First parse the request body
     try {
-      presentation = identity.Presentation.fromJSON(req.body)
+      // console.log(JSON.parse(req.body.presentation))
+      presentation = identity.Presentation.fromJSON(JSON.parse(req.body.presentation))
     } catch (error) {
       if (error instanceof Error) {
         return res.status(400).send({ reason: `${failureReasons.presentationParsingFailed}: ${error.message}` })
@@ -70,7 +71,8 @@ export function validateVP(credentialType: string) {
       else return res.send({ reason: failureReasons.presentationValidationFailedUnknown })
     }
 
-    req.body = { credential, holderDid }
+    let program = req.body.program
+    req.body = { credential, holderDid, program }
 
     return next()
   }

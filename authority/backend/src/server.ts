@@ -68,7 +68,8 @@ app.post(
   validateVP(credentialTypes.nationalID),
   async (req: Request, res: Response) => {
     const { credential, holderDid, program } = req.body
-
+    console.log(program + "\n\n")
+    console.log(req.body)
     const studentPersonalData = credential.credentialSubject()[0] as unknown as NationalIDCard
 
     const studentStudyData: StudentIDCard = {
