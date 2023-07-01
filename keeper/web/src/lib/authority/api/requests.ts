@@ -11,11 +11,11 @@ export async function getChallenge(authorityEndpoint: URL, did: string): Promise
   return await response.json()
 }
 
-export async function sendVerifiablePresentation(authorityEndpoint: URL, presentation: any) {
+export async function sendVerifiablePresentation(authorityEndpoint: URL, presentation: any, program?: string) {
   const response = await fetch(authorityEndpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: presentation,
+    body: JSON.stringify({ presentation, program }),
   })
   if (await hasError(response, apiNames.authority)) return null
   return await response.json()

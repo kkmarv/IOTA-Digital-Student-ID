@@ -9,6 +9,7 @@
   let password = 'rawr' // TODO remove default password
   let authorityEndpoint: URL
   let wants: string
+  let program: string
 
   // http://localhost:5173/landing?authority=http://localhost:8080/api/credential/student/issue&wants=NationalIDCredential&for=StudentIDCredential
 
@@ -16,10 +17,11 @@
     const urlSearchParams = new URLSearchParams(location.search)
     authorityEndpoint = new URL(urlSearchParams.get('authority'))
     wants = urlSearchParams.get('wants')
-    console.log(!!authorityEndpoint, wants)
+    program = urlSearchParams.get('program')
+    console.log(!!authorityEndpoint, wants, program)
   })
 
-  async function sendVerifiablePresentation(endpoint: URL, credentials: string[]) {
+  async function sendVerifiablePresentation(endpoint: URL, credentials: string[], program?: string) {
     const { did } = await keeper.getDid()
 
     const challengeEndpoint = new URL(endpoint.origin + '/api/challenge')
@@ -27,7 +29,7 @@
 
     // Send VerifiablePresentation to authority
     const presentation = await keeper.createVerifiablePresentation(password, credentials, challenge)
-    let response = await authority.sendVerifiablePresentation(endpoint, JSON.stringify(presentation))
+    let response = await authority.sendVerifiablePresentation(endpoint, JSON.stringify(presentation), program)
     console.log('presentation', presentation)
 
     if (Array.isArray(response.type) && response.type.includes('StudentIDCredential')) {
@@ -61,7 +63,7 @@
       <button
         type="submit"
         on:click|preventDefault={() => {
-          sendVerifiablePresentation(authorityEndpoint, [wants])
+          sendVerifiablePresentation(authorityEndpoint, [wants], program)
         }}
         >Allow
       </button>
