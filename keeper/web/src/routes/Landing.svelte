@@ -50,31 +50,36 @@
 </script>
 
 {#if authorityEndpoint && wants}
-  <h1>Verification Request</h1>
-  <b>{authorityEndpoint.host}</b> would like to verify your identity.<br />
-  They request to see the following credentials of yours:<br /><br />
+  <div style="">
+    <h1>Verification Request</h1>
+    <b>{authorityEndpoint.host}</b> would like to verify your identity.<br />
+    They request to see the following credentials of yours:<br /><br />
 
-  <li>{wants}</li>
+    <li>{wants}</li>
 
-  <div>
-    <p>Allow <b>{authorityEndpoint.host}</b> to see your credentials by typing your password:</p>
-    <form style="display: flex; align-items: center; justify-content: center;">
-      <input id="password" type="password" autocomplete="current-password" bind:value={password} />
-      <button
-        type="submit"
-        on:click|preventDefault={() => {
-          sendVerifiablePresentation(authorityEndpoint, [wants], program)
-        }}
-        >Allow
-      </button>
-    </form>
-  </div>
+    <div>
+      <br />
+      <br />
+      <p>Allow <b>{authorityEndpoint.host}</b> to see your credentials by typing your password:</p>
+      <form style="display: flex; align-items: center;">
+        <input id="password" type="password" autocomplete="current-password" bind:value={password} />
+        <button
+          style="margin-left: 1em;"
+          type="submit"
+          on:click|preventDefault={() => {
+            sendVerifiablePresentation(authorityEndpoint, [wants], program)
+          }}
+          >Allow
+        </button>
+      </form>
+    </div>
 
-  <div>
-    Or, alternatively,
-    <button on:click={() => (authorityEndpoint = null)}>Deny</button>
-    <!-- ^^ enforces re-render TODO find better way ^^ -->
-    the request.
+    <div>
+      Or, alternatively,
+      <button on:click={() => (authorityEndpoint = null)}>Deny</button>
+      <!-- ^^ enforces re-render TODO find better way ^^ -->
+      the request.
+    </div>
   </div>
 {:else}
   {#await keeper.getVerifiableCredential(password, 'NationalIDCredential') then credential}

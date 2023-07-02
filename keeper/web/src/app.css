@@ -46,7 +46,6 @@ h1 {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
-  text-align: center;
 }
 
 button {
@@ -83,7 +82,6 @@ button:hover,
 input:hover {
   border-color: #535bf2;
 }
-
 
 button:focus,
 button:focus-visible {
