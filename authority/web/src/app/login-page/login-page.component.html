@@ -1,17 +1,17 @@
 <div class="content">
-  <img src="../../assets/HSA_Logo_digital_RGB_1000px_transparent.png">
-  <h1>Anmelden</h1>
-    <main *ngIf="state === 'loading'">
-      <mat-spinner></mat-spinner>
-      <div class="mobile-space desktop-space"></div>
-      <div class="white-text">{{ this.loadingState }}</div>
-    </main>
-    <main *ngIf="state === 'login'">
-      <p>Klicke, um dich anzumelden:</p>
-      <form #loginKeeper="ngForm" [ngFormOptions]="{updateOn: 'change'}" (ngSubmit)="login()">
-        <div class="thin"></div>
-        <button mat-raised-button color="primary" type="submit">Anmelden</button>
-        <div class="thin"></div>
-      </form>
-    </main>
+  <img src="../../assets/HSA_Logo_digital_RGB_1000px_transparent.png" />
+  <h1>Login</h1>
+  <main *ngIf="state === 'loading'">
+    <mat-spinner></mat-spinner>
+    <div class="mobile-space desktop-space"></div>
+    <div class="white-text">{{ this.loadingState }}</div>
+  </main>
+  <main *ngIf="state === 'login'">
+    <p></p>
+    <form #loginKeeper="ngForm" [ngFormOptions]="{ updateOn: 'change' }" (ngSubmit)="login()">
+      <div class="thin"></div>
+      <button mat-raised-button color="primary" type="submit">Anmelden mit Keeper</button>
+      <div class="thin"></div>
+    </form>
+  </main>
 </div>
